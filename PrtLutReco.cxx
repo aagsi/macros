@@ -1538,26 +1538,6 @@ goon:
                     ++photon_ambiguity_counter_wt;
 
                     if(tangle >minChangle && tangle < maxChangle && tangle < 1.85) {
-                        fHist->Fill(tangle ,weight);
-                        //fHist_copy->Fill(tangle ,weight);
-                        if(samepath) fHist_same_path->Fill(tangle ,weight);
-                        if(!samepath) fHist_bg->Fill(tangle ,weight);
-                        if(tofPid==2212 && recoP==1 && recoPi==0) fHistMcp[mcpid]->Fill(tangle ,weight); // proton canditate
-                        if(tofPid==211 && recoP==0 && recoPi==1) fHistMcp[mcpid]->Fill(tangle ,weight); // pi candidate changed
-                        solution_number++;
-                        //if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
-
-                        if(0.7<tangle && tangle<0.9) {
-                            if(fabs(tangle-recoAngle)<chAngleCut) {
-                                isGoodHit=true; //default 0.04 rad = 40 mrad
-                                ++photon_ambiguity_counter_wtc;
-                            }
-                            if(radiator==2) { // plate
-                                if(fabs(tangle-recoAngle)<chAngleCut) isGoodHit=true;
-                            }
-                        }
-
-
                         if(openChCorr== 1) {
                             // proton correction
                             if( prtangle==20 && fEvent->GetType()==0) {
@@ -1594,6 +1574,25 @@ goon:
                                 if(mcpid==8) tangle += -0.00402756;
                             }
                         }
+                        fHist->Fill(tangle ,weight);
+                        //fHist_copy->Fill(tangle ,weight);
+                        if(samepath) fHist_same_path->Fill(tangle ,weight);
+                        if(!samepath) fHist_bg->Fill(tangle ,weight);
+                        if(tofPid==2212 && recoP==1 && recoPi==0) fHistMcp[mcpid]->Fill(tangle ,weight); // proton canditate
+                        if(tofPid==211 && recoP==0 && recoPi==1) fHistMcp[mcpid]->Fill(tangle ,weight); // pi candidate changed
+                        solution_number++;
+                        //if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
+
+                        if(0.7<tangle && tangle<0.9) {
+                            if(fabs(tangle-recoAngle)<chAngleCut) {
+                                isGoodHit=true; //default 0.04 rad = 40 mrad
+                                ++photon_ambiguity_counter_wtc;
+                            }
+                            if(radiator==2) { // plate
+                                if(fabs(tangle-recoAngle)<chAngleCut) isGoodHit=true;
+                            }
+                        }
+
 
                         /*
                         // p cherenkove angle correction
