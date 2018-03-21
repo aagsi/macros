@@ -65,7 +65,7 @@ void GraphStyle(TGraph *x=new TGraph(), TGraph *y=new TGraph(), TGraph *z=new TG
 // file existance
 bool exists_test (const std::string& name);
 
-Bool_t Bool_cherenkov_correction(false), Bool_separation_graph(false), Bool_photonyield_histo(true), Bool_cherenkov_PDF_histo(false);
+Bool_t Bool_cherenkov_correction(true), Bool_separation_graph(false), Bool_photonyield_histo(false), Bool_cherenkov_PDF_histo(false);
 ////////////////////
 // function   //////
 ////////////////////
@@ -95,8 +95,8 @@ void pdf() {
         if (Bool_cherenkov_correction== true && i >20) break;
         if (Bool_separation_graph== true && i ==70) continue;
         TString separation_data_path = Form("/u/aali/work/test/%d_sph_data_separation.root", i);
-        TString spr_data_p_path = Form("/u/aali/work/test/%d_sph_p_data_spr.root", i);
-        TString spr_data_pi_path = Form("/u/aali/work/test/%d_sph_pi_data_spr.root", i);
+        TString spr_data_p_path = Form("/u/aali/work/beam_correction/%d_test_p_data_spr.root", i);
+        TString spr_data_pi_path = Form("/u/aali/work/beam_correction/%d_test_pi_data_spr.root", i);
         cout<<"separation data path= " <<separation_data_path<<endl;
         cout<<"spr data p path= " <<spr_data_p_path<<endl;
         cout<<"spr data pi path= " <<spr_data_pi_path<<endl;
@@ -128,7 +128,7 @@ void pdf() {
             ///////////////////////////
             ffile_data_p_spr  = new TFile(spr_data_p_path, "READ");
             ffile_data_pi_spr  = new TFile(spr_data_pi_path, "READ");
-            cout << "MCP by MCP cherenvove angle correction for PION"<< endl;
+            cout << "MCP by MCP cherenvove angle correction for Poton"<< endl;
             for(Int_t mcp=0; mcp<prt_nmcp; mcp++) {
                 HistMcp_p[mcp] =(TH1F*)ffile_data_p_spr->Get(Form("fHistMcp_%d",mcp));
             }
