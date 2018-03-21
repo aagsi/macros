@@ -56,8 +56,43 @@ timeCut150_proton=1.527406
 chAngleCut150_proton=0.045013
 
 # create spr
-./prtdirc -s 2 -i "${DIRd}/beam_s332_30C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/30_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut30_proton -chcut $chAngleCut30_proton -recoangle $recoAngle30_proton -t1 0 -t2 0
-./prtdirc -s 2 -i "${DIRd}/beam_s332_30C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/30_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut30_proton -chcut $chAngleCut30_proton -recoangle $recoAngle30_proton -t1 0 -t2 0
+
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_40C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/40_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut40_proton -chcut $chAngleCut40_proton -recoangle $recoAngle40_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_40C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/40_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut40_proton -chcut $chAngleCut40_proton -recoangle $recoAngle40_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_50C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/50_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_50C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/50_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_60C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/60_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_60C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/60_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_70C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/70_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut70_proton -chcut $chAngleCut70_proton -recoangle $recoAngle70_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_70C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/70_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut70_proton -chcut $chAngleCut70_proton -recoangle $recoAngle70_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_80C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/80_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut80_proton -chcut $chAngleCut80_proton -recoangle $recoAngle80_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_80C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/80_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut80_proton -chcut $chAngleCut80_proton -recoangle $recoAngle80_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_90C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/90_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut90_proton -chcut $chAngleCut90_proton -recoangle $recoAngle90_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_90C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/90_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut90_proton -chcut $chAngleCut90_proton -recoangle $recoAngle90_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_100C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/100_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut100_proton -chcut $chAngleCut100_proton -recoangle $recoAngle100_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_100C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/100_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut100_proton -chcut $chAngleCut100_proton -recoangle $recoAngle100_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_110C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/110_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut110_proton -chcut $chAngleCut110_proton -recoangle $recoAngle110_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_110C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/110_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut110_proton -chcut $chAngleCut110_proton -recoangle $recoAngle110_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_120C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/120_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut120_proton -chcut $chAngleCut120_proton -recoangle $recoAngle120_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_120C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/120_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut120_proton -chcut $chAngleCut120_proton -recoangle $recoAngle120_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_130C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/130_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut130_proton -chcut $chAngleCut130_proton -recoangle $recoAngle130_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_130C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/130_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut130_proton -chcut $chAngleCut130_proton -recoangle $recoAngle130_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_140C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/140_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut140_proton -chcut $chAngleCut140_proton -recoangle $recoAngle140_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_140C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/140_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut140_proton -chcut $chAngleCut140_proton -recoangle $recoAngle140_proton -t1 0 -t2 0
+
+./prtdirc -s 2 -i "${DIRd}/beam_s332_150C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/150_test_p_data.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut150_proton -chcut $chAngleCut150_proton -recoangle $recoAngle150_proton -t1 0 -t2 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_150C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/150_test_pi_data.root" -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut150_proton -chcut $chAngleCut150_proton -recoangle $recoAngle150_proton -t1 0 -t2 0
 
 # create spr
 #./prtdirc -s 2 -i "${DIRd}/beam_s332_20C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/test_open1.root" -recop 1 -recopi 0  -e 500 -v 2 -tr $timeCut20_proton -chcut $chAngleCut20_proton -recoangle $recoAngle20_pro$  -openchcorr 1
