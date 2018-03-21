@@ -164,16 +164,16 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     fHist = new TH1F("fHist",  "chrenkov angle;#theta_{C} [rad];entries [#]", 80,0.6,1); //150  //80     // warning
     fHist_copy = new TH1F("fHist_copy",  "chrenkov angle;#theta_{C} [rad];entries [#]", 80,0.6,1); //150  //80
     fHist_correction = new TH1F("fHist_correction",  "chrenkov angle;#theta_{C} [rad];entries [#]", 80,0.6,1); //150  //80
-
+    
     fHist_same_path = new TH1F("fHist_same_path",  "chrenkov angle;#theta_{C} [rad];entries [#]", 80,0.6,1); //150  //80
     fHist_same_path_wotc = new TH1F("fHist_same_path_wotc",  "chrenkov angle;#theta_{C} [rad];entries [#]", 80,0.6,1); //150  //80
-
-
+    
+    
     fHist_bg = new TH1F("fHist_bg",  "chrenkov angle;#theta_{C} [rad];entries [#]", 80,0.6,1); //150  //80
     fHistPi = new TH1F("chrenkov_angle_hist_Pi",  "chrenkov angle pi;#theta_{C} [rad];entries [#]", 80,0.6,1); //150
     fHisti = new TH1F("chrenkov_angle_histi","chrenkov angle;#theta_{C} [rad];entries [#]", 80,0.6,1); //150
-
-
+    
+    
     fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
     fSpect = new TSpectrum(10);
     if(infile.Contains("beam_")) {
@@ -200,8 +200,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     for(Int_t i=0; i<960; i++) {
         fHistCh[i] = new TH1F(Form("fHistCh_%d",i),Form("fHistCh_%d;#theta_{C} [rad];entries [#]",i), 2000,0.6,1); //150
     }
-
-
+    
+    
     /*
      // hodo
      for(Int_t p=0; p<nHodoPixel; p++){
@@ -216,7 +216,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
 
 // -----   Destructor   ----------------------------------------------------
 PrtLutReco::~PrtLutReco() {
-
+    
 }
 
 Int_t mcpdata[12][65]; // changed
@@ -231,7 +231,7 @@ Int_t getneighbours(Int_t m, Int_t p) {
         if(mcpdata[m][t]) {
             for(Int_t i=0; i<65; i++) if(t==lneighbours[i]) continue;
             if((t==p-1 && p%8!=0) || (t==p+1 && p%8!=7) ||
-                    (t==p+8 && p<57) || (t==p-8 && p>8)) getneighbours(m,t);
+               (t==p+8 && p<57) || (t==p-8 && p>8)) getneighbours(m,t);
         }
     }
     return lsize;
@@ -249,7 +249,7 @@ void getclusters() {
 
 //-------------- Loop over tracks ------------------------------------------
 void PrtLutReco::Run(Int_t start, Int_t end) {
-
+    
     gr_pi->SetPoint(1,0.6025,0.0064464);
     gr_pi->SetPoint(2,0.6075,0.00700676);
     gr_pi->SetPoint(3,0.6125,0.00614543);
@@ -410,8 +410,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     gr_p->SetPoint(78,0.9875,0.00471952);
     gr_p->SetPoint(79,0.9925,0.00488757);
     gr_p->SetPoint(80,0.9975,0.00407725);
-
-
+    
+    
     TVector3 dird, dir, momInBar(0,0,1),posInBar,cz;
     Double_t mom, cangle,spr,tangle,likelihood(0),boxPhi,weight,evtime,bartime, lenz,dirz,luttheta, barHitTime, hitTime, photonEnergy, alphAngle;
     Int_t  tofPid(0),distPid(0),likePid(0),pdgcode, evpointcount=0;
@@ -421,15 +421,15 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     TVector3 fnY1 = TVector3( 0,1,0);
     bool testTrRes = false;
     Double_t angdiv,dtheta,dtphi,prtangle, counter(0);
-
+    
     /////////////////////
     /////////////////////
     /////////////////////
-
+    
     Double_t theta(0),phi(0), trr(0),  nph(0),par1(0), par2(0), par3(0), par4(0), par5(0), par6(0), test1(0), test2(0), test3(0),separation(0),recoAngle(0), chAngleCut(0), timeRes(0);
     Double_t recoP(0), recoPi(0), gPDF(0), openChCorr(0), method_type(-1);
     Int_t solution_number_approach_selection(0),solution_number(0);
-
+    
     chAngleCut = PrtManager::Instance()->GetchAngleCut();
     recoAngle = PrtManager::Instance()->GetrecoAngle();
     timeRes = PrtManager::Instance()->GetTimeRes();
@@ -438,17 +438,17 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     gPDF = PrtManager::Instance()->GetgPDF();
     openChCorr = PrtManager::Instance()->GetopenChCorr();
     method_type = PrtManager::Instance()->GetRunType();
-
+    
     cout<<"@@@@@@@@@@@@ gPDF="<< gPDF << endl;
     cout<<"@@@@@@@@@@@@ recoP="<< recoP << endl;
     cout<<"@@@@@@@@@@@@ recoPi="<< recoPi << endl;
     cout<<"@@@@@@@@@@@@ method_type="<< method_type << endl;
-
-
+    
+    
     TFile *ffile_data_p, *ffile_data_pi;
     Double_t prtangle_pdf, pdf_nph_p, pdf_nph_pi;
     TString cherenkov_data_p_path, cherenkov_data_pi_path;
-
+    
     if (method_type == 3) {
         fChain->GetEntry(20);
         prtangle_pdf = fEvent->GetAngle();
@@ -496,9 +496,9 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             fHistCh_graph_pi[pix] =new TGraph(fHistCh_read_pi[pix]);
         }
     }
-
-
-
+    
+    
+    
     TString outFile;
     if(method_type==3) {
         outFile = PrtManager::Instance()->GetOutName()+"_separation.root";
@@ -507,16 +507,16 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     } else {
         outFile = PrtManager::Instance()->GetOutName()+"_spr.root";
     }
-
-
-
+    
+    
+    
     //TString outFile =PrtManager::Instance()->GetOutName()+"_spr.root" ;
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     Double_t minChangle(0);
     Double_t maxChangle(1);
     Double_t rad = TMath::Pi()/180.;
@@ -543,18 +543,18 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     tree.Branch("test3",&test3,"test3/D");
     tree.Branch("theta",&theta,"theta/D");
     tree.Branch("phi",&phi,"phi/D");
-
+    
     tree.Branch("chAngleCut",&chAngleCut,"chAngleCut/D");
     tree.Branch("recoAngle",&recoAngle,"recoAngle/D");
     tree.Branch("timeRes",&timeRes,"timeRes/D");
     tree.Branch("end",&end,"end/I");
     tree.Branch("solution_number_approach_selection",&end,"solution_number_approach_selection/I");
     tree.Branch("solution_number",&end,"solution_number/I");
-
-
-
-
-
+    
+    
+    
+    
+    
     test1 = PrtManager::Instance()->GetTest1();
     test2 = PrtManager::Instance()->GetTest2();
     test3 = PrtManager::Instance()->GetTest3();
@@ -563,9 +563,9 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     Int_t nEvents = fChain->GetEntries();
     if(end==0) end = nEvents;
     if (gPDF==1)start = 500001;
-
+    
     cout<<"@@@@@@@@@@@@ gPDF="<< gPDF << "    start= "<< start << endl;
-
+    
     std::cout<<"Run started for ["<<start<<","<<end <<"]"<<std::endl;
     Int_t nsHits(0),nsEvents(0),studyId(0), nHits(0), ninfit(1);
     if(start<0) {
@@ -599,11 +599,11 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             if(fEvent->GetType()==0) {
                 momInBar.RotateY(TMath::Pi()-prtangle*rad-test1);// 0  test1
                 momInBar.RotateX(test2);//0 test2
-
+                
                 //momInBar.RotateY(TMath::Pi()-prtangle*rad+0.0);
                 //momInBar.RotateX(0.0);
                 // -+, --, +-, ++
-
+                
             } else {
                 momInBar.RotateY(TMath::Pi()-prtangle*rad);
             }
@@ -621,7 +621,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         tofPid=fEvent->GetParticle();
         if(tofPid==212) tofPid=211;
         //std::cout<<"$$$$$$$$$$$$$$$$$$$ up $$$$$$ tofPid "<<tofPid <<std::endl;
-
+        
         Int_t pdg[]= {11,13,211,321,2212};
         Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
         Double_t angle1(0), angle2(0),sum1(0),sum2(0), sigma(0.009),range(5*sigma),noise(0.3);
@@ -631,58 +631,58 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         //std::cout<<" ####### ###### chrencove Angle  "<< " pi  ="<< fAnglePi <<std::endl;   // changed
         gF1->SetParameter(0,1);
         gF2->SetParameter(0,1);
-
+        
         // move the model
-
+        
         gF1->SetParameter(1,fAngleP);
         gF2->SetParameter(1,fAnglePi);
         //std::cout<<"No Problem2  " <<std::endl;
         /*
-        if(prtangle == 20)gF1->SetParameter(1,0.818334);
-        if(prtangle == 30)gF1->SetParameter(1,0.816051);
-        if(prtangle == 40)gF1->SetParameter(1,0.816986);
-        if(prtangle == 50)gF1->SetParameter(1,0.817087);
-        if(prtangle == 60)gF1->SetParameter(1,0.815137);
-        if(prtangle == 70)gF1->SetParameter(1,0.813078);
-        if(prtangle == 80)gF1->SetParameter(1,0.812915);
-        if(prtangle == 90)gF1->SetParameter(1,0.810881);
-        if(prtangle == 100)gF1->SetParameter(1,0.811012);
-        if(prtangle == 110)gF1->SetParameter(1,0.813848);
-        if(prtangle == 120)gF1->SetParameter(1,0.814565);
-        if(prtangle == 130)gF1->SetParameter(1,0.817052);
-        if(prtangle == 140)gF1->SetParameter(1,0.816796);
-        if(prtangle == 150)gF1->SetParameter(1,0.815613);
-
-
-        if(prtangle == 20)gF2->SetParameter(1,0.826920);
-        if(prtangle == 30)gF2->SetParameter(1,0.824533);
-        if(prtangle == 40)gF2->SetParameter(1,0.825388);
-        if(prtangle == 50)gF2->SetParameter(1,0.824601);
-        if(prtangle == 60)gF2->SetParameter(1,0.823733);
-        if(prtangle == 70)gF2->SetParameter(1,0.820671);
-        if(prtangle == 80)gF2->SetParameter(1,0.820424);
-        if(prtangle == 90)gF2->SetParameter(1,0.819132);
-        if(prtangle == 100)gF2->SetParameter(1,0.820097);
-        if(prtangle == 110)gF2->SetParameter(1,0.821585);
-        if(prtangle == 120)gF2->SetParameter(1,0.822756);
-        if(prtangle == 130)gF2->SetParameter(1,0.824813);
-        if(prtangle == 140)gF2->SetParameter(1,0.825208);
-        if(prtangle == 150)gF2->SetParameter(1,0.823934);
-        */
-
+         if(prtangle == 20)gF1->SetParameter(1,0.818334);
+         if(prtangle == 30)gF1->SetParameter(1,0.816051);
+         if(prtangle == 40)gF1->SetParameter(1,0.816986);
+         if(prtangle == 50)gF1->SetParameter(1,0.817087);
+         if(prtangle == 60)gF1->SetParameter(1,0.815137);
+         if(prtangle == 70)gF1->SetParameter(1,0.813078);
+         if(prtangle == 80)gF1->SetParameter(1,0.812915);
+         if(prtangle == 90)gF1->SetParameter(1,0.810881);
+         if(prtangle == 100)gF1->SetParameter(1,0.811012);
+         if(prtangle == 110)gF1->SetParameter(1,0.813848);
+         if(prtangle == 120)gF1->SetParameter(1,0.814565);
+         if(prtangle == 130)gF1->SetParameter(1,0.817052);
+         if(prtangle == 140)gF1->SetParameter(1,0.816796);
+         if(prtangle == 150)gF1->SetParameter(1,0.815613);
+         
+         
+         if(prtangle == 20)gF2->SetParameter(1,0.826920);
+         if(prtangle == 30)gF2->SetParameter(1,0.824533);
+         if(prtangle == 40)gF2->SetParameter(1,0.825388);
+         if(prtangle == 50)gF2->SetParameter(1,0.824601);
+         if(prtangle == 60)gF2->SetParameter(1,0.823733);
+         if(prtangle == 70)gF2->SetParameter(1,0.820671);
+         if(prtangle == 80)gF2->SetParameter(1,0.820424);
+         if(prtangle == 90)gF2->SetParameter(1,0.819132);
+         if(prtangle == 100)gF2->SetParameter(1,0.820097);
+         if(prtangle == 110)gF2->SetParameter(1,0.821585);
+         if(prtangle == 120)gF2->SetParameter(1,0.822756);
+         if(prtangle == 130)gF2->SetParameter(1,0.824813);
+         if(prtangle == 140)gF2->SetParameter(1,0.825208);
+         if(prtangle == 150)gF2->SetParameter(1,0.823934);
+         */
+        
         gF1->SetParameter(2,sigma);
         gF2->SetParameter(2,sigma);
         //////////////////////////////
         // select proton sim
         if(fMethod==2 && tofPid!=2212 && fEvent->GetType()==1&& recoP==1 && recoPi==0) continue; //2212, 211 will remove pion , proton respectively in simulation
         if(fMethod==2 && tofPid!=211 && fEvent->GetType()==1&& recoP==1 && recoPi==0) goto goon;
-
+        
         //select pi sim
         if(fMethod==2 && tofPid!=211 && fEvent->GetType()==1&& recoP==0 && recoPi==1) continue; //2212, 211 will remove pion , proton respectively in simulation
         if(fMethod==2 && tofPid!=2212 && fEvent->GetType()==1&& recoP==0 && recoPi==1) goto goon;
-
+        
         if(fMethod==3 && fEvent->GetType()==1) goto goon;
-
+        
         if(fEvent->GetType()==0) { // Pions and protons will enter the loop the filltering will be applyied from the tof system
             Bool_t tof1_bool (false);
             Bool_t tof2_bool (false);
@@ -699,28 +699,28 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Bool_t multi_bool_trgmzV = false;
             Bool_t bad_bool_hodoH = false;
             Bool_t bad_bool_hodoV = false;
-
-
+            
+            
             //Vertical
             Bool_t hodo_bool_1349= false;
             Bool_t hodo_bool_1350= false;
             Bool_t hodo_bool_1351= false;
             Bool_t hodo_bool_1352= false;
-
+            
             //Horizental
             Bool_t hodo_bool_1367= false;
             Bool_t hodo_bool_1368= false;
             Bool_t hodo_bool_1369= false;
             Bool_t hodo_bool_1370= false;
             Bool_t hodo_bool_1371= false;
-
+            
             Double_t LE_tof1=0;
             Double_t LE_tof2=0;
             Double_t LE_trg1=0;
             Double_t LE_trg2=0;
             Double_t LE_trgmzH=0;
             Double_t LE_trgmzV=0;
-
+            
             TOT_tof1=0;
             TOT_tof2=0;
             TOT_trg1=0;
@@ -728,26 +728,26 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             TOT_trgmzH=0;
             TOT_trgmzV=0;
             delta_tof2tof1=0;
-
+            
             Int_t count_tof1 =0;
             Int_t count_tof2 =0;
             Int_t count_trg1 =0;
             Int_t count_trg2 =0;
             Int_t count_trgmzH =0;
             Int_t count_trgmzV =0;
-
+            
             Int_t count_hodoH_1368 =0;
             Int_t count_hodoH_1369 =0;
             Int_t count_hodoH_1370 =0;
-
-
+            
+            
             Int_t count_hodoV_1350 =0;
             Int_t count_hodoV_1351 =0;
             Int_t count_hodoV_1352 =0;
-
-
-
-
+            
+            
+            
+            
             for(Int_t h=0; h<fEvent->GetHitSize(); h++) {
                 fHit = fEvent->GetHit(h);
                 Int_t gch=fHit.GetChannel();
@@ -819,21 +819,21 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                     //  multi_bool = true;
                     multi_bool_trgmzV= true;
                 }
-
+                
                 if(0<=(gch-1344) && (gch-1344)<16) { // hodoscope V all
                     hodoV->Fill(gch-1344);
                 }
-
+                
                 if(16<=(gch-1344) && (gch-1344)<32) { // hodoscope H all
                     hodoH->Fill(gch-1344-16);
                 }
-
-
+                
+                
                 // select bad fibers
                 if (gch==1344||gch==1345||gch==1346||gch==1347||gch==1348||gch==1349||gch==1353||gch==1354||gch==1355||gch==1356||gch==1357||gch==1358||gch==1359) bad_bool_hodoV=true;
                 if (gch==1360||gch==1361||gch==1362||gch==1363||gch==1364||gch==1365||gch==1366||gch==1367||gch==1371||gch==1372||gch==1373||gch==1374||gch==1375) bad_bool_hodoH=true;
                 // fill good fibers
-
+                
                 // fill good fibers
                 if (gch==1350 && bad_bool_hodoV==false && bad_bool_hodoH== false) { // Vertical
                     hodo_bool_1350=true;
@@ -884,7 +884,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                             if (0<=(gch2-1344) && (gch2-1344)<16)  hodoV_select->Fill(gch2-1344); // fill vertical fiber
                         }
                     }
-
+                    
                 }
                 if (gch==1352 && bad_bool_hodoV==false && bad_bool_hodoH== false) {  // Vertical
                     hodo_bool_1352=true;
@@ -959,7 +959,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                             if (16<=(gch3-1344) && (gch3-1344)<32) hodoH_select->Fill(gch3-1344-16);
                         }
                     }
-
+                    
                 }
                 if (gch==1370 && bad_bool_hodoV==false && bad_bool_hodoH== false) { // Horizental
                     hodo_bool_1370=true;
@@ -985,7 +985,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         }
                     }
                 }
-
+                
             }// end of hit loop
             countmulti_tof1->Fill(count_tof1);
             countmulti_tof2->Fill(count_tof2);
@@ -1002,7 +1002,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                     for(int v=0; v<16; v++)
                         hodoF->Fill(v,(15-h),hodoH->GetBinContent(h)+hodoV->GetBinContent(v));
             } // end Fill
-
+            
             // hodo Vertical
             {
                 for(int h=0; h<16; h++)
@@ -1015,11 +1015,11 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                     for(int v=0; v<16; v++)
                         hodo_multi_withmedHfiber->Fill(v,(15-h),hodoH_select->GetBinContent(h));
             }
-
-
+            
+            
             //////////////////////////////////////////////////////////////////////////////////////////
             delta_tof2tof1=LE_tof2-LE_tof1;
-
+            
             //htof1_le->Fill(LE_tof1);
             //htof1_tot->Fill(TOT_tof1);
             htof1_le_tot->Fill(LE_tof1,TOT_tof1);
@@ -1038,41 +1038,41 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             //htrgmzH_le->Fill(LE_trgmzH);
             //htrgmzH_tot->Fill(TOT_trgmzH);
             htrgmzH_le_tot->Fill(LE_trgmzH, TOT_trgmzH);
-
+            
             hdelta_tof2tof1->Fill(delta_tof2tof1);
-
+            
             if(/*hodo_bool_1351==true  &&  hodo_bool_1369==true &&
                 count_hodoV_1351==0 && count_hodoH_1369==0 &&*/  // tight cut
-
-
-                bad_bool_hodoV==false && bad_bool_hodoH== false &&
-                (hodo_bool_1350==true || hodo_bool_1351==true|| hodo_bool_1352==true) && (hodo_bool_1368==true || hodo_bool_1369==true || hodo_bool_1370==true ) &&
-                count_hodoV_1350 ==0 && count_hodoV_1351==0 && count_hodoV_1352==0 && count_hodoH_1368==0 && count_hodoH_1369==0 && count_hodoH_1370==0 &&
-
-
-
-
-                tof1_bool == true && tof2_bool == true &&
-                trg1_bool==true && trg2_bool==true && trgmzH_bool==true && trgmzV_bool==true &&
-
-                LE_trg1>-144 && LE_trg1 < -132 &&
-                TOT_trg1>118.4 && TOT_trg1<119.8 &&
-
-                LE_tof1>-282 && LE_tof1<-270 &&
-                TOT_tof1>45 && TOT_tof1<50 &&
-
-                LE_tof2>-250 && LE_tof2 < -238 &&
-                TOT_tof2>44 && TOT_tof2<50 &&
-
-                LE_trg2> -125 && LE_trg2<-110 &&
-                LE_trg1> -143 && LE_trg1<-130 &&
-
-                multi_bool ==false ) { // TOF1, TOF2, TRG1
-
+               
+               
+               bad_bool_hodoV==false && bad_bool_hodoH== false &&
+               (hodo_bool_1350==true || hodo_bool_1351==true|| hodo_bool_1352==true) && (hodo_bool_1368==true || hodo_bool_1369==true || hodo_bool_1370==true ) &&
+               count_hodoV_1350 ==0 && count_hodoV_1351==0 && count_hodoV_1352==0 && count_hodoH_1368==0 && count_hodoH_1369==0 && count_hodoH_1370==0 &&
+               
+               
+               
+               
+               tof1_bool == true && tof2_bool == true &&
+               trg1_bool==true && trg2_bool==true && trgmzH_bool==true && trgmzV_bool==true &&
+               
+               LE_trg1>-144 && LE_trg1 < -132 &&
+               TOT_trg1>118.4 && TOT_trg1<119.8 &&
+               
+               LE_tof1>-282 && LE_tof1<-270 &&
+               TOT_tof1>45 && TOT_tof1<50 &&
+               
+               LE_tof2>-250 && LE_tof2 < -238 &&
+               TOT_tof2>44 && TOT_tof2<50 &&
+               
+               LE_trg2> -125 && LE_trg2<-110 &&
+               LE_trg1> -143 && LE_trg1<-130 &&
+               
+               multi_bool ==false ) { // TOF1, TOF2, TRG1
+                
                 // All good candidates
                 //hdelta_tof2tof1->Fill(delta_tof2tof1);
                 //goto goon;
-
+                
                 if (fMethod==2 && delta_tof2tof1 > 32.4 && delta_tof2tof1< 32.9 && recoP==1 && recoPi==0) goto goon; //proton Candidate
                 if (fMethod==2 && delta_tof2tof1 > 31.5 && delta_tof2tof1< 32.0 && recoP==0 && recoPi==1 ) goto goon; //pi Candidate
                 //std::cout<<"No Problem  methos =  " <<fMethod<<std::endl;
@@ -1081,8 +1081,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             }
             continue; // outside the event loop
         }// if data condition
-
-goon:
+        
+    goon:
         //std::cout<<"No Problem  goon  " <<std::endl;
         hdelta_tof2tof1_isproton->Fill(delta_tof2tof1);
         nHits_dac_syscut_p->Fill(nHits);
@@ -1092,7 +1092,7 @@ goon:
                 for(int v=0; v<16; v++)
                     hodo_afterCut->Fill(v,(15-h),hodoH_select->GetBinContent(h)+hodoV_select->GetBinContent(v));
         } // end FillF()
-
+        
         //   //clusters search
         //   for(Int_t h=0; h<nHits; h++) {
         //     Int_t mid=fEvent->GetHit(h).GetMcpId();
@@ -1100,7 +1100,7 @@ goon:
         //     mcpdata[mid][pid]=1;
         //   }
         //   getclusters();
-
+        
         //   Int_t bad(0);
         //   for(Int_t j=0; j<prt_nmcp; j++){
         //     for(Int_t i=0; i<65; i++){
@@ -1110,10 +1110,10 @@ goon:
         // 	}
         //     }
         //   }
-
+        
         // lllll:
         //   std::cout<<"bad  "<<bad <<std::endl;
-
+        
         //   if(bad){
         //     for(Int_t j=0; j<prt_nmcp; j++){
         //   	for(Int_t i=0; i<65; i++){
@@ -1121,10 +1121,10 @@ goon:
         //   	  cluster[j][i]=0;
         //   	}
         //     }
-
+        
         //     continue;
         //   }
-
+        
         Int_t nGoodPhotons=0;
         Int_t nGoodPhotons_TimeCutOnly=0;
         Int_t nCandidat=0;
@@ -1153,7 +1153,7 @@ goon:
             }
             //======================================== dynamic cuts for sim and data
             if(fEvent->GetType()==1 || fEvent->GetType()==0) {
-
+                
                 Double_t cut1(0);
                 {   //time cuts
                     if(prtangle==20) {
@@ -1341,12 +1341,12 @@ goon:
                                 if(hitTime<9.0 || hitTime>25 ) continue; // warning1
                                 reflected = kTRUE;
                             }
-
+                            
                             else if(prtangle==25 ) {
                                 if(hitTime<9.5 || hitTime>30 ) continue;
                                 reflected = kTRUE;
                             }
-
+                            
                             else if(prtangle==30 ) {
                                 if(hitTime<9.5 || hitTime>35 ) continue;
                                 reflected = kTRUE;
@@ -1371,7 +1371,7 @@ goon:
                                 if(hitTime<10 || hitTime>50 ) continue;
                                 reflected = kTRUE;
                             }
-
+                            
                             else if(prtangle==60 ) {
                                 if(hitTime<10.5 || hitTime>50 ) continue;
                                 reflected = kTRUE;
@@ -1404,7 +1404,7 @@ goon:
                                 if(hitTime<=12)   reflected = kFALSE;
                                 if(hitTime>12) reflected = kTRUE;
                             }
-
+                            
                             else if(prtangle>94) {
                                 if(hitTime<3 || hitTime>25) continue;
                                 reflected = kFALSE;
@@ -1414,19 +1414,19 @@ goon:
                     //======================================== dynamic cuts
                 }// end of (if false) old calculations
             }// end of else
-
+            
             if(fVerbose==3) {
                 TVector3 cd = fHit.GetMomentum();
                 fHist5->Fill(cd.Theta()*TMath::Sin(cd.Phi()),cd.Theta()*TMath::Cos(cd.Phi()));
             }
-
+            
             Int_t pixid=fHit.GetPixelId()-1;
             Int_t mcpid=fHit.GetMcpId();
             if(reflected) lenz = 2*radiatorL - lenz;
             Int_t ch = map_mpc[mcpid][pixid];
             if(prt_isBadChannel(ch)) continue;
-
-
+            
+            
             //if(cluster[mcpid][pixid]>8) continue;
             // Int_t x(0),y(0), piid(pixid) , nedge(0); //new
             // for(Int_t h=0; h<nHits; h++) {
@@ -1446,7 +1446,7 @@ goon:
                 if(mid!=mcpid || pid==piid) continue;
                 if(pid==piid-1 && piid%8!=1) x-=1;
                 if(pid==piid+1 && piid%8!=0) x+=1;
-
+                
                 if(pid==piid+8 && piid<57) y+=1;
                 if(pid==piid-8 && piid>8)  y-=1;
             }
@@ -1475,12 +1475,12 @@ goon:
             Int_t size =fLutNode[sensorId]->Entries();
             Double_t min_time = 1000;
             Double_t min_diff_time_tangle = 0;
-
+            
             Int_t photon_ambiguity_counter_wo=0;
             Int_t photon_ambiguity_counter_wt=0;
             Int_t photon_ambiguity_counter_wtc=0;
             for(Int_t i=0; i<size; i++) {
-
+                
                 weight = 1;//fLutNode[sensorId]->GetWeight(i);
                 dird   = fLutNode[sensorId]->GetEntryCs(i,nedge); // nedge=0
                 //dird   = fLutNode[sensorId]->GetEntry(i);
@@ -1536,43 +1536,476 @@ goon:
                     if(fabs(diff_variable)>timeRes) continue;
                     isGoodHit_TimeCutOnly=true;
                     ++photon_ambiguity_counter_wt;
-
+                    
                     if(tangle >minChangle && tangle < maxChangle && tangle < 1.85) {
                         if(openChCorr== 1) {
                             // proton correction
                             if( prtangle==20 && fEvent->GetType()==0) {
-                                if(mcpid==0) tangle += -0.0033519;
-                                if(mcpid==2) tangle += 0.0021898;
-                                if(mcpid==3) tangle += -3.00714e-05;
-                                if(mcpid==4) tangle += -0.00060821;
-                                if(mcpid==5) tangle += -2.10318e-05;
-                                if(mcpid==6) tangle += -0.000505296;
-                                if(mcpid==7) tangle += -0.00756833;
-                                if(mcpid==8) tangle += -0.00393329;
+                                if(mcpid==0) tangle += -0.000552563;
+                                if(mcpid==2) tangle += -2.60183e-05;
+                                if(mcpid==3) tangle += 0.00053028;
+                                if(mcpid==4) tangle += -0.000884074;
+                                if(mcpid==5) tangle += 0.000118507;
+                                if(mcpid==6) tangle += -0.000515171;
+                                if(mcpid==7) tangle += -0.00740027;
+                                if(mcpid==8) tangle += -0.0018925;
                             }
+                            if( prtangle==30 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00132868;
+                                if(mcpid==1) tangle += 0.00205366;
+                                if(mcpid==2) tangle += -0.00125278;
+                                if(mcpid==3) tangle += 0.0014853;
+                                if(mcpid==4) tangle += -0.00568198;
+                                if(mcpid==5) tangle += 0.000909951;
+                                if(mcpid==10) tangle += 1.22961e-05;
+                            }
+                            if( prtangle==40 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00187671;
+                                if(mcpid==1) tangle += -0.00244975;
+                                if(mcpid==2) tangle += -0.00103689;
+                                if(mcpid==3) tangle += -0.00139366;
+                                if(mcpid==5) tangle += 1.61661e-06;
+                                if(mcpid==6) tangle += 0.00154321;
+                                if(mcpid==7) tangle += -0.000755452;
+                                if(mcpid==8) tangle += 0.00491692;
+                                if(mcpid==10) tangle += 0.00261197;
+                            }
+                            if( prtangle==50 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.0039061;
+                                if(mcpid==1) tangle += -0.00235155;
+                                if(mcpid==2) tangle += 0.00336188;
+                                if(mcpid==3) tangle += -0.000294134;
+                                if(mcpid==4) tangle += -0.000102314;
+                                if(mcpid==5) tangle += -0.00279286;
+                                if(mcpid==6) tangle += 0.00179221;
+                                if(mcpid==7) tangle += 0.00275634;
+                                if(mcpid==8) tangle += 0.00289899;
+                                if(mcpid==10) tangle += 0.00288362;
+                            }
+                            if( prtangle==60 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00467379;
+                                if(mcpid==1) tangle += -0.000391501;
+                                if(mcpid==2) tangle += 0.00594887;
+                                if(mcpid==3) tangle += -0.000696882;
+                                if(mcpid==4) tangle += 0.00352862;
+                                if(mcpid==5) tangle += 0.00371636;
+                                if(mcpid==6) tangle += 0.002468;
+                                if(mcpid==7) tangle += 0.00308988;
+                                if(mcpid==8) tangle += 0.000586403;
+                                if(mcpid==9) tangle += 0.00336604;
+                                if(mcpid==10) tangle += 0.00314341;
+                                if(mcpid==11) tangle += 0.003037;
+                            }
+                            if( prtangle==70 && fEvent->GetType()==0) {
+                                if(mcpid==3) tangle += -0.00272;
+                                if(mcpid==4) tangle += -0.00488619;
+                                if(mcpid==5) tangle += 0.00269788;
+                                if(mcpid==6) tangle += 0.00258091;
+                                if(mcpid==7) tangle += 0.000291311;
+                                if(mcpid==8) tangle += 0.00704058;
+                                if(mcpid==9) tangle += 0.00522358;
+                                if(mcpid==10) tangle += 0.00321597;
+                                if(mcpid==11) tangle += 0.0021549;
+                            }
+                            if( prtangle==80 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00342907;
+                                if(mcpid==7) tangle += 0.00858775;
+                                if(mcpid==8) tangle += 0.00693776;
+                                if(mcpid==9) tangle += 0.00334695;
+                                if(mcpid==10) tangle += 0.00590321;
+                                if(mcpid==11) tangle += 0.00414424;
+                            }
+                            if( prtangle==90 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00857332;
+                                if(mcpid==7) tangle += 0.00361811;
+                                if(mcpid==8) tangle += -0.00375136;
+                                if(mcpid==9) tangle += 0.00756504;
+                                if(mcpid==10) tangle += 0.00208208;
+                                if(mcpid==11) tangle += 0.00830876;
+                            }
+                            if( prtangle==100 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00427901;
+                                if(mcpid==7) tangle += 0.00857843;
+                                if(mcpid==8) tangle += 0.00797428;
+                                if(mcpid==9) tangle += 0.00471495;
+                                if(mcpid==10) tangle += 0.00576361;
+                                if(mcpid==11) tangle += 0.0010465;
+                            }
+                            if( prtangle==110 && fEvent->GetType()==0) {
+                                if(mcpid==3) tangle += -0.00232889;
+                                if(mcpid==4) tangle += -0.00428743;
+                                if(mcpid==5) tangle += -4.85167e-05;
+                                if(mcpid==6) tangle += 0.00387198;
+                                if(mcpid==7) tangle += 0.00611611;
+                                if(mcpid==8) tangle += 0.00737297;
+                                if(mcpid==9) tangle += 0.00503845;
+                                if(mcpid==10) tangle += 0.0028168;
+                                if(mcpid==11) tangle += 0.00302321;
+                            }
+                            if( prtangle==120 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00130958;
+                                if(mcpid==1) tangle += -0.000222135;
+                                if(mcpid==2) tangle += 0.00444806;
+                                if(mcpid==3) tangle += -3.9531e-05;
+                                if(mcpid==4) tangle += 0.00187078;
+                                if(mcpid==5) tangle += 0.00667806;
+                                if(mcpid==6) tangle += 0.000870121;
+                                if(mcpid==7) tangle += 0.00390263;
+                                if(mcpid==8) tangle += 0.000665123;
+                                if(mcpid==9) tangle += 0.00470851;
+                                if(mcpid==10) tangle += 0.00354464;
+                                if(mcpid==11) tangle += 0.00388248;
+                            }
+                            if( prtangle==130 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00375212;
+                                if(mcpid==1) tangle += -0.00402245;
+                                if(mcpid==2) tangle += 0.00630612;
+                                if(mcpid==3) tangle += 5.78799e-05;
+                                if(mcpid==4) tangle += 0.000167143;
+                                if(mcpid==5) tangle += -0.00292017;
+                                if(mcpid==6) tangle += 0.00161571;
+                                if(mcpid==7) tangle += 0.00351941;
+                                if(mcpid==8) tangle += 0.00331335;
+                            }
+                            if( prtangle==140 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00117562;
+                                if(mcpid==1) tangle += -0.00274411;
+                                if(mcpid==2) tangle += -0.00050551;
+                                if(mcpid==3) tangle += -0.00271978;
+                                if(mcpid==5) tangle += -0.000578674;
+                                if(mcpid==6) tangle += 0.00140766;
+                                if(mcpid==7) tangle += -0.000241591;
+                                if(mcpid==8) tangle += 0.00541661;
+                                if(mcpid==10) tangle += 0.00288774;
+                            }
+                            if( prtangle==150 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00140322;
+                                if(mcpid==1) tangle += 0.00181343;
+                                if(mcpid==2) tangle += -0.00141683;
+                                if(mcpid==3) tangle += 0.00190386;
+                                if(mcpid==4) tangle += -0.00512756;
+                                if(mcpid==5) tangle += 0.000627991;
+                                if(mcpid==6) tangle += 0.00176406;
+                                if(mcpid==7) tangle += -0.000831458;
+                                if(mcpid==8) tangle += 0.00776926;
+                                if(mcpid==10) tangle += -0.000320836;
+                            }
+                            
                         }
                         if(openChCorr== 2) {
                             // custom correction
                             if(tofPid==2212 && prtangle==20 && fEvent->GetType()==0) {
-                                if(mcpid==0) tangle += -0.0033519;
-                                if(mcpid==2) tangle += 0.0021898;
-                                if(mcpid==3) tangle += -3.00714e-05;
-                                if(mcpid==4) tangle += -0.00060821;
-                                if(mcpid==5) tangle += -2.10318e-05;
-                                if(mcpid==6) tangle += -0.000505296;
-                                if(mcpid==7) tangle += -0.00756833;
-                                if(mcpid==8) tangle += -0.00393329;
+                                if(mcpid==0) tangle += -0.000552563;
+                                if(mcpid==2) tangle += -2.60183e-05;
+                                if(mcpid==3) tangle += 0.00053028;
+                                if(mcpid==4) tangle += -0.000884074;
+                                if(mcpid==5) tangle += 0.000118507;
+                                if(mcpid==6) tangle += -0.000515171;
+                                if(mcpid==7) tangle += -0.00740027;
+                                if(mcpid==8) tangle += -0.0018925;
                             }
+                            if(tofPid==2212 && prtangle==30 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00132868;
+                                if(mcpid==1) tangle += 0.00205366;
+                                if(mcpid==2) tangle += -0.00125278;
+                                if(mcpid==3) tangle += 0.0014853;
+                                if(mcpid==4) tangle += -0.00568198;
+                                if(mcpid==5) tangle += 0.000909951;
+                                if(mcpid==10) tangle += 1.22961e-05;
+                            }
+                            if(tofPid==2212 && prtangle==40 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00187671;
+                                if(mcpid==1) tangle += -0.00244975;
+                                if(mcpid==2) tangle += -0.00103689;
+                                if(mcpid==3) tangle += -0.00139366;
+                                if(mcpid==5) tangle += 1.61661e-06;
+                                if(mcpid==6) tangle += 0.00154321;
+                                if(mcpid==7) tangle += -0.000755452;
+                                if(mcpid==8) tangle += 0.00491692;
+                                if(mcpid==10) tangle += 0.00261197;
+                            }
+                            if(tofPid==2212 && prtangle==50 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.0039061;
+                                if(mcpid==1) tangle += -0.00235155;
+                                if(mcpid==2) tangle += 0.00336188;
+                                if(mcpid==3) tangle += -0.000294134;
+                                if(mcpid==4) tangle += -0.000102314;
+                                if(mcpid==5) tangle += -0.00279286;
+                                if(mcpid==6) tangle += 0.00179221;
+                                if(mcpid==7) tangle += 0.00275634;
+                                if(mcpid==8) tangle += 0.00289899;
+                                if(mcpid==10) tangle += 0.00288362;
+                            }
+                            if(tofPid==2212 && prtangle==60 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00467379;
+                                if(mcpid==1) tangle += -0.000391501;
+                                if(mcpid==2) tangle += 0.00594887;
+                                if(mcpid==3) tangle += -0.000696882;
+                                if(mcpid==4) tangle += 0.00352862;
+                                if(mcpid==5) tangle += 0.00371636;
+                                if(mcpid==6) tangle += 0.002468;
+                                if(mcpid==7) tangle += 0.00308988;
+                                if(mcpid==8) tangle += 0.000586403;
+                                if(mcpid==9) tangle += 0.00336604;
+                                if(mcpid==10) tangle += 0.00314341;
+                                if(mcpid==11) tangle += 0.003037;
+                            }
+                            if(tofPid==2212 && prtangle==70 && fEvent->GetType()==0) {
+                                if(mcpid==3) tangle += -0.00272;
+                                if(mcpid==4) tangle += -0.00488619;
+                                if(mcpid==5) tangle += 0.00269788;
+                                if(mcpid==6) tangle += 0.00258091;
+                                if(mcpid==7) tangle += 0.000291311;
+                                if(mcpid==8) tangle += 0.00704058;
+                                if(mcpid==9) tangle += 0.00522358;
+                                if(mcpid==10) tangle += 0.00321597;
+                                if(mcpid==11) tangle += 0.0021549;
+                            }
+                            if(tofPid==2212 && prtangle==80 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00342907;
+                                if(mcpid==7) tangle += 0.00858775;
+                                if(mcpid==8) tangle += 0.00693776;
+                                if(mcpid==9) tangle += 0.00334695;
+                                if(mcpid==10) tangle += 0.00590321;
+                                if(mcpid==11) tangle += 0.00414424;
+                            }
+                            if(tofPid==2212 && prtangle==90 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00857332;
+                                if(mcpid==7) tangle += 0.00361811;
+                                if(mcpid==8) tangle += -0.00375136;
+                                if(mcpid==9) tangle += 0.00756504;
+                                if(mcpid==10) tangle += 0.00208208;
+                                if(mcpid==11) tangle += 0.00830876;
+                            }
+                            if(tofPid==2212 && prtangle==100 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00427901;
+                                if(mcpid==7) tangle += 0.00857843;
+                                if(mcpid==8) tangle += 0.00797428;
+                                if(mcpid==9) tangle += 0.00471495;
+                                if(mcpid==10) tangle += 0.00576361;
+                                if(mcpid==11) tangle += 0.0010465;
+                            }
+                            if(tofPid==2212 && prtangle==110 && fEvent->GetType()==0) {
+                                if(mcpid==3) tangle += -0.00232889;
+                                if(mcpid==4) tangle += -0.00428743;
+                                if(mcpid==5) tangle += -4.85167e-05;
+                                if(mcpid==6) tangle += 0.00387198;
+                                if(mcpid==7) tangle += 0.00611611;
+                                if(mcpid==8) tangle += 0.00737297;
+                                if(mcpid==9) tangle += 0.00503845;
+                                if(mcpid==10) tangle += 0.0028168;
+                                if(mcpid==11) tangle += 0.00302321;
+                            }
+                            if(tofPid==2212 && prtangle==120 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00130958;
+                                if(mcpid==1) tangle += -0.000222135;
+                                if(mcpid==2) tangle += 0.00444806;
+                                if(mcpid==3) tangle += -3.9531e-05;
+                                if(mcpid==4) tangle += 0.00187078;
+                                if(mcpid==5) tangle += 0.00667806;
+                                if(mcpid==6) tangle += 0.000870121;
+                                if(mcpid==7) tangle += 0.00390263;
+                                if(mcpid==8) tangle += 0.000665123;
+                                if(mcpid==9) tangle += 0.00470851;
+                                if(mcpid==10) tangle += 0.00354464;
+                                if(mcpid==11) tangle += 0.00388248;
+                            }
+                            if(tofPid==2212 && prtangle==130 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00375212;
+                                if(mcpid==1) tangle += -0.00402245;
+                                if(mcpid==2) tangle += 0.00630612;
+                                if(mcpid==3) tangle += 5.78799e-05;
+                                if(mcpid==4) tangle += 0.000167143;
+                                if(mcpid==5) tangle += -0.00292017;
+                                if(mcpid==6) tangle += 0.00161571;
+                                if(mcpid==7) tangle += 0.00351941;
+                                if(mcpid==8) tangle += 0.00331335;
+                            }
+                            if(tofPid==2212 && prtangle==140 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00117562;
+                                if(mcpid==1) tangle += -0.00274411;
+                                if(mcpid==2) tangle += -0.00050551;
+                                if(mcpid==3) tangle += -0.00271978;
+                                if(mcpid==5) tangle += -0.000578674;
+                                if(mcpid==6) tangle += 0.00140766;
+                                if(mcpid==7) tangle += -0.000241591;
+                                if(mcpid==8) tangle += 0.00541661;
+                                if(mcpid==10) tangle += 0.00288774;
+                            }
+                            if(tofPid==2212 && prtangle==150 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00140322;
+                                if(mcpid==1) tangle += 0.00181343;
+                                if(mcpid==2) tangle += -0.00141683;
+                                if(mcpid==3) tangle += 0.00190386;
+                                if(mcpid==4) tangle += -0.00512756;
+                                if(mcpid==5) tangle += 0.000627991;
+                                if(mcpid==6) tangle += 0.00176406;
+                                if(mcpid==7) tangle += -0.000831458;
+                                if(mcpid==8) tangle += 0.00776926;
+                                if(mcpid==10) tangle += -0.000320836;
+                            }
+                            
+
+                            // pion
+                            
                             if(tofPid==211 && prtangle==20 && fEvent->GetType()==0) {
-                                if(mcpid==0) tangle += -0.00344711;
-                                if(mcpid==2) tangle += 0.00182577;
-                                if(mcpid==3) tangle += 0.000571232;
-                                if(mcpid==4) tangle += -0.000894415;
-                                if(mcpid==5) tangle += -4.84668e-05;
-                                if(mcpid==6) tangle += -0.00127433;
-                                if(mcpid==7) tangle += -0.00280513;
-                                if(mcpid==8) tangle += -0.00402756;
+                                if(mcpid==0) tangle += -0.000204684;
+                                if(mcpid==2) tangle += -0.000263019;
+                                if(mcpid==3) tangle += 0.00208593;
+                                if(mcpid==4) tangle += -0.000889746;
+                                if(mcpid==5) tangle += -0.000521675;
+                                if(mcpid==6) tangle += -0.00336454;
+                                if(mcpid==7) tangle += -0.00269668;
+                                if(mcpid==8) tangle += -0.00334317;
                             }
+                            if(tofPid==211 && prtangle==30 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.000167437;
+                                if(mcpid==1) tangle += 0.00272239;
+                                if(mcpid==2) tangle += -0.00277327;
+                                if(mcpid==3) tangle += 0.00131372;
+                                if(mcpid==4) tangle += 0.00094735;
+                                if(mcpid==5) tangle += 3.9524e-05;
+                                if(mcpid==10) tangle += 0.00135771;
+                            }
+                            if(tofPid==211 && prtangle==40 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.00044046;
+                                if(mcpid==1) tangle += 0.00116361;
+                                if(mcpid==2) tangle += -0.00109422;
+                                if(mcpid==3) tangle += -0.00107697;
+                                if(mcpid==5) tangle += -0.000840057;
+                                if(mcpid==6) tangle += 0.00094143;
+                                if(mcpid==7) tangle += 0.00205677;
+                                if(mcpid==8) tangle += 0.00447051;
+                                if(mcpid==10) tangle += 0.00585306;
+                            }
+                            if(tofPid==211 && prtangle==50 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00659781;
+                                if(mcpid==1) tangle += 0.00381614;
+                                if(mcpid==2) tangle += 0.00164261;
+                                if(mcpid==3) tangle += 0.000115864;
+                                if(mcpid==4) tangle += -0.000866036;
+                                if(mcpid==5) tangle += -0.00308279;
+                                if(mcpid==6) tangle += 0.00131542;
+                                if(mcpid==7) tangle += 0.00225676;
+                                if(mcpid==8) tangle += 0.00214504;
+                                if(mcpid==10) tangle += 0.00403977;
+                            }
+                            if(tofPid==211 && prtangle==60 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00612557;
+                                if(mcpid==1) tangle += 0.000919693;
+                                if(mcpid==2) tangle += 0.00587308;
+                                if(mcpid==3) tangle += -0.00160004;
+                                if(mcpid==4) tangle += 0.00591402;
+                                if(mcpid==5) tangle += 0.00265842;
+                                if(mcpid==6) tangle += 0.00236742;
+                                if(mcpid==7) tangle += 0.00354398;
+                                if(mcpid==8) tangle += -2.10236e-05;
+                                if(mcpid==9) tangle += 0.00465679;
+                                if(mcpid==10) tangle += 0.00276819;
+                                if(mcpid==11) tangle += 0.00372521;
+                            }
+                            if(tofPid==211 && prtangle==70 && fEvent->GetType()==0) {
+                                if(mcpid==3) tangle += -0.00180159;
+                                if(mcpid==4) tangle += 0.00281292;
+                                if(mcpid==5) tangle += 0.00790411;
+                                if(mcpid==6) tangle += 0.00319017;
+                                if(mcpid==7) tangle += 0.00539275;
+                                if(mcpid==8) tangle += 0.00363206;
+                                if(mcpid==9) tangle += 0.00516468;
+                                if(mcpid==10) tangle += 0.00280664;
+                                if(mcpid==11) tangle += 0.00142862;
+                            }
+                            if(tofPid==211 && prtangle==80 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00192899;
+                                if(mcpid==7) tangle += -0.001925;
+                                if(mcpid==8) tangle += 0.00730824;
+                                if(mcpid==9) tangle += 0.00493638;
+                                if(mcpid==10) tangle += 0.00506679;
+                                if(mcpid==11) tangle += 0.00763977;
+                            }
+                            if(tofPid==211 && prtangle==90 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00704385;
+                                if(mcpid==7) tangle += 0.0046051;
+                                if(mcpid==8) tangle += -0.00394628;
+                                if(mcpid==9) tangle += 0.00774429;
+                                if(mcpid==10) tangle += 0.00345619;
+                                if(mcpid==11) tangle += 0.00852348;
+                            }
+                            if(tofPid==211 && prtangle==100 && fEvent->GetType()==0) {
+                                if(mcpid==6) tangle += 0.00276711;
+                                if(mcpid==7) tangle += 0.0153335;
+                                if(mcpid==8) tangle += 0.00735507;
+                                if(mcpid==9) tangle += 0.00576569;
+                                if(mcpid==10) tangle += 0.00209249;
+                                if(mcpid==11) tangle += 0.00582571;
+                            }
+                            if(tofPid==211 && prtangle==110 && fEvent->GetType()==0) {
+                                if(mcpid==3) tangle += -0.00366319;
+                                if(mcpid==4) tangle += 0.00229088;
+                                if(mcpid==5) tangle += 0.00305063;
+                                if(mcpid==6) tangle += 0.0045257;
+                                if(mcpid==7) tangle += 0.00629425;
+                                if(mcpid==8) tangle += 0.00746792;
+                                if(mcpid==9) tangle += 0.00626438;
+                                if(mcpid==10) tangle += 0.00270292;
+                                if(mcpid==11) tangle += 0.00178491;
+                            }
+                            if(tofPid==211 && prtangle==120 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00177393;
+                                if(mcpid==1) tangle += 0.00606854;
+                                if(mcpid==2) tangle += 0.00427907;
+                                if(mcpid==3) tangle += -0.00157467;
+                                if(mcpid==4) tangle += -0.00140391;
+                                if(mcpid==5) tangle += 0.00482365;
+                                if(mcpid==6) tangle += 0.00297811;
+                                if(mcpid==7) tangle += 0.00347225;
+                                if(mcpid==8) tangle += -0.000664346;
+                                if(mcpid==9) tangle += 0.00565245;
+                                if(mcpid==10) tangle += 0.00524858;
+                                if(mcpid==11) tangle += 0.00207278;
+                            }
+                            if(tofPid==211 && prtangle==130 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += -0.00480605;
+                                if(mcpid==1) tangle += 0.00247213;
+                                if(mcpid==2) tangle += 0.0065549;
+                                if(mcpid==3) tangle += -0.000457472;
+                                if(mcpid==4) tangle += 0.00015722;
+                                if(mcpid==5) tangle += -0.00368145;
+                                if(mcpid==6) tangle += 0.00107231;
+                                if(mcpid==7) tangle += 0.00495944;
+                                if(mcpid==8) tangle += 0.00276952;
+                            }
+                            if(tofPid==211 && prtangle==140 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.000686947;
+                                if(mcpid==1) tangle += 0.000371816;
+                                if(mcpid==2) tangle += 0.000975129;
+                                if(mcpid==3) tangle += -0.000522616;
+                                if(mcpid==5) tangle += -0.000886424;
+                                if(mcpid==6) tangle += 0.000609797;
+                                if(mcpid==7) tangle += 0.00159651;
+                                if(mcpid==8) tangle += 0.00492931;
+                                if(mcpid==10) tangle += 0.00461885;
+                            }
+                            if(tofPid==211 && prtangle==150 && fEvent->GetType()==0) {
+                                if(mcpid==0) tangle += 0.000551419;
+                                if(mcpid==1) tangle += 0.00204506;
+                                if(mcpid==2) tangle += -0.00288978;
+                                if(mcpid==3) tangle += 0.00224168;
+                                if(mcpid==4) tangle += 0.00137732;
+                                if(mcpid==5) tangle += -0.00023819;
+                                if(mcpid==6) tangle += 0.00107518;
+                                if(mcpid==7) tangle += 0.00343334;
+                                if(mcpid==8) tangle += 0.0100382;
+                                if(mcpid==10) tangle += 0.00146456;
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
                         }
                         fHist->Fill(tangle ,weight);
                         //fHist_copy->Fill(tangle ,weight);
@@ -1582,7 +2015,7 @@ goon:
                         if(tofPid==211 && recoP==0 && recoPi==1) fHistMcp[mcpid]->Fill(tangle ,weight); // pi candidate changed
                         solution_number++;
                         //if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
-
+                        
                         if(0.7<tangle && tangle<0.9) {
                             if(fabs(tangle-recoAngle)<chAngleCut) {
                                 isGoodHit=true; //default 0.04 rad = 40 mrad
@@ -1592,506 +2025,506 @@ goon:
                                 if(fabs(tangle-recoAngle)<chAngleCut) isGoodHit=true;
                             }
                         }
-
-
+                        
+                        
                         /*
-                        // p cherenkove angle correction
-
-                        if( prtangle==20 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.0037463;
-                            if(mcpid==2) tangle += 0.00393206;
-                            if(mcpid==3) tangle += -0.00160145;
-                            if(mcpid==4) tangle += -0.00256794;
-                            if(mcpid==5) tangle += -0.000283742;
-                            if(mcpid==6) tangle += 0.00407178;
-                            if(mcpid==7) tangle += -0.00393463;
-                            if(mcpid==8) tangle += -0.00126251;
-                        }
-                        if( prtangle==30 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00156478;
-                            if(mcpid==1) tangle += 0.000717535;
-                            if(mcpid==2) tangle += -0.00185094;
-                            if(mcpid==3) tangle += 0.00432859;
-                            if(mcpid==4) tangle += -0.000132634;
-                            if(mcpid==5) tangle += 0.00287237;
-                            if(mcpid==10) tangle += 6.37505e-05;
-
-                        }
-                        if( prtangle==40 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00303354;
-                            if(mcpid==1) tangle += 0.00181321;
-                            if(mcpid==2) tangle += -0.000399244;
-                            if(mcpid==3) tangle += -0.00298469;
-                            if(mcpid==5) tangle += 0.00286224;
-                            if(mcpid==6) tangle += -0.00557738;
-                            if(mcpid==7) tangle += 0.00117326;
-                            if(mcpid==8) tangle += 0.00706862;
-                            if(mcpid==10) tangle += 0.00154225;
-                        }
-                        if( prtangle==50 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00309107;
-                            if(mcpid==1) tangle += -0.00051898;
-                            if(mcpid==2) tangle += 0.000299447;
-                            if(mcpid==3) tangle += -0.00197735;
-                            if(mcpid==4) tangle += -0.00323337;
-                            if(mcpid==5) tangle += 0.0018425;
-                            if(mcpid==6) tangle += -0.00426238;
-                            if(mcpid==7) tangle += 0.0034893;
-                            if(mcpid==8) tangle += 0.00502382;
-                            if(mcpid==10) tangle += 0.00256969;
-                        }
-                        if( prtangle==60 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00273982;
-                            if(mcpid==1) tangle += 0.00429161;
-                            if(mcpid==2) tangle += 0.00918813;
-                            if(mcpid==3) tangle += -0.000644696;
-                            if(mcpid==4) tangle += -0.000102986;
-                            if(mcpid==5) tangle += 0.00205593;
-                            if(mcpid==6) tangle += -0.00170198;
-                            if(mcpid==7) tangle += -0.000299491;
-                            if(mcpid==8) tangle += 0.00402219;
-                            if(mcpid==9) tangle += -0.00537187;
-                            if(mcpid==10) tangle += 0.00229431;
-                            if(mcpid==11) tangle += 0.00583173;
-                        }
-                        if( prtangle==70 && fEvent->GetType()==0) {
-                            if(mcpid==3) tangle += 0.00551639;
-                            if(mcpid==5) tangle += 0.00644471;
-                            if(mcpid==6) tangle += 0.00211921;
-                            if(mcpid==7) tangle += 0.000141244;
-                            if(mcpid==8) tangle += 0.00253215;
-                            if(mcpid==9) tangle += 0.000443011;
-                            if(mcpid==10) tangle += 0.00459536;
-                            if(mcpid==11) tangle += 0.0044117;
-
-                        }
-                        if( prtangle==80 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00324281;
-                            if(mcpid==7) tangle += 0.00906944;
-                            if(mcpid==8) tangle += 0.0039351;
-                            if(mcpid==9) tangle += 0.00264384;
-                            if(mcpid==10) tangle += 0.00515091;
-                            if(mcpid==11) tangle += 0.00352387;
-
-                        }
-                        if( prtangle==90 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00216665;
-                            if(mcpid==7) tangle += 0.00291354;
-                            if(mcpid==8) tangle += 0.00695433;
-                            if(mcpid==9) tangle += 0.0101353;
-                            if(mcpid==10) tangle += -0.0017459;
-                            if(mcpid==11) tangle += 0.00769177;
-
-                        }
-                        if( prtangle==100 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00271104;
-                            if(mcpid==7) tangle += 0.0097834;
-                            if(mcpid==8) tangle += 0.0101384;
-                            if(mcpid==9) tangle += 0.00300913;
-                            if(mcpid==10) tangle += 0.00766586;
-                            if(mcpid==11) tangle += 0.00422346;
-                        }
-                        if( prtangle==110 && fEvent->GetType()==0) {
-                            if(mcpid==3) tangle += 0.00528759;
-                            if(mcpid==4) tangle += 0.00563497;
-                            if(mcpid==5) tangle += 0.0068598;
-                            if(mcpid==6) tangle += 0.0029672;
-                            if(mcpid==7) tangle += 0.00616749;
-                            if(mcpid==8) tangle += 0.00290852;
-                            if(mcpid==9) tangle += 0.000640083;
-                            if(mcpid==10) tangle += 0.00418752;
-                            if(mcpid==11) tangle += 0.00624901;
-
-                        }
-                        if( prtangle==120 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00398425;
-                            if(mcpid==1) tangle += 0.00720028;
-                            if(mcpid==2) tangle += 0.00729632;
-                            if(mcpid==3) tangle += -0.00026553;
-                            if(mcpid==4) tangle += 0.00738272;
-                            if(mcpid==5) tangle += 0.00253814;
-                            if(mcpid==6) tangle += -0.00333346;
-                            if(mcpid==7) tangle += 0.000519743;
-                            if(mcpid==8) tangle += 0.0046651;
-                            if(mcpid==9) tangle += -0.00522381;
-                            if(mcpid==10) tangle += 0.00336109;
-                            if(mcpid==11) tangle += 0.00554843;
-                        }
-                        if( prtangle==130 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00034945;
-                            if(mcpid==1) tangle += -0.00203324;
-                            if(mcpid==2) tangle += 0.00320907;
-                            if(mcpid==3) tangle += -0.000829152;
-                            if(mcpid==4) tangle += -0.0042837;
-                            if(mcpid==5) tangle += 0.00236503;
-                            if(mcpid==6) tangle += -0.00210343;
-                            if(mcpid==7) tangle += 0.00367466;
-                            if(mcpid==8) tangle += 0.00612672;
-
-                        }
-                        if( prtangle==140 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00175713;
-                            if(mcpid==1) tangle += -0.000870838;
-                            if(mcpid==2) tangle += -0.000806541;
-                            if(mcpid==3) tangle += -0.00590427;
-                            if(mcpid==5) tangle += 0.00250988;
-                            if(mcpid==6) tangle += -0.00558701;
-                            if(mcpid==7) tangle += 0.00135012;
-                            if(mcpid==8) tangle += 0.00730651;
-                            if(mcpid==10) tangle += 0.00222968;
-                        }
-                        if( prtangle==150 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.000707214;
-                            if(mcpid==1) tangle += 0.000375289;
-                            if(mcpid==2) tangle += -0.00247093;
-                            if(mcpid==3) tangle += 0.00413308;
-                            if(mcpid==4) tangle += 9.30833e-05;
-                            if(mcpid==5) tangle += 0.00246793;
-                            if(mcpid==6) tangle += -0.000243905;
-                            if(mcpid==7) tangle += -0.000585869;
-                            if(mcpid==8) tangle += 0.00834577;
-                            if(mcpid==10) tangle += 0.000285897;
-                        }
-
-                        */
+                         // p cherenkove angle correction
+                         
+                         if( prtangle==20 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.0037463;
+                         if(mcpid==2) tangle += 0.00393206;
+                         if(mcpid==3) tangle += -0.00160145;
+                         if(mcpid==4) tangle += -0.00256794;
+                         if(mcpid==5) tangle += -0.000283742;
+                         if(mcpid==6) tangle += 0.00407178;
+                         if(mcpid==7) tangle += -0.00393463;
+                         if(mcpid==8) tangle += -0.00126251;
+                         }
+                         if( prtangle==30 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00156478;
+                         if(mcpid==1) tangle += 0.000717535;
+                         if(mcpid==2) tangle += -0.00185094;
+                         if(mcpid==3) tangle += 0.00432859;
+                         if(mcpid==4) tangle += -0.000132634;
+                         if(mcpid==5) tangle += 0.00287237;
+                         if(mcpid==10) tangle += 6.37505e-05;
+                         
+                         }
+                         if( prtangle==40 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00303354;
+                         if(mcpid==1) tangle += 0.00181321;
+                         if(mcpid==2) tangle += -0.000399244;
+                         if(mcpid==3) tangle += -0.00298469;
+                         if(mcpid==5) tangle += 0.00286224;
+                         if(mcpid==6) tangle += -0.00557738;
+                         if(mcpid==7) tangle += 0.00117326;
+                         if(mcpid==8) tangle += 0.00706862;
+                         if(mcpid==10) tangle += 0.00154225;
+                         }
+                         if( prtangle==50 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00309107;
+                         if(mcpid==1) tangle += -0.00051898;
+                         if(mcpid==2) tangle += 0.000299447;
+                         if(mcpid==3) tangle += -0.00197735;
+                         if(mcpid==4) tangle += -0.00323337;
+                         if(mcpid==5) tangle += 0.0018425;
+                         if(mcpid==6) tangle += -0.00426238;
+                         if(mcpid==7) tangle += 0.0034893;
+                         if(mcpid==8) tangle += 0.00502382;
+                         if(mcpid==10) tangle += 0.00256969;
+                         }
+                         if( prtangle==60 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00273982;
+                         if(mcpid==1) tangle += 0.00429161;
+                         if(mcpid==2) tangle += 0.00918813;
+                         if(mcpid==3) tangle += -0.000644696;
+                         if(mcpid==4) tangle += -0.000102986;
+                         if(mcpid==5) tangle += 0.00205593;
+                         if(mcpid==6) tangle += -0.00170198;
+                         if(mcpid==7) tangle += -0.000299491;
+                         if(mcpid==8) tangle += 0.00402219;
+                         if(mcpid==9) tangle += -0.00537187;
+                         if(mcpid==10) tangle += 0.00229431;
+                         if(mcpid==11) tangle += 0.00583173;
+                         }
+                         if( prtangle==70 && fEvent->GetType()==0) {
+                         if(mcpid==3) tangle += 0.00551639;
+                         if(mcpid==5) tangle += 0.00644471;
+                         if(mcpid==6) tangle += 0.00211921;
+                         if(mcpid==7) tangle += 0.000141244;
+                         if(mcpid==8) tangle += 0.00253215;
+                         if(mcpid==9) tangle += 0.000443011;
+                         if(mcpid==10) tangle += 0.00459536;
+                         if(mcpid==11) tangle += 0.0044117;
+                         
+                         }
+                         if( prtangle==80 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00324281;
+                         if(mcpid==7) tangle += 0.00906944;
+                         if(mcpid==8) tangle += 0.0039351;
+                         if(mcpid==9) tangle += 0.00264384;
+                         if(mcpid==10) tangle += 0.00515091;
+                         if(mcpid==11) tangle += 0.00352387;
+                         
+                         }
+                         if( prtangle==90 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00216665;
+                         if(mcpid==7) tangle += 0.00291354;
+                         if(mcpid==8) tangle += 0.00695433;
+                         if(mcpid==9) tangle += 0.0101353;
+                         if(mcpid==10) tangle += -0.0017459;
+                         if(mcpid==11) tangle += 0.00769177;
+                         
+                         }
+                         if( prtangle==100 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00271104;
+                         if(mcpid==7) tangle += 0.0097834;
+                         if(mcpid==8) tangle += 0.0101384;
+                         if(mcpid==9) tangle += 0.00300913;
+                         if(mcpid==10) tangle += 0.00766586;
+                         if(mcpid==11) tangle += 0.00422346;
+                         }
+                         if( prtangle==110 && fEvent->GetType()==0) {
+                         if(mcpid==3) tangle += 0.00528759;
+                         if(mcpid==4) tangle += 0.00563497;
+                         if(mcpid==5) tangle += 0.0068598;
+                         if(mcpid==6) tangle += 0.0029672;
+                         if(mcpid==7) tangle += 0.00616749;
+                         if(mcpid==8) tangle += 0.00290852;
+                         if(mcpid==9) tangle += 0.000640083;
+                         if(mcpid==10) tangle += 0.00418752;
+                         if(mcpid==11) tangle += 0.00624901;
+                         
+                         }
+                         if( prtangle==120 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00398425;
+                         if(mcpid==1) tangle += 0.00720028;
+                         if(mcpid==2) tangle += 0.00729632;
+                         if(mcpid==3) tangle += -0.00026553;
+                         if(mcpid==4) tangle += 0.00738272;
+                         if(mcpid==5) tangle += 0.00253814;
+                         if(mcpid==6) tangle += -0.00333346;
+                         if(mcpid==7) tangle += 0.000519743;
+                         if(mcpid==8) tangle += 0.0046651;
+                         if(mcpid==9) tangle += -0.00522381;
+                         if(mcpid==10) tangle += 0.00336109;
+                         if(mcpid==11) tangle += 0.00554843;
+                         }
+                         if( prtangle==130 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00034945;
+                         if(mcpid==1) tangle += -0.00203324;
+                         if(mcpid==2) tangle += 0.00320907;
+                         if(mcpid==3) tangle += -0.000829152;
+                         if(mcpid==4) tangle += -0.0042837;
+                         if(mcpid==5) tangle += 0.00236503;
+                         if(mcpid==6) tangle += -0.00210343;
+                         if(mcpid==7) tangle += 0.00367466;
+                         if(mcpid==8) tangle += 0.00612672;
+                         
+                         }
+                         if( prtangle==140 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00175713;
+                         if(mcpid==1) tangle += -0.000870838;
+                         if(mcpid==2) tangle += -0.000806541;
+                         if(mcpid==3) tangle += -0.00590427;
+                         if(mcpid==5) tangle += 0.00250988;
+                         if(mcpid==6) tangle += -0.00558701;
+                         if(mcpid==7) tangle += 0.00135012;
+                         if(mcpid==8) tangle += 0.00730651;
+                         if(mcpid==10) tangle += 0.00222968;
+                         }
+                         if( prtangle==150 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.000707214;
+                         if(mcpid==1) tangle += 0.000375289;
+                         if(mcpid==2) tangle += -0.00247093;
+                         if(mcpid==3) tangle += 0.00413308;
+                         if(mcpid==4) tangle += 9.30833e-05;
+                         if(mcpid==5) tangle += 0.00246793;
+                         if(mcpid==6) tangle += -0.000243905;
+                         if(mcpid==7) tangle += -0.000585869;
+                         if(mcpid==8) tangle += 0.00834577;
+                         if(mcpid==10) tangle += 0.000285897;
+                         }
+                         
+                         */
                         /*
-                        // custom cherenkove angle correction
-
-                        if(tofPid==2212 && prtangle==20 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.0037463;
-                            if(mcpid==2) tangle += 0.00393206;
-                            if(mcpid==3) tangle += -0.00160145;
-                            if(mcpid==4) tangle += -0.00256794;
-                            if(mcpid==5) tangle += -0.000283742;
-                            if(mcpid==6) tangle += 0.00407178;
-                            if(mcpid==7) tangle += -0.00393463;
-                            if(mcpid==8) tangle += -0.00126251;
-                        }
-                        if(tofPid==2212 && prtangle==30 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00156478;
-                            if(mcpid==1) tangle += 0.000717535;
-                            if(mcpid==2) tangle += -0.00185094;
-                            if(mcpid==3) tangle += 0.00432859;
-                            if(mcpid==4) tangle += -0.000132634;
-                            if(mcpid==5) tangle += 0.00287237;
-                            if(mcpid==10) tangle += 6.37505e-05;
-
-                        }
-                        if(tofPid==2212 && prtangle==40 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00303354;
-                            if(mcpid==1) tangle += 0.00181321;
-                            if(mcpid==2) tangle += -0.000399244;
-                            if(mcpid==3) tangle += -0.00298469;
-                            if(mcpid==5) tangle += 0.00286224;
-                            if(mcpid==6) tangle += -0.00557738;
-                            if(mcpid==7) tangle += 0.00117326;
-                            if(mcpid==8) tangle += 0.00706862;
-                            if(mcpid==10) tangle += 0.00154225;
-                        }
-                        if(tofPid==2212 && prtangle==50 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00309107;
-                            if(mcpid==1) tangle += -0.00051898;
-                            if(mcpid==2) tangle += 0.000299447;
-                            if(mcpid==3) tangle += -0.00197735;
-                            if(mcpid==4) tangle += -0.00323337;
-                            if(mcpid==5) tangle += 0.0018425;
-                            if(mcpid==6) tangle += -0.00426238;
-                            if(mcpid==7) tangle += 0.0034893;
-                            if(mcpid==8) tangle += 0.00502382;
-                            if(mcpid==10) tangle += 0.00256969;
-                        }
-                        if(tofPid==2212 && prtangle==60 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00273982;
-                            if(mcpid==1) tangle += 0.00429161;
-                            if(mcpid==2) tangle += 0.00918813;
-                            if(mcpid==3) tangle += -0.000644696;
-                            if(mcpid==4) tangle += -0.000102986;
-                            if(mcpid==5) tangle += 0.00205593;
-                            if(mcpid==6) tangle += -0.00170198;
-                            if(mcpid==7) tangle += -0.000299491;
-                            if(mcpid==8) tangle += 0.00402219;
-                            if(mcpid==9) tangle += -0.00537187;
-                            if(mcpid==10) tangle += 0.00229431;
-                            if(mcpid==11) tangle += 0.00583173;
-                        }
-                        if(tofPid==2212 && prtangle==70 && fEvent->GetType()==0) {
-                            if(mcpid==3) tangle += 0.00551639;
-                            if(mcpid==5) tangle += 0.00644471;
-                            if(mcpid==6) tangle += 0.00211921;
-                            if(mcpid==7) tangle += 0.000141244;
-                            if(mcpid==8) tangle += 0.00253215;
-                            if(mcpid==9) tangle += 0.000443011;
-                            if(mcpid==10) tangle += 0.00459536;
-                            if(mcpid==11) tangle += 0.0044117;
-
-                        }
-                        if(tofPid==2212 && prtangle==80 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00324281;
-                            if(mcpid==7) tangle += 0.00906944;
-                            if(mcpid==8) tangle += 0.0039351;
-                            if(mcpid==9) tangle += 0.00264384;
-                            if(mcpid==10) tangle += 0.00515091;
-                            if(mcpid==11) tangle += 0.00352387;
-
-                        }
-                        if(tofPid==2212 && prtangle==90 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00216665;
-                            if(mcpid==7) tangle += 0.00291354;
-                            if(mcpid==8) tangle += 0.00695433;
-                            if(mcpid==9) tangle += 0.0101353;
-                            if(mcpid==10) tangle += -0.0017459;
-                            if(mcpid==11) tangle += 0.00769177;
-
-                        }
-                        if(tofPid==2212 && prtangle==100 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00271104;
-                            if(mcpid==7) tangle += 0.0097834;
-                            if(mcpid==8) tangle += 0.0101384;
-                            if(mcpid==9) tangle += 0.00300913;
-                            if(mcpid==10) tangle += 0.00766586;
-                            if(mcpid==11) tangle += 0.00422346;
-                        }
-                        if(tofPid==2212 && prtangle==110 && fEvent->GetType()==0) {
-                            if(mcpid==3) tangle += 0.00528759;
-                            if(mcpid==4) tangle += 0.00563497;
-                            if(mcpid==5) tangle += 0.0068598;
-                            if(mcpid==6) tangle += 0.0029672;
-                            if(mcpid==7) tangle += 0.00616749;
-                            if(mcpid==8) tangle += 0.00290852;
-                            if(mcpid==9) tangle += 0.000640083;
-                            if(mcpid==10) tangle += 0.00418752;
-                            if(mcpid==11) tangle += 0.00624901;
-
-                        }
-                        if(tofPid==2212 && prtangle==120 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00398425;
-                            if(mcpid==1) tangle += 0.00720028;
-                            if(mcpid==2) tangle += 0.00729632;
-                            if(mcpid==3) tangle += -0.00026553;
-                            if(mcpid==4) tangle += 0.00738272;
-                            if(mcpid==5) tangle += 0.00253814;
-                            if(mcpid==6) tangle += -0.00333346;
-                            if(mcpid==7) tangle += 0.000519743;
-                            if(mcpid==8) tangle += 0.0046651;
-                            if(mcpid==9) tangle += -0.00522381;
-                            if(mcpid==10) tangle += 0.00336109;
-                            if(mcpid==11) tangle += 0.00554843;
-                        }
-                        if(tofPid==2212 && prtangle==130 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00034945;
-                            if(mcpid==1) tangle += -0.00203324;
-                            if(mcpid==2) tangle += 0.00320907;
-                            if(mcpid==3) tangle += -0.000829152;
-                            if(mcpid==4) tangle += -0.0042837;
-                            if(mcpid==5) tangle += 0.00236503;
-                            if(mcpid==6) tangle += -0.00210343;
-                            if(mcpid==7) tangle += 0.00367466;
-                            if(mcpid==8) tangle += 0.00612672;
-
-                        }
-                        if(tofPid==2212 && prtangle==140 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00175713;
-                            if(mcpid==1) tangle += -0.000870838;
-                            if(mcpid==2) tangle += -0.000806541;
-                            if(mcpid==3) tangle += -0.00590427;
-                            if(mcpid==5) tangle += 0.00250988;
-                            if(mcpid==6) tangle += -0.00558701;
-                            if(mcpid==7) tangle += 0.00135012;
-                            if(mcpid==8) tangle += 0.00730651;
-                            if(mcpid==10) tangle += 0.00222968;
-                        }
-                        if(tofPid==2212 && prtangle==150 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.000707214;
-                            if(mcpid==1) tangle += 0.000375289;
-                            if(mcpid==2) tangle += -0.00247093;
-                            if(mcpid==3) tangle += 0.00413308;
-                            if(mcpid==4) tangle += 9.30833e-05;
-                            if(mcpid==5) tangle += 0.00246793;
-                            if(mcpid==6) tangle += -0.000243905;
-                            if(mcpid==7) tangle += -0.000585869;
-                            if(mcpid==8) tangle += 0.00834577;
-                            if(mcpid==10) tangle += 0.000285897;
-                        }
-                        //////////////////////////////////////////////////////////
-                        if(tofPid==211 && prtangle==20 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00592128;
-                            if(mcpid==2) tangle += 0.0016258;
-                            if(mcpid==3) tangle += 0.000194822;
-                            if(mcpid==4) tangle += -0.00187034;
-                            if(mcpid==5) tangle += 0.000418295;
-                            if(mcpid==6) tangle += 0.00214353;
-                            if(mcpid==7) tangle += -0.00231171;
-                            if(mcpid==8) tangle += -0.0028962;
-                        }
-                        if(tofPid==211 && prtangle==30 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00222565;
-                            if(mcpid==1) tangle += 0.00121942;
-                            if(mcpid==2) tangle += -0.00228483;
-                            if(mcpid==3) tangle += 0.0050814;
-                            if(mcpid==4) tangle += 0.00102791;
-                            if(mcpid==5) tangle += 0.00272348;
-                            if(mcpid==10) tangle += 0.000190674;
-
-                        }
-                        if(tofPid==211 && prtangle==40 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00142964;
-                            if(mcpid==1) tangle += -0.000896485;
-                            if(mcpid==2) tangle += -0.0012704;
-                            if(mcpid==3) tangle += -0.00548164;
-                            if(mcpid==5) tangle += 0.00348412;
-                            if(mcpid==6) tangle += -0.00596745;
-                            if(mcpid==7) tangle += 0.00364285;
-                            if(mcpid==8) tangle += 0.00743459;
-                            if(mcpid==10) tangle += 0.00572617;
-                        }
-                        if(tofPid==211 && prtangle==50 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00478102;
-                            if(mcpid==1) tangle += 0.00438392;
-                            if(mcpid==2) tangle += -0.00039053;
-                            if(mcpid==3) tangle += -0.00191347;
-                            if(mcpid==4) tangle += -0.00350191;
-                            if(mcpid==5) tangle += 0.00316318;
-                            if(mcpid==6) tangle += -0.00452553;
-                            if(mcpid==7) tangle += 0.00427;
-                            if(mcpid==8) tangle += 0.00448392;
-                            if(mcpid==10) tangle += 0.00416322;
-                        }
-                        if(tofPid==211 && prtangle==60 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.000868201;
-                            if(mcpid==1) tangle += 0.00565408;
-                            if(mcpid==2) tangle += 0.00849748;
-                            if(mcpid==3) tangle += -0.00187067;
-                            if(mcpid==4) tangle += 0.00620808;
-                            if(mcpid==5) tangle += -0.00257401;
-                            if(mcpid==6) tangle += -0.00163821;
-                            if(mcpid==7) tangle += -0.000197209;
-                            if(mcpid==8) tangle += 0.00506754;
-                            if(mcpid==9) tangle += -0.00277595;
-                            if(mcpid==10) tangle += 0.00166398;
-                            if(mcpid==11) tangle += 0.00652052;
-                        }
-                        if(tofPid==211 && prtangle==70 && fEvent->GetType()==0) {
-                            if(mcpid==3) tangle += 0.003487;
-                            if(mcpid==4) tangle += 0.00788698;
-                            if(mcpid==5) tangle += 0.012404;
-                            if(mcpid==6) tangle += 0.00143184;
-                            if(mcpid==7) tangle += 0.00242198;
-                            if(mcpid==8) tangle += 0.00201628;
-                            if(mcpid==9) tangle += 0.000275323;
-                            if(mcpid==10) tangle += 0.00381258;
-                            if(mcpid==11) tangle += 0.00463261;
-
-                        }
-                        if(tofPid==211 && prtangle==80 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00571238;
-                            if(mcpid==7) tangle += 0.0029977;
-                            if(mcpid==8) tangle += 0.00789599;
-                            if(mcpid==9) tangle += 0.00341371;
-                            if(mcpid==10) tangle += 0.00368001;
-                            if(mcpid==11) tangle += 0.00423138;
-                        }
-                        if(tofPid==211 && prtangle==90 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += -0.0010984;
-                            if(mcpid==7) tangle += 0.00200863;
-                            if(mcpid==8) tangle += -0.000294216;
-                            if(mcpid==9) tangle += 0.0124423;
-                            if(mcpid==10) tangle += 0.0054001;
-                            if(mcpid==11) tangle += 0.008128;
-                        }
-                        if(tofPid==211 && prtangle==100 && fEvent->GetType()==0) {
-                            if(mcpid==6) tangle += 0.00562832;
-                            if(mcpid==7) tangle += 0.0169453;
-                            if(mcpid==8) tangle += 0.00818838;
-                            if(mcpid==9) tangle += 0.00370759;
-                            if(mcpid==10) tangle += -0.00130711;
-                            if(mcpid==11) tangle += 0.00519548;
-                        }
-                        if(tofPid==211 && prtangle==110 && fEvent->GetType()==0) {
-                            if(mcpid==3) tangle += 0.00412955;
-                            if(mcpid==4) tangle += 0.0073297;
-                            if(mcpid==5) tangle += 5.66044e-05;
-                            if(mcpid==6) tangle += 0.00285047;
-                            if(mcpid==7) tangle += 0.003427;
-                            if(mcpid==8) tangle += 0.00506727;
-                            if(mcpid==9) tangle += 0.0017315;
-                            if(mcpid==10) tangle += 0.00340199;
-                            if(mcpid==11) tangle += 0.00496769;
-
-                        }
-                        if(tofPid==211 && prtangle==120 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00383344;
-                            if(mcpid==1) tangle += 0.0109035;
-                            if(mcpid==2) tangle += 0.00667142;
-                            if(mcpid==3) tangle += -0.0031447;
-                            if(mcpid==4) tangle += 0.0062613;
-                            if(mcpid==5) tangle += -0.000207705;
-                            if(mcpid==6) tangle += -0.000802091;
-                            if(mcpid==7) tangle += 0.000332764;
-                            if(mcpid==8) tangle += 0.00468189;
-                            if(mcpid==9) tangle += -0.0031504;
-                            if(mcpid==10) tangle += 0.00111094;
-                            if(mcpid==11) tangle += 0.00457433;
-                        }
-                        if(tofPid==211 && prtangle==130 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00432128;
-                            if(mcpid==1) tangle += 0.00217721;
-                            if(mcpid==2) tangle += 0.000793142;
-                            if(mcpid==3) tangle += -0.00277914;
-                            if(mcpid==4) tangle += -0.00338113;
-                            if(mcpid==5) tangle += 0.00444236;
-                            if(mcpid==6) tangle += -0.00488036;
-                            if(mcpid==7) tangle += 0.00647494;
-                            if(mcpid==8) tangle += 0.00546047;
-
-                        }
-                        if(tofPid==211 && prtangle==140 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += 0.00143412;
-                            if(mcpid==1) tangle += -0.000569617;
-                            if(mcpid==2) tangle += 0.000551199;
-                            if(mcpid==3) tangle += -0.00415235;
-                            if(mcpid==5) tangle += 0.003773;
-                            if(mcpid==6) tangle += -0.00590251;
-                            if(mcpid==7) tangle += 0.00302066;
-                            if(mcpid==8) tangle += 0.00816306;
-                            if(mcpid==10) tangle += 0.00506197;
-                        }
-                        if(tofPid==211 && prtangle==150 && fEvent->GetType()==0) {
-                            if(mcpid==0) tangle += -0.00110873;
-                            if(mcpid==1) tangle += 0.000221602;
-                            if(mcpid==2) tangle += -0.00192121;
-                            if(mcpid==3) tangle += 0.00675487;
-                            if(mcpid==4) tangle += 0.00262255;
-                            if(mcpid==5) tangle += 0.00232109;
-                            if(mcpid==6) tangle += 0.0015646;
-                            if(mcpid==7) tangle += 0.00431714;
-                            if(mcpid==8) tangle += 0.0101385;
-                            if(mcpid==10) tangle += 0.000698113;
-                        }
-
-                        */
+                         // custom cherenkove angle correction
+                         
+                         if(tofPid==2212 && prtangle==20 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.0037463;
+                         if(mcpid==2) tangle += 0.00393206;
+                         if(mcpid==3) tangle += -0.00160145;
+                         if(mcpid==4) tangle += -0.00256794;
+                         if(mcpid==5) tangle += -0.000283742;
+                         if(mcpid==6) tangle += 0.00407178;
+                         if(mcpid==7) tangle += -0.00393463;
+                         if(mcpid==8) tangle += -0.00126251;
+                         }
+                         if(tofPid==2212 && prtangle==30 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00156478;
+                         if(mcpid==1) tangle += 0.000717535;
+                         if(mcpid==2) tangle += -0.00185094;
+                         if(mcpid==3) tangle += 0.00432859;
+                         if(mcpid==4) tangle += -0.000132634;
+                         if(mcpid==5) tangle += 0.00287237;
+                         if(mcpid==10) tangle += 6.37505e-05;
+                         
+                         }
+                         if(tofPid==2212 && prtangle==40 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00303354;
+                         if(mcpid==1) tangle += 0.00181321;
+                         if(mcpid==2) tangle += -0.000399244;
+                         if(mcpid==3) tangle += -0.00298469;
+                         if(mcpid==5) tangle += 0.00286224;
+                         if(mcpid==6) tangle += -0.00557738;
+                         if(mcpid==7) tangle += 0.00117326;
+                         if(mcpid==8) tangle += 0.00706862;
+                         if(mcpid==10) tangle += 0.00154225;
+                         }
+                         if(tofPid==2212 && prtangle==50 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00309107;
+                         if(mcpid==1) tangle += -0.00051898;
+                         if(mcpid==2) tangle += 0.000299447;
+                         if(mcpid==3) tangle += -0.00197735;
+                         if(mcpid==4) tangle += -0.00323337;
+                         if(mcpid==5) tangle += 0.0018425;
+                         if(mcpid==6) tangle += -0.00426238;
+                         if(mcpid==7) tangle += 0.0034893;
+                         if(mcpid==8) tangle += 0.00502382;
+                         if(mcpid==10) tangle += 0.00256969;
+                         }
+                         if(tofPid==2212 && prtangle==60 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00273982;
+                         if(mcpid==1) tangle += 0.00429161;
+                         if(mcpid==2) tangle += 0.00918813;
+                         if(mcpid==3) tangle += -0.000644696;
+                         if(mcpid==4) tangle += -0.000102986;
+                         if(mcpid==5) tangle += 0.00205593;
+                         if(mcpid==6) tangle += -0.00170198;
+                         if(mcpid==7) tangle += -0.000299491;
+                         if(mcpid==8) tangle += 0.00402219;
+                         if(mcpid==9) tangle += -0.00537187;
+                         if(mcpid==10) tangle += 0.00229431;
+                         if(mcpid==11) tangle += 0.00583173;
+                         }
+                         if(tofPid==2212 && prtangle==70 && fEvent->GetType()==0) {
+                         if(mcpid==3) tangle += 0.00551639;
+                         if(mcpid==5) tangle += 0.00644471;
+                         if(mcpid==6) tangle += 0.00211921;
+                         if(mcpid==7) tangle += 0.000141244;
+                         if(mcpid==8) tangle += 0.00253215;
+                         if(mcpid==9) tangle += 0.000443011;
+                         if(mcpid==10) tangle += 0.00459536;
+                         if(mcpid==11) tangle += 0.0044117;
+                         
+                         }
+                         if(tofPid==2212 && prtangle==80 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00324281;
+                         if(mcpid==7) tangle += 0.00906944;
+                         if(mcpid==8) tangle += 0.0039351;
+                         if(mcpid==9) tangle += 0.00264384;
+                         if(mcpid==10) tangle += 0.00515091;
+                         if(mcpid==11) tangle += 0.00352387;
+                         
+                         }
+                         if(tofPid==2212 && prtangle==90 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00216665;
+                         if(mcpid==7) tangle += 0.00291354;
+                         if(mcpid==8) tangle += 0.00695433;
+                         if(mcpid==9) tangle += 0.0101353;
+                         if(mcpid==10) tangle += -0.0017459;
+                         if(mcpid==11) tangle += 0.00769177;
+                         
+                         }
+                         if(tofPid==2212 && prtangle==100 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00271104;
+                         if(mcpid==7) tangle += 0.0097834;
+                         if(mcpid==8) tangle += 0.0101384;
+                         if(mcpid==9) tangle += 0.00300913;
+                         if(mcpid==10) tangle += 0.00766586;
+                         if(mcpid==11) tangle += 0.00422346;
+                         }
+                         if(tofPid==2212 && prtangle==110 && fEvent->GetType()==0) {
+                         if(mcpid==3) tangle += 0.00528759;
+                         if(mcpid==4) tangle += 0.00563497;
+                         if(mcpid==5) tangle += 0.0068598;
+                         if(mcpid==6) tangle += 0.0029672;
+                         if(mcpid==7) tangle += 0.00616749;
+                         if(mcpid==8) tangle += 0.00290852;
+                         if(mcpid==9) tangle += 0.000640083;
+                         if(mcpid==10) tangle += 0.00418752;
+                         if(mcpid==11) tangle += 0.00624901;
+                         
+                         }
+                         if(tofPid==2212 && prtangle==120 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00398425;
+                         if(mcpid==1) tangle += 0.00720028;
+                         if(mcpid==2) tangle += 0.00729632;
+                         if(mcpid==3) tangle += -0.00026553;
+                         if(mcpid==4) tangle += 0.00738272;
+                         if(mcpid==5) tangle += 0.00253814;
+                         if(mcpid==6) tangle += -0.00333346;
+                         if(mcpid==7) tangle += 0.000519743;
+                         if(mcpid==8) tangle += 0.0046651;
+                         if(mcpid==9) tangle += -0.00522381;
+                         if(mcpid==10) tangle += 0.00336109;
+                         if(mcpid==11) tangle += 0.00554843;
+                         }
+                         if(tofPid==2212 && prtangle==130 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00034945;
+                         if(mcpid==1) tangle += -0.00203324;
+                         if(mcpid==2) tangle += 0.00320907;
+                         if(mcpid==3) tangle += -0.000829152;
+                         if(mcpid==4) tangle += -0.0042837;
+                         if(mcpid==5) tangle += 0.00236503;
+                         if(mcpid==6) tangle += -0.00210343;
+                         if(mcpid==7) tangle += 0.00367466;
+                         if(mcpid==8) tangle += 0.00612672;
+                         
+                         }
+                         if(tofPid==2212 && prtangle==140 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00175713;
+                         if(mcpid==1) tangle += -0.000870838;
+                         if(mcpid==2) tangle += -0.000806541;
+                         if(mcpid==3) tangle += -0.00590427;
+                         if(mcpid==5) tangle += 0.00250988;
+                         if(mcpid==6) tangle += -0.00558701;
+                         if(mcpid==7) tangle += 0.00135012;
+                         if(mcpid==8) tangle += 0.00730651;
+                         if(mcpid==10) tangle += 0.00222968;
+                         }
+                         if(tofPid==2212 && prtangle==150 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.000707214;
+                         if(mcpid==1) tangle += 0.000375289;
+                         if(mcpid==2) tangle += -0.00247093;
+                         if(mcpid==3) tangle += 0.00413308;
+                         if(mcpid==4) tangle += 9.30833e-05;
+                         if(mcpid==5) tangle += 0.00246793;
+                         if(mcpid==6) tangle += -0.000243905;
+                         if(mcpid==7) tangle += -0.000585869;
+                         if(mcpid==8) tangle += 0.00834577;
+                         if(mcpid==10) tangle += 0.000285897;
+                         }
+                         //////////////////////////////////////////////////////////
+                         if(tofPid==211 && prtangle==20 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00592128;
+                         if(mcpid==2) tangle += 0.0016258;
+                         if(mcpid==3) tangle += 0.000194822;
+                         if(mcpid==4) tangle += -0.00187034;
+                         if(mcpid==5) tangle += 0.000418295;
+                         if(mcpid==6) tangle += 0.00214353;
+                         if(mcpid==7) tangle += -0.00231171;
+                         if(mcpid==8) tangle += -0.0028962;
+                         }
+                         if(tofPid==211 && prtangle==30 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00222565;
+                         if(mcpid==1) tangle += 0.00121942;
+                         if(mcpid==2) tangle += -0.00228483;
+                         if(mcpid==3) tangle += 0.0050814;
+                         if(mcpid==4) tangle += 0.00102791;
+                         if(mcpid==5) tangle += 0.00272348;
+                         if(mcpid==10) tangle += 0.000190674;
+                         
+                         }
+                         if(tofPid==211 && prtangle==40 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00142964;
+                         if(mcpid==1) tangle += -0.000896485;
+                         if(mcpid==2) tangle += -0.0012704;
+                         if(mcpid==3) tangle += -0.00548164;
+                         if(mcpid==5) tangle += 0.00348412;
+                         if(mcpid==6) tangle += -0.00596745;
+                         if(mcpid==7) tangle += 0.00364285;
+                         if(mcpid==8) tangle += 0.00743459;
+                         if(mcpid==10) tangle += 0.00572617;
+                         }
+                         if(tofPid==211 && prtangle==50 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00478102;
+                         if(mcpid==1) tangle += 0.00438392;
+                         if(mcpid==2) tangle += -0.00039053;
+                         if(mcpid==3) tangle += -0.00191347;
+                         if(mcpid==4) tangle += -0.00350191;
+                         if(mcpid==5) tangle += 0.00316318;
+                         if(mcpid==6) tangle += -0.00452553;
+                         if(mcpid==7) tangle += 0.00427;
+                         if(mcpid==8) tangle += 0.00448392;
+                         if(mcpid==10) tangle += 0.00416322;
+                         }
+                         if(tofPid==211 && prtangle==60 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.000868201;
+                         if(mcpid==1) tangle += 0.00565408;
+                         if(mcpid==2) tangle += 0.00849748;
+                         if(mcpid==3) tangle += -0.00187067;
+                         if(mcpid==4) tangle += 0.00620808;
+                         if(mcpid==5) tangle += -0.00257401;
+                         if(mcpid==6) tangle += -0.00163821;
+                         if(mcpid==7) tangle += -0.000197209;
+                         if(mcpid==8) tangle += 0.00506754;
+                         if(mcpid==9) tangle += -0.00277595;
+                         if(mcpid==10) tangle += 0.00166398;
+                         if(mcpid==11) tangle += 0.00652052;
+                         }
+                         if(tofPid==211 && prtangle==70 && fEvent->GetType()==0) {
+                         if(mcpid==3) tangle += 0.003487;
+                         if(mcpid==4) tangle += 0.00788698;
+                         if(mcpid==5) tangle += 0.012404;
+                         if(mcpid==6) tangle += 0.00143184;
+                         if(mcpid==7) tangle += 0.00242198;
+                         if(mcpid==8) tangle += 0.00201628;
+                         if(mcpid==9) tangle += 0.000275323;
+                         if(mcpid==10) tangle += 0.00381258;
+                         if(mcpid==11) tangle += 0.00463261;
+                         
+                         }
+                         if(tofPid==211 && prtangle==80 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00571238;
+                         if(mcpid==7) tangle += 0.0029977;
+                         if(mcpid==8) tangle += 0.00789599;
+                         if(mcpid==9) tangle += 0.00341371;
+                         if(mcpid==10) tangle += 0.00368001;
+                         if(mcpid==11) tangle += 0.00423138;
+                         }
+                         if(tofPid==211 && prtangle==90 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += -0.0010984;
+                         if(mcpid==7) tangle += 0.00200863;
+                         if(mcpid==8) tangle += -0.000294216;
+                         if(mcpid==9) tangle += 0.0124423;
+                         if(mcpid==10) tangle += 0.0054001;
+                         if(mcpid==11) tangle += 0.008128;
+                         }
+                         if(tofPid==211 && prtangle==100 && fEvent->GetType()==0) {
+                         if(mcpid==6) tangle += 0.00562832;
+                         if(mcpid==7) tangle += 0.0169453;
+                         if(mcpid==8) tangle += 0.00818838;
+                         if(mcpid==9) tangle += 0.00370759;
+                         if(mcpid==10) tangle += -0.00130711;
+                         if(mcpid==11) tangle += 0.00519548;
+                         }
+                         if(tofPid==211 && prtangle==110 && fEvent->GetType()==0) {
+                         if(mcpid==3) tangle += 0.00412955;
+                         if(mcpid==4) tangle += 0.0073297;
+                         if(mcpid==5) tangle += 5.66044e-05;
+                         if(mcpid==6) tangle += 0.00285047;
+                         if(mcpid==7) tangle += 0.003427;
+                         if(mcpid==8) tangle += 0.00506727;
+                         if(mcpid==9) tangle += 0.0017315;
+                         if(mcpid==10) tangle += 0.00340199;
+                         if(mcpid==11) tangle += 0.00496769;
+                         
+                         }
+                         if(tofPid==211 && prtangle==120 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00383344;
+                         if(mcpid==1) tangle += 0.0109035;
+                         if(mcpid==2) tangle += 0.00667142;
+                         if(mcpid==3) tangle += -0.0031447;
+                         if(mcpid==4) tangle += 0.0062613;
+                         if(mcpid==5) tangle += -0.000207705;
+                         if(mcpid==6) tangle += -0.000802091;
+                         if(mcpid==7) tangle += 0.000332764;
+                         if(mcpid==8) tangle += 0.00468189;
+                         if(mcpid==9) tangle += -0.0031504;
+                         if(mcpid==10) tangle += 0.00111094;
+                         if(mcpid==11) tangle += 0.00457433;
+                         }
+                         if(tofPid==211 && prtangle==130 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00432128;
+                         if(mcpid==1) tangle += 0.00217721;
+                         if(mcpid==2) tangle += 0.000793142;
+                         if(mcpid==3) tangle += -0.00277914;
+                         if(mcpid==4) tangle += -0.00338113;
+                         if(mcpid==5) tangle += 0.00444236;
+                         if(mcpid==6) tangle += -0.00488036;
+                         if(mcpid==7) tangle += 0.00647494;
+                         if(mcpid==8) tangle += 0.00546047;
+                         
+                         }
+                         if(tofPid==211 && prtangle==140 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += 0.00143412;
+                         if(mcpid==1) tangle += -0.000569617;
+                         if(mcpid==2) tangle += 0.000551199;
+                         if(mcpid==3) tangle += -0.00415235;
+                         if(mcpid==5) tangle += 0.003773;
+                         if(mcpid==6) tangle += -0.00590251;
+                         if(mcpid==7) tangle += 0.00302066;
+                         if(mcpid==8) tangle += 0.00816306;
+                         if(mcpid==10) tangle += 0.00506197;
+                         }
+                         if(tofPid==211 && prtangle==150 && fEvent->GetType()==0) {
+                         if(mcpid==0) tangle += -0.00110873;
+                         if(mcpid==1) tangle += 0.000221602;
+                         if(mcpid==2) tangle += -0.00192121;
+                         if(mcpid==3) tangle += 0.00675487;
+                         if(mcpid==4) tangle += 0.00262255;
+                         if(mcpid==5) tangle += 0.00232109;
+                         if(mcpid==6) tangle += 0.0015646;
+                         if(mcpid==7) tangle += 0.00431714;
+                         if(mcpid==8) tangle += 0.0101385;
+                         if(mcpid==10) tangle += 0.000698113;
+                         }
+                         
+                         */
                         fHist_correction->Fill(tangle ,weight);
                         //if(tofPid==211 &&fabs(tangle-fAnglePi)> chAngleCut) continue;
                         //if(tofPid==2212 &&fabs(tangle-fAngleP)> chAngleCut) continue;
                         /*
-                        if(true && tangle>0.65 && tangle<0.95 ) {
-                        sum1 += TMath::Log(gF1->Eval(tangle)+noise);
-                        sum2 += TMath::Log(gF2->Eval(tangle)+noise);
-                        }
-                        */
+                         if(true && tangle>0.65 && tangle<0.95 ) {
+                         sum1 += TMath::Log(gF1->Eval(tangle)+noise);
+                         sum2 += TMath::Log(gF2->Eval(tangle)+noise);
+                         }
+                         */
                         //~ if(method_type =! 3 && tangle>0.65 && tangle<0.95 ) {
                         //~ sum1 += TMath::Log(gr_p->Eval(tangle));
                         //~ sum2 += TMath::Log(gr_pi->Eval(tangle));
                         //~ //std::cout<<"No Problem  separation  " <<sum1<<""<<sum2<<std::endl;
                         //~ }
                         // old separation power calculations
-
+                        
                         //~ if(method_type == 3 && tangle>0.65 && tangle<0.95 ) {
                         //~ sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle));
                         //~ sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle));
                         //~ //std::cout<<"No Problem  separation  " <<sum1<<""<<sum2<<std::endl;
                         //~ }
-
-
+                        
+                        
                         if(fVerbose==3) {
                             TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
                             rdir.RotateUz(cz);
@@ -2106,16 +2539,16 @@ goon:
                     if(fabs(diff_variable)<min_time) {
                         min_time= diff_variable;
                         min_diff_time_tangle= tangle;
-
+                        
                     }
                 }// end of bar ambiguity loop
                 //std::cout<<"No Problem  ambiguity  " <<std::endl;
             }// end of lut loop
-
+            
             histo_photon_ambiguity_wo->Fill(photon_ambiguity_counter_wo,weight);
             histo_photon_ambiguity_wt->Fill(photon_ambiguity_counter_wt,weight);
             histo_photon_ambiguity_wtc->Fill(photon_ambiguity_counter_wtc,weight);
-
+            
             fHist_copy->Fill(min_diff_time_tangle ,weight);
             if(gPDF ==1) fHistCh[ch]->Fill(min_diff_time_tangle ,weight);
             // old separation power calculations
@@ -2127,10 +2560,10 @@ goon:
                 //sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                 //std::cout<<"No Problem  separation  " <<sum1<<" "<<sum2<<std::endl;
             }
-
-
-
-
+            
+            
+            
+            
             //std::cout<<"No Problem  lut loop  " <<std::endl;
             if(isGoodHit) {
                 nsHits++;
@@ -2140,21 +2573,21 @@ goon:
             if(isGoodHit_true_sim)nGoodPhotons_true_sim++;
             if(isGoodHit_TimeCutOnly) nGoodPhotons_TimeCutOnly++;
             if(isCandidat) nCandidat++;
-
+            
         }// end of hit loop
         fnHits_p_good->Fill(nGoodPhotons);
         fnHits_p->Fill(nGoodPhotons_TimeCutOnly);
         fnHits->Fill(nCandidat);
         fnHits_true_sim->Fill(nGoodPhotons_true_sim);
         //std::cout<<"@@@@@@@@@@@"<<" nGoodPhotons= "<<nGoodPhotons<<std::endl;
-
+        
         // for(Int_t j=0; j<prt_nmcp; j++){
         //   for(Int_t i=0; i<65; i++){
         // 	mcpdata[j][i]=0;
         // 	cluster[j][i]=0;
         //   }
         // }
-
+        
         Double_t sum = sum1-sum2;
         if(sum!=0) {
             if(tofPid==2212) hLnDiffP->Fill(sum);
@@ -2168,7 +2601,7 @@ goon:
         //   gF1->Draw();
         //   gF2->SetLineColor(4);
         //   gF2->Draw("same");
-
+        
         //   prt_waitPrimitive("ff");
         //   prt_canvasDel("ff");
         //   //prt_canvasSave(1,0);
@@ -2264,28 +2697,28 @@ goon:
         hdelta_tof2tof1_isproton->Draw("same");
         ///////////////////////////////////////////////////////////////////////
         prt_canvasAdd("r_test_hist"+nid,800,400);
-
-
+        
+        
         gr_pi->SetMarkerStyle(6);
         gr_pi->SetMarkerSize(21);
         gr_pi->SetLineColor(kRed);
         //gr_pi->Sort();
-
+        
         gr_p->SetMarkerStyle(6);
         gr_p->SetMarkerSize(21);
         gr_p->SetLineColor(kBlue);
         //gr_p->Sort();
-
-
+        
+        
         mg->Add(gr_p);
         mg->Add(gr_pi);
         mg->SetTitle(" Modle used in Liklehood calculations ;#theta_{C} [rad];  [#]");
         mg->Draw("APL");
-
+        
         //  gr_p->Draw("PL");
         //  gr_pi->Draw("SAMEPL");
-
-
+        
+        
         //prt_waitPrimitive("r_test_hist"+nid);// wait here
         prt_canvasSave(2,0);
         //prt_waitPrimitive("r_lhood","w");
@@ -2298,7 +2731,7 @@ goon:
     fHist->Write();
     fHist_copy->Write();
     fHist_correction->Write();
-
+    
     fHist_same_path->Write();
     fHist_bg->Write();
     fnHits->Write();
@@ -2313,13 +2746,13 @@ goon:
     nHits_dac_syscut_p->Write();
     nHits_dac->Write();
     hdelta_tof2tof1->Write();
-
+    
     fHist_same_path_wotc->Write();
-
+    
     histo_photon_ambiguity_wo->Write();
     histo_photon_ambiguity_wt->Write();
     histo_photon_ambiguity_wtc->Write();
-
+    
     if(gPDF ==1) {
         for(Int_t i=0; i<960; i++) {
             fHistCh[i]->Write();
@@ -2399,7 +2832,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
             // }
             //      TString name = Form("r_tangle_%3.1f",PrtManager::Instance()->GetTest3());
             TString nid = Form("_%2.0f",a);
-
+            
             //~
             //~ for(Int_t pix=495; pix<500; pix++) {
             //~ prt_canvasAdd(Form("r_pix_%d",pix),800,400);
@@ -2414,8 +2847,8 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
             //~ lin_ch_p_v->Draw();
             //~
             //~ }
-
-
+            
+            
             /*
              ///////////////////////////////////////////////////////////////////
              prt_canvasAdd("r_tangle"+nid,800,400);
@@ -2425,7 +2858,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
              //fHist->Scale(1/fHist->GetMaximum());
              //prt_normalize(fHist,fHistPi);
              prt_normalize(fHist,fHist_same_path);
-
+             
              fHistPi->SetLineColor(2);
              fHist_same_path->SetLineColor(2);
              fHist->Draw();
@@ -2454,7 +2887,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
              std::cout<<"fAnglePi "<< fAnglePi<<std::endl;
              std::cout<<"fAngleP "<< fAngleP<<std::endl;
              //prt_waitPrimitive("r_tangle"+nid);// wait here
-
+             
              //////////////////////////////////////////////////////////////////////
              prt_canvasAdd("r_fnHits"+nid,800,400);
              fnHits->SetTitle(Form("Theta %3.1f", a));
@@ -2539,111 +2972,111 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
              prt_canvasAdd("r_cm"+nid,800,400);
              fHist3->SetTitle(Form("theta %3.1f", a));
              fHist3->Draw("colz");
-            ////////////////////////////////////////////////////////////////////
-            prt_drawDigi("m,p,v\n", 2017);//2
-            //TPaveText* tit;
-            //tit = new TPaveText(17.0,5,25.,5,"NB");
-            //tit->SetFillColor(0);
-            //tit->AddText(Form("theta = %f", a));
-            prt_canvasAdd(prt_cdigi);
-            prt_cdigi->SetName("r_hp"+nid);
-            prt_cdigi->SetTitle(Form("theta %3.1f", a));
-            //prt_cdigi->Draw();
-            //tit->Draw();
-            std::cout<<"no problem 4"<<std::endl;
-            ///////////////////////////////////////////////////////////////////////
-            prt_canvasAdd("r_hodo"+nid,800,400);
-            hodoF->SetTitle(Form("theta %3.1f", a));
-            hodoF->SetStats(0);
-            hodoF->SetTitle("hodo");
-            hodoF->GetXaxis()->SetTitle("[mm]");
-            hodoF->GetYaxis()->SetTitle("[mm]");
-            hodoF->Draw("colz");
-            ///////////////////////////////////////////////////////////////////////
-            prt_canvasAdd("r_hodo_afterCut"+nid,800,400);
-            hodo_afterCut->SetTitle(Form("theta %3.1f", a));
-            hodo_afterCut->SetStats(0);
-            hodo_afterCut->SetTitle("hodo");
-            hodo_afterCut->GetXaxis()->SetTitle("[mm]");
-            hodo_afterCut->GetYaxis()->SetTitle("[mm]");
-            hodo_afterCut->Draw("colz");
-            //////////////////////////////////////////////////////////////////////
-            prt_canvasAdd("r_hodo_V_pos"+nid,800,500);
-            hodo_multi_withmedVfiber->SetTitle(Form("theta %3.1f", a));
-            hodo_multi_withmedVfiber->SetStats(0);
-            hodo_multi_withmedVfiber->SetTitle("hodo V");
-            hodo_multi_withmedVfiber->GetXaxis()->SetTitle("[mm]");
-            hodo_multi_withmedVfiber->GetYaxis()->SetTitle("[mm]");
-            hodo_multi_withmedVfiber->Draw("colz");
-            //////////////////////////////////////////////////////////////////////
-            prt_canvasAdd("r_hodo_H_pos"+nid,800,500);
-            hodo_multi_withmedHfiber->SetTitle(Form("theta %3.1f", a));
-            hodo_multi_withmedHfiber->SetStats(0);
-            hodo_multi_withmedHfiber->SetTitle("hodo H");
-            hodo_multi_withmedHfiber->GetXaxis()->SetTitle("[mm]");
-            hodo_multi_withmedHfiber->GetYaxis()->SetTitle("[mm]");
-            hodo_multi_withmedHfiber->Draw("colz");
-            //////////////////////////////////////////////////////////////////////
-            prt_canvasAdd("r_multi"+nid,800,400);
-            countmulti_trg1->SetTitle(Form("theta %3.1f", a));
-            countmulti_trg1->SetStats(0);
-            countmulti_tof1->SetLineColor(kViolet);
-            countmulti_tof2->SetLineColor(kGreen);
-            countmulti_trg1->SetLineColor(kBlue);
-            countmulti_trg2->SetLineColor(kCyan);
-            countmulti_trgmzV->SetLineColor(kRed);
-            countmulti_trgmzH->SetLineColor(kMagenta);
-            countmulti_trg1->GetXaxis()->SetTitle("Multiplicity");
-            countmulti_trg1->GetYaxis()->SetTitle("count [#]");
-            countmulti_trg1->Draw();
-            countmulti_tof2->Draw("same");
-            countmulti_trg2->Draw("same");
-            countmulti_tof1->Draw("same");
-            countmulti_trgmzV->Draw("same");
-            countmulti_trgmzH->Draw("same");
-            TLegend *leg_multi = new TLegend(0.5,0.6,0.8,0.85);
-            leg_multi->SetFillColor(0);
-            leg_multi->SetFillStyle(0);
-            leg_multi->SetBorderSize(0);
-            leg_multi->SetFillStyle(0);
-            leg_multi->AddEntry(countmulti_trg1,"Trigger 1","lp");
-            leg_multi->AddEntry(countmulti_trg2,"Trigger 2","lp");
-            leg_multi->AddEntry(countmulti_trgmzV,"Trigger MZ V","lp");
-            leg_multi->AddEntry(countmulti_trgmzH,"Trigger MZ H","lp");
-            leg_multi->AddEntry(countmulti_tof1,"TOF 1","lp");
-            leg_multi->AddEntry(countmulti_tof2,"TOF 2","lp");
-            leg_multi->Draw();
-            ///////////////////////////////////////////////////////////////////////
-            prt_canvasAdd("r_hodo_H_number"+nid,800,500);
-            countmulti_hodoH->SetTitle(Form("theta %3.1f", a));
-            countmulti_hodoH->SetStats(0);
-            countmulti_hodoH->SetLineColor(kBlue);
-            countmulti_hodoH->GetXaxis()->SetTitle("number of spikes[#]");
-            countmulti_hodoH->GetYaxis()->SetTitle("count [#]");
-            countmulti_hodoH->Draw();
-            TLegend *leg_countmulti_hodoH = new TLegend(0.261905, 0.386076 , 0.907268,  0.995781 );
-            leg_countmulti_hodoH->SetFillColor(0);
-            leg_countmulti_hodoH->SetFillStyle(0);
-            leg_countmulti_hodoH->SetBorderSize(0);
-            leg_countmulti_hodoH->SetFillStyle(0);
-            leg_countmulti_hodoH->AddEntry(countmulti_hodoH,"number of 'spikes' associated with selected H fiber","lp");
-            leg_countmulti_hodoH->Draw();
-            ///////////////////////////////////////////////////////////////////////
-            prt_canvasAdd("r_hodo_V_number"+nid,800,500);
-            countmulti_hodoV->SetTitle(Form("theta %3.1f", a));
-            countmulti_hodoV->SetStats(0);
-            countmulti_hodoV->SetLineColor(kViolet);
-            countmulti_hodoV->GetXaxis()->SetTitle("number of spikes[#]");
-            countmulti_hodoV->GetYaxis()->SetTitle("count [#]");
-            countmulti_hodoV->Draw();
-            TLegend *leg_countmulti_hodoV = new TLegend(0.261905, 0.386076 , 0.907268,  0.995781 );
-            leg_countmulti_hodoV->SetFillColor(0);
-            leg_countmulti_hodoV->SetFillStyle(0);
-            leg_countmulti_hodoV->SetBorderSize(0);
-            leg_countmulti_hodoV->SetFillStyle(0);
-            leg_countmulti_hodoV->AddEntry(countmulti_hodoV,"number of 'spikes' associated with selected V fiber","lp");
-            leg_countmulti_hodoV->Draw();
-            */
+             ////////////////////////////////////////////////////////////////////
+             prt_drawDigi("m,p,v\n", 2017);//2
+             //TPaveText* tit;
+             //tit = new TPaveText(17.0,5,25.,5,"NB");
+             //tit->SetFillColor(0);
+             //tit->AddText(Form("theta = %f", a));
+             prt_canvasAdd(prt_cdigi);
+             prt_cdigi->SetName("r_hp"+nid);
+             prt_cdigi->SetTitle(Form("theta %3.1f", a));
+             //prt_cdigi->Draw();
+             //tit->Draw();
+             std::cout<<"no problem 4"<<std::endl;
+             ///////////////////////////////////////////////////////////////////////
+             prt_canvasAdd("r_hodo"+nid,800,400);
+             hodoF->SetTitle(Form("theta %3.1f", a));
+             hodoF->SetStats(0);
+             hodoF->SetTitle("hodo");
+             hodoF->GetXaxis()->SetTitle("[mm]");
+             hodoF->GetYaxis()->SetTitle("[mm]");
+             hodoF->Draw("colz");
+             ///////////////////////////////////////////////////////////////////////
+             prt_canvasAdd("r_hodo_afterCut"+nid,800,400);
+             hodo_afterCut->SetTitle(Form("theta %3.1f", a));
+             hodo_afterCut->SetStats(0);
+             hodo_afterCut->SetTitle("hodo");
+             hodo_afterCut->GetXaxis()->SetTitle("[mm]");
+             hodo_afterCut->GetYaxis()->SetTitle("[mm]");
+             hodo_afterCut->Draw("colz");
+             //////////////////////////////////////////////////////////////////////
+             prt_canvasAdd("r_hodo_V_pos"+nid,800,500);
+             hodo_multi_withmedVfiber->SetTitle(Form("theta %3.1f", a));
+             hodo_multi_withmedVfiber->SetStats(0);
+             hodo_multi_withmedVfiber->SetTitle("hodo V");
+             hodo_multi_withmedVfiber->GetXaxis()->SetTitle("[mm]");
+             hodo_multi_withmedVfiber->GetYaxis()->SetTitle("[mm]");
+             hodo_multi_withmedVfiber->Draw("colz");
+             //////////////////////////////////////////////////////////////////////
+             prt_canvasAdd("r_hodo_H_pos"+nid,800,500);
+             hodo_multi_withmedHfiber->SetTitle(Form("theta %3.1f", a));
+             hodo_multi_withmedHfiber->SetStats(0);
+             hodo_multi_withmedHfiber->SetTitle("hodo H");
+             hodo_multi_withmedHfiber->GetXaxis()->SetTitle("[mm]");
+             hodo_multi_withmedHfiber->GetYaxis()->SetTitle("[mm]");
+             hodo_multi_withmedHfiber->Draw("colz");
+             //////////////////////////////////////////////////////////////////////
+             prt_canvasAdd("r_multi"+nid,800,400);
+             countmulti_trg1->SetTitle(Form("theta %3.1f", a));
+             countmulti_trg1->SetStats(0);
+             countmulti_tof1->SetLineColor(kViolet);
+             countmulti_tof2->SetLineColor(kGreen);
+             countmulti_trg1->SetLineColor(kBlue);
+             countmulti_trg2->SetLineColor(kCyan);
+             countmulti_trgmzV->SetLineColor(kRed);
+             countmulti_trgmzH->SetLineColor(kMagenta);
+             countmulti_trg1->GetXaxis()->SetTitle("Multiplicity");
+             countmulti_trg1->GetYaxis()->SetTitle("count [#]");
+             countmulti_trg1->Draw();
+             countmulti_tof2->Draw("same");
+             countmulti_trg2->Draw("same");
+             countmulti_tof1->Draw("same");
+             countmulti_trgmzV->Draw("same");
+             countmulti_trgmzH->Draw("same");
+             TLegend *leg_multi = new TLegend(0.5,0.6,0.8,0.85);
+             leg_multi->SetFillColor(0);
+             leg_multi->SetFillStyle(0);
+             leg_multi->SetBorderSize(0);
+             leg_multi->SetFillStyle(0);
+             leg_multi->AddEntry(countmulti_trg1,"Trigger 1","lp");
+             leg_multi->AddEntry(countmulti_trg2,"Trigger 2","lp");
+             leg_multi->AddEntry(countmulti_trgmzV,"Trigger MZ V","lp");
+             leg_multi->AddEntry(countmulti_trgmzH,"Trigger MZ H","lp");
+             leg_multi->AddEntry(countmulti_tof1,"TOF 1","lp");
+             leg_multi->AddEntry(countmulti_tof2,"TOF 2","lp");
+             leg_multi->Draw();
+             ///////////////////////////////////////////////////////////////////////
+             prt_canvasAdd("r_hodo_H_number"+nid,800,500);
+             countmulti_hodoH->SetTitle(Form("theta %3.1f", a));
+             countmulti_hodoH->SetStats(0);
+             countmulti_hodoH->SetLineColor(kBlue);
+             countmulti_hodoH->GetXaxis()->SetTitle("number of spikes[#]");
+             countmulti_hodoH->GetYaxis()->SetTitle("count [#]");
+             countmulti_hodoH->Draw();
+             TLegend *leg_countmulti_hodoH = new TLegend(0.261905, 0.386076 , 0.907268,  0.995781 );
+             leg_countmulti_hodoH->SetFillColor(0);
+             leg_countmulti_hodoH->SetFillStyle(0);
+             leg_countmulti_hodoH->SetBorderSize(0);
+             leg_countmulti_hodoH->SetFillStyle(0);
+             leg_countmulti_hodoH->AddEntry(countmulti_hodoH,"number of 'spikes' associated with selected H fiber","lp");
+             leg_countmulti_hodoH->Draw();
+             ///////////////////////////////////////////////////////////////////////
+             prt_canvasAdd("r_hodo_V_number"+nid,800,500);
+             countmulti_hodoV->SetTitle(Form("theta %3.1f", a));
+             countmulti_hodoV->SetStats(0);
+             countmulti_hodoV->SetLineColor(kViolet);
+             countmulti_hodoV->GetXaxis()->SetTitle("number of spikes[#]");
+             countmulti_hodoV->GetYaxis()->SetTitle("count [#]");
+             countmulti_hodoV->Draw();
+             TLegend *leg_countmulti_hodoV = new TLegend(0.261905, 0.386076 , 0.907268,  0.995781 );
+             leg_countmulti_hodoV->SetFillColor(0);
+             leg_countmulti_hodoV->SetFillStyle(0);
+             leg_countmulti_hodoV->SetBorderSize(0);
+             leg_countmulti_hodoV->SetFillStyle(0);
+             leg_countmulti_hodoV->AddEntry(countmulti_hodoV,"number of 'spikes' associated with selected V fiber","lp");
+             leg_countmulti_hodoV->Draw();
+             */
             ///////////////////////////////////////////////////////////////////////
             if(false) {
                 Int_t tmax, max=0;
@@ -2700,7 +3133,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
              fHistPhotonEnergy->Draw();
              */
             //std::cout<<"no problem 5"<<std::endl;
-
+            
             /*
              TCanvas * can6 = new TCanvas("can6","can6",0,0,800,400);
              //hHodo->Draw();
@@ -2714,7 +3147,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
              hodoF->Draw("colz");
              //can6->Print("Hodo.png");
              */
-
+            
             /*
              TCanvas * can4 = new TCanvas("can4","can4",0,0,800,400);
              fHist0->Draw();
@@ -2739,7 +3172,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
              htrgmzV_le->Draw("same");
              can7->Print("le.png");
              */
-
+            
             /*
              TCanvas * can8 = new TCanvas("TOT","TOT",0,0,800,400);
              htrg1_tot->SetLineColor(kGreen);
@@ -2773,8 +3206,8 @@ Bool_t PrtLutReco::FindPeak(Double_t& cangle, Double_t& spr, Double_t a, Int_t t
             //prt_waitPrimitive("r_cm"+nid);// wait here
             prt_canvasSave(2,0);
             prt_canvasDel("*");
-
-
+            
+            
             if(fVerbose==3) {
                 TCanvas* c2 = new TCanvas("c2","c2",0,0,800,400);
                 c2->Divide(2,1);
@@ -2834,13 +3267,13 @@ void PrtLutReco::ResetHists() {
     fHist2->Reset();
     fHist3->Reset();
     fHist4->Reset();
-
+    
     fHist->Reset();
     fnHits->Reset();
     fnHits_p->Reset();
     fnHits_p_good->Reset();
-
-
+    
+    
     for(Int_t m=0; m<prt_nmcp; m++) prt_hdigi[m]->Reset();
 }
 
