@@ -597,8 +597,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             // if(studyId==151) beam_corr = -0.003; // 25 deg
             //beam_corr = 0.002; // 125 deg s160
             if(fEvent->GetType()==0) {
-                momInBar.RotateY(TMath::Pi()-prtangle*rad-0);// 0  test1
-                momInBar.RotateX(0);//0 test2
+                momInBar.RotateY(TMath::Pi()-prtangle*rad-test1);// 0  test1
+                momInBar.RotateX(test2);//0 test2
 
                 //momInBar.RotateY(TMath::Pi()-prtangle*rad+0.0);
                 //momInBar.RotateX(0.0);
