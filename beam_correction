@@ -22,7 +22,7 @@ export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/prttools/bin:$PATH
 
 
 
-DIRr="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/beam_correction_50"
+DIRr="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/beam_correction_60"
 DIRd="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/bardata/332/data"
 DIRl="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/lut"
 
@@ -131,8 +131,8 @@ chAngleCut150_pi=0.048570
 #./prtdirc -s 2 -i "${DIRd}/beam_s332_20C.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/db_20_3sph_t1_${dtheta}_t2_${dphi}_pi_data_custom_correction.root"     -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut20_pi      -chcut $chAngleCut20_pi    -recoangle $recoAngle20_pi     -t1 $dtheta -t2 $dphi -openchcorr 2
 
 # Mar 2018
-./prtdirc -s 2 -i "${DIRd}/beam_s332_50C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_50_3sph_t1_${dtheta}_t2_${dphi}_proton_data_p_correction.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton -t1 $dtheta -t2 $dphi -openchcorr 1
-./prtdirc -s 2 -i "${DIRd}/beam_s332_50C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_50_3sph_t1_${dtheta}_t2_${dphi}_pi_data_p_correction.root"     -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton -t1 $dtheta -t2 $dphi -openchcorr 1
-./prtdirc -s 2 -i "${DIRd}/beam_s332_50C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_50_3sph_t1_${dtheta}_t2_${dphi}_pi_data_pi_correction.root"    -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton -t1 $dtheta -t2 $dphi -openchcorr 2
-./prtdirc -s 2 -i "${DIRd}/beam_s332_50C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_50_3sph_t1_${dtheta}_t2_${dphi}_proton_data_wo_correction.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton -t1 $dtheta -t2 $dphi -openchcorr 0
-./prtdirc -s 2 -i "${DIRd}/beam_s332_50C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_50_3sph_t1_${dtheta}_t2_${dphi}_pi_data_wo_correction.root"     -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton -t1 $dtheta -t2 $dphi -openchcorr 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_60C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_60_3sph_t1_${dtheta}_t2_${dphi}_proton_data_p_correction.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton -t1 $dtheta -t2 $dphi -openchcorr 1
+./prtdirc -s 2 -i "${DIRd}/beam_s332_60C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_60_3sph_t1_${dtheta}_t2_${dphi}_pi_data_p_correction.root"     -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton -t1 $dtheta -t2 $dphi -openchcorr 1
+./prtdirc -s 2 -i "${DIRd}/beam_s332_60C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_60_3sph_t1_${dtheta}_t2_${dphi}_pi_data_pi_correction.root"    -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton -t1 $dtheta -t2 $dphi -openchcorr 2
+./prtdirc -s 2 -i "${DIRd}/beam_s332_60C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_60_3sph_t1_${dtheta}_t2_${dphi}_proton_data_wo_correction.root" -recop 1 -recopi 0  -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton -t1 $dtheta -t2 $dphi -openchcorr 0
+./prtdirc -s 2 -i "${DIRd}/beam_s332_60C.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/opt_60_3sph_t1_${dtheta}_t2_${dphi}_pi_data_wo_correction.root"     -recop 0 -recopi 1  -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton -t1 $dtheta -t2 $dphi -openchcorr 0
