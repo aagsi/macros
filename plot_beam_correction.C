@@ -1,39 +1,39 @@
 #include "/Users/ahmed/dirc/prttools/prttools.C"
 
-//root plot_beam_correction.C'("/data.local/beam_correction/db_20_3sph_t1_*_t2_*_proton_data_spr.root", 20)'
-//root plot_beam_correction.C'("/Users/ahmed/dirc/beam_correction/beam_correction_20/opt_20_3sph_t1_*_t2_*_pi_data_pi_correction_spr.root", 20)'
+
 
 // file existance
 bool exists_test (const std::string& name);
-void plot_beam_correction(/*TString inFile = "r_spr.root", Int_t angle= 20*/) {
+
+//root plot_beam_correction.C'(20)'
+void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
     
     prt_savepath="opt";
     std::cout<<"fSavePath  "<< prt_savepath <<std::endl;
     prt_setRootPalette(1);
-    //TChain ch("dirc");
-    //ch.Add(inFile);
-    //Double_t cangle,spr,trr,nph,par1,par2,par3,par4,par5,par6,test1,test2,theta,phi;
+    //gStyle->SetPalette(62);
     Int_t nf = 40;
-    //TH2F * twoD_nph =  new TH2F("twoD_nph",";#Delta#Theta[mrad]; #Delta#Phi[mrad]", nf, -20, 20, nf, -10,10);
-    //TH1F * timeCut =  new TH1F("timecut",";Time Cut [ns];Count[#]",nf, 0.1, 6);
-    //TH1F * chCut =  new TH1F("chCut",";Cherenkov Angle Cut[rad];Count[#]",nf, 0.001,0.06);
+    TH2F * twoD_spr =  new TH2F("twoD_spr",";#Delta#Theta[mrad]; #Delta#Phi[mrad]", nf, -20, 20, nf, -10,10);
+    TH2F * twoD_mean =  new TH2F("twoD_mean",";#Delta#Theta[mrad]; #Delta#Phi[mrad]", nf, -20, 20, nf, -10,10);
     
-    
-    TH2F * twoD_nph =  new TH2F("twoD_nph",";#Delta#Theta[mrad]; #Delta#Phi[mrad]", nf, -20, 20, nf, -10,10);
-    Int_t angle;
+    //Int_t angle;
     TFile *ffile;
     TH1F *chere;
     for (int i=20; i<=150; i+=10) {
         for (int j= -200; j<=200; j+=10) {
             for (int k=-100; k<=100; k+=5) {
-               // if (i == 40){
-                     angle=i;
+                if (i == angle){
+                    //angle=i;
                     Double_t jj = (Float_t) j/10000.0;
                     Double_t kk = (Float_t) k/10000.0;
                     TString jj_string = Form("t1_%.3f", jj);
                     TString kk_string = Form("_t2_%.4f", kk);
                     cout<< "enter the if condition"<<endl;
-                    TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_p_data_wo_correction_spr.root",i, i);
+                    //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_wo_correction_spr.root",i, i);
+                    TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_p_correction_spr.root",i, i);
+                    //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_pi_correction_spr.root",i, i);
+                    //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_p_correction_spr.root",i, i);
+                    //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_wo_correction_spr.root",i, i);
                     //cout<<"cherenkov_data_path= " <<cherenkov_data_path<<endl;
                     
                     string path = (string)cherenkov_data_path;
@@ -43,9 +43,6 @@ void plot_beam_correction(/*TString inFile = "r_spr.root", Int_t angle= 20*/) {
                     std::cout<<"############"<< " no problem 1 " <<std::endl;
                     ffile  = new TFile(cherenkov_data_path, "READ");
                     chere=(TH1F*)ffile->Get("fHist_correction");
-                    
-                    
-                    
                     
                     
                     TF1 *fFit = new TF1("fFit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
@@ -76,9 +73,8 @@ void plot_beam_correction(/*TString inFile = "r_spr.root", Int_t angle= 20*/) {
                     Double_t r_max = cangle+8*spr;
                     Double_t sumundercurve = fFit->Integral(cangle_minus_3_sgma,cangle_plus_3_sgma);
                     
-                    twoD_nph->Fill(jj*1000, kk*1000, spr*1000/14.0);
-                    //std::cout<<"############"<< " no problem     "<<jj*1000<<"        "<<kk*1000 <<std::endl;
-
+                    twoD_spr->Fill(jj*1000, kk*1000, spr*1000); // /14.0
+                    twoD_mean->Fill(jj*1000, kk*1000, cangle);
                     
                     /*
                     TString nid = Form("_%2.0d", angle);
@@ -91,65 +87,38 @@ void plot_beam_correction(/*TString inFile = "r_spr.root", Int_t angle= 20*/) {
                     
                     ffile->Close();
                     delete ffile;
-               // }
+                }
             }
         }
     }
     
-    
-    
     TString nid = Form("_%2.0d", angle);
-    prt_canvasAdd("r_beam_correction_p_wo"+nid,800,400);
-    twoD_nph->SetStats(0);
-    //twoD_nph-> SetTitle(Form("SPR #pi data with mcp by mcp #theta_{c} correction for P %d",angle) );
-    //twoD_nph-> SetTitle("SPR #pi data with mcp by mcp #theta_{c} correction for P" );
-    twoD_nph-> SetTitle("SPR P data without mcp by mcp #theta_{c} correction" );
-    twoD_nph-> Draw("colz");
+    //prt_canvasAdd("r_beam_correction_p_wo",800,400);
+    //prt_canvasAdd("r_beam_correction_p_wp",800,400);
+    //prt_canvasAdd("r_beam_correction_pi_wpi",800,400);
+    //prt_canvasAdd("r_beam_correction_pi_wp",800,400);
+    //prt_canvasAdd("r_beam_correction_pi_wo",800,400);
     
     
+    prt_canvasAdd("r_spr_p_wp"+ nid,800,400);
+    twoD_spr->SetStats(0);
+    twoD_spr-> SetTitle(Form("SPR #pi data with mcp by mcp #theta_{c} correction for P %d",angle) );
+    //twoD_spr-> SetTitle("SPR P data without mcp by mcp #theta_{c} correction" );
+    //twoD_spr-> SetTitle("SPR P data with mcp by mcp #theta_{c} correction" );
+    //twoD_spr-> SetTitle("SPR #pi data with mcp by mcp #theta_{c} correction for #pi" );
+    //twoD_spr-> SetTitle("SPR #pi data with mcp by mcp #theta_{c} correction for P" );
+    //twoD_spr-> SetTitle("SPR #pi data without mcp by mcp #theta_{c} correction" );
+    
+    twoD_spr-> Draw("colz");
+    
+    prt_canvasAdd("r_mean_p_wp"+nid,800,400);
+    gStyle->SetPaintTextFormat(".3f");
+    twoD_mean->SetStats(0);
+    twoD_mean-> SetTitle(Form("Mean P data with mcp by mcp #theta_{c} correction for P %d",angle) );
+    twoD_mean-> Draw("colztext");
+
    prt_canvasSave(2,0);
    prt_canvasDel("*");
-    
-
-    
-    
-    /*
-     ch.SetBranchAddress("spr",&spr);
-     ch.SetBranchAddress("trr",&trr);
-     ch.SetBranchAddress("nph",&nph);
-     ch.SetBranchAddress("cangle",&cangle);
-     //  ch.SetBranchAddress("par4",&par4);
-     ch.SetBranchAddress("par5",&par5);
-     ch.SetBranchAddress("par6",&par6);
-     ch.SetBranchAddress("test1",&test1);
-     ch.SetBranchAddress("test2",&test2);
-     ch.SetBranchAddress("theta",&theta);
-     ch.SetBranchAddress("phi",&phi);
-     
-     Int_t nent = ch.GetEntries();
-     std::cout<<"# entries  "<< nent <<std::endl;
-     std::cout<<"# inFile  "<< inFile <<std::endl;
-     //std::cout<<"infor  "<< ch.GetTree()->GetTitle()<<std::endl;
-     for (Int_t i = 0; i < nent; i++) {
-     ch.GetEvent(i);
-     //if (spr< 6.0||spr> 11.3) spr=9.8 ;
-     twoD_nph->Fill(test1*1000, test2*1000, spr);
-     }
-     
-     TString nid = Form("_%2.0d", angle);
-     prt_canvasAdd("r_beam_correction_pi_p"+nid,800,400);
-     twoD_nph->SetStats(0);
-     twoD_nph-> SetTitle(Form("SPR #pi data with mcp by mcp #theta_{c} correction for #p %d",angle) );
-     twoD_nph-> Draw("colz");
-     
-     
-     prt_canvasAdd("r_chere"+nid,800,400);
-     chere->SetStats(0);
-     chere-> SetTitle(Form("SPR #pi data with mcp by mcp #theta_{c} correction for #p %d",angle) );
-     chere-> Draw();
-     */
-    
-    
     
 }
 //////////////////////////
