@@ -1,7 +1,4 @@
 #include "/Users/ahmed/dirc/prttools/prttools.C"
-
-
-
 // file existance
 bool exists_test (const std::string& name);
 
@@ -30,10 +27,10 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
                     TString kk_string = Form("_t2_%.4f", kk);
                     cout<< "enter the if condition"<<endl;
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_wo_correction_spr.root",i, i);
-                    TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_p_correction_spr.root",i, i);
+                    //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_p_correction_spr.root",i, i);
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_pi_correction_spr.root",i, i);
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_p_correction_spr.root",i, i);
-                    //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_wo_correction_spr.root",i, i);
+                    TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_wo_correction_spr.root",i, i);
                     //cout<<"cherenkov_data_path= " <<cherenkov_data_path<<endl;
                     
                     string path = (string)cherenkov_data_path;
@@ -59,7 +56,7 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
                     fFit->SetParLimits(0,0.1,1E6);
                     fFit->SetParLimits(1,cangle-0.04,cangle+0.04);
                     fFit->SetParLimits(2,0.005,0.018); // changed 0.014
-                    chere->Fit("fFit","M+","",cangle-0.1,cangle+0.1);
+                    chere->Fit("fFit","M+","",cangle-0.06,cangle+0.06);
                     //p_cherenkov_data_copy->Fit("fFit","0","",cangle-0.06,cangle+0.06);
                     //chere->Fit("fFit","R");
                     Double_t chi = fFit->GetChisquare()/fFit->GetNDF();
@@ -100,9 +97,10 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
     //prt_canvasAdd("r_beam_correction_pi_wo",800,400);
     
     
-    prt_canvasAdd("r_spr_p_wp"+ nid,800,400);
+    prt_canvasAdd("r_spr_pi_wo"+ nid,800,400);
     twoD_spr->SetStats(0);
-    twoD_spr-> SetTitle(Form("SPR #pi data with mcp by mcp #theta_{c} correction for P %d",angle) );
+    twoD_spr-> SetTitle(Form("SPR #pi data without mcp by mcp #theta_{c} correction %d",angle) );
+    //twoD_spr-> SetTitle(Form("SPR P data without mcp by mcp #theta_{c} correction %d",angle) );
     //twoD_spr-> SetTitle("SPR P data without mcp by mcp #theta_{c} correction" );
     //twoD_spr-> SetTitle("SPR P data with mcp by mcp #theta_{c} correction" );
     //twoD_spr-> SetTitle("SPR #pi data with mcp by mcp #theta_{c} correction for #pi" );
@@ -111,20 +109,22 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
     
     twoD_spr-> Draw("colz");
     
-    prt_canvasAdd("r_mean_p_wp"+nid,800,400);
+    prt_canvasAdd("r_mean_pi_wo"+nid,800,400);
     gStyle->SetPaintTextFormat(".3f");
     twoD_mean->SetStats(0);
-    twoD_mean-> SetTitle(Form("Mean P data with mcp by mcp #theta_{c} correction for P %d",angle) );
-    twoD_mean-> Draw("colztext");
+    twoD_mean-> SetTitle(Form("Mean #pi data without mcp by mcp #theta_{c} correction %d",angle) );
+    //twoD_mean-> SetTitle(Form("Mean P data without mcp by mcp #theta_{c} correction %d",angle) );
+    //twoD_mean->SetMaximum(0.84);
+    //twoD_mean->SetMinimum(0.81);
+    twoD_mean-> Draw("colz");
 
    prt_canvasSave(2,0);
    prt_canvasDel("*");
-    
 }
+
 //////////////////////////
 // check file existance //
 //////////////////////////
-
 bool exists_test (const std::string& name) {
     return ( access( name.c_str(), F_OK ) != -1 );
 }
