@@ -1,7 +1,5 @@
  #!/bin/bash
 
-
-
 DIRs="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/sim/332"
 DIRr="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332"
 DIRl="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/lut"
@@ -55,35 +53,35 @@ chAngleCut150_proton=0.045013
 
 
 # proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_20_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/20_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut20_proton -chcut $chAngleCut20_proton -recoangle $recoAngle20_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_30_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/30_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut30_proton -chcut $chAngleCut30_proton -recoangle $recoAngle30_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_40_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/40_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut40_proton -chcut $chAngleCut40_proton -recoangle $recoAngle40_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_50_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/50_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_60_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/60_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_70_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/70_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut70_proton -chcut $chAngleCut70_proton -recoangle $recoAngle70_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_80_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/80_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut80_proton -chcut $chAngleCut80_proton -recoangle $recoAngle80_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_90_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/90_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut90_proton -chcut $chAngleCut90_proton -recoangle $recoAngle90_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_100_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/100_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut100_proton -chcut $chAngleCut100_proton -recoangle $recoAngle100_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_110_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/110_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut110_proton -chcut $chAngleCut110_proton -recoangle $recoAngle110_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_120_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/120_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut120_proton -chcut $chAngleCut120_proton -recoangle $recoAngle120_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_130_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/130_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut130_proton -chcut $chAngleCut130_proton -recoangle $recoAngle130_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_140_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/140_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut140_proton -chcut $chAngleCut140_proton -recoangle $recoAngle140_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_150_3lsph_proton_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/150_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut150_proton -chcut $chAngleCut150_proton -recoangle $recoAngle150_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_20_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/20_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut20_proton -chcut $chAngleCut20_proton -recoangle $recoAngle20_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_30_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/30_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut30_proton -chcut $chAngleCut30_proton -recoangle $recoAngle30_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_40_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/40_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut40_proton -chcut $chAngleCut40_proton -recoangle $recoAngle40_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_50_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/50_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_60_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/60_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_70_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/70_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut70_proton -chcut $chAngleCut70_proton -recoangle $recoAngle70_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_80_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/80_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut80_proton -chcut $chAngleCut80_proton -recoangle $recoAngle80_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_90_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/90_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut90_proton -chcut $chAngleCut90_proton -recoangle $recoAngle90_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_100_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/100_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut100_proton -chcut $chAngleCut100_proton -recoangle $recoAngle100_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_110_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/110_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut110_proton -chcut $chAngleCut110_proton -recoangle $recoAngle110_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_120_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/120_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut120_proton -chcut $chAngleCut120_proton -recoangle $recoAngle120_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_130_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/130_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut130_proton -chcut $chAngleCut130_proton -recoangle $recoAngle130_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_140_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/140_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut140_proton -chcut $chAngleCut140_proton -recoangle $recoAngle140_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_150_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/150_sph_proton_sim.root" -e $nevents -v 2 -tr $timeCut150_proton -chcut $chAngleCut150_proton -recoangle $recoAngle150_proton
 
 
 # pion
-./prtdirc -s 2 -i "${DIRs}/new_theta_20_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/20_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut20_proton -chcut $chAngleCut20_proton -recoangle $recoAngle20_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_30_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/30_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut30_proton -chcut $chAngleCut30_proton -recoangle $recoAngle30_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_40_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/40_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut40_proton -chcut $chAngleCut40_proton -recoangle $recoAngle40_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_50_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/50_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_60_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/60_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_70_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/70_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut70_proton -chcut $chAngleCut70_proton -recoangle $recoAngle70_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_80_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/80_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut80_proton -chcut $chAngleCut80_proton -recoangle $recoAngle80_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_90_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/90_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut90_proton -chcut $chAngleCut90_proton -recoangle $recoAngle90_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_100_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/100_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut100_proton -chcut $chAngleCut100_proton -recoangle $recoAngle100_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_110_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/110_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut110_proton -chcut $chAngleCut110_proton -recoangle $recoAngle110_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_120_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/120_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut120_proton -chcut $chAngleCut120_proton -recoangle $recoAngle120_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_130_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/130_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut130_proton -chcut $chAngleCut130_proton -recoangle $recoAngle130_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_140_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/140_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut140_proton -chcut $chAngleCut140_proton -recoangle $recoAngle140_proton
-./prtdirc -s 2 -i "${DIRs}/new_theta_150_3lsph_pi_sim.root" -u "${DIRl}/lut_db_332_2018_cs_avr.root" -o "${DIRr}/150_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut150_proton -chcut $chAngleCut150_proton -recoangle $recoAngle150_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_20_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/20_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut20_proton -chcut $chAngleCut20_proton -recoangle $recoAngle20_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_30_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/30_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut30_proton -chcut $chAngleCut30_proton -recoangle $recoAngle30_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_40_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/40_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut40_proton -chcut $chAngleCut40_proton -recoangle $recoAngle40_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_50_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/50_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut50_proton -chcut $chAngleCut50_proton -recoangle $recoAngle50_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_60_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/60_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut60_proton -chcut $chAngleCut60_proton -recoangle $recoAngle60_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_70_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/70_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut70_proton -chcut $chAngleCut70_proton -recoangle $recoAngle70_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_80_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/80_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut80_proton -chcut $chAngleCut80_proton -recoangle $recoAngle80_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_90_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/90_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut90_proton -chcut $chAngleCut90_proton -recoangle $recoAngle90_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_100_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/100_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut100_proton -chcut $chAngleCut100_proton -recoangle $recoAngle100_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_110_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/110_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut110_proton -chcut $chAngleCut110_proton -recoangle $recoAngle110_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_120_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/120_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut120_proton -chcut $chAngleCut120_proton -recoangle $recoAngle120_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_130_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/130_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut130_proton -chcut $chAngleCut130_proton -recoangle $recoAngle130_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_140_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/140_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut140_proton -chcut $chAngleCut140_proton -recoangle $recoAngle140_proton
+./prtdirc -s 2 -i "${DIRs}/new_theta_150_3lsph_pi_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRr}/150_sph_pi_sim.root" -e $nevents -v 2 -tr $timeCut150_proton -chcut $chAngleCut150_proton -recoangle $recoAngle150_proton
 
