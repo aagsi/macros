@@ -2009,10 +2009,10 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         //fHist_copy->Fill(tangle ,weight);
                         if(samepath) fHist_same_path->Fill(tangle ,weight);
                         if(!samepath) fHist_bg->Fill(tangle ,weight);
-                        if(tofPid==2212 && recoP==1 && recoPi==0) fHistMcp[mcpid]->Fill(tangle ,weight); // proton canditate
-                        if(tofPid==211 && recoP==0 && recoPi==1) fHistMcp[mcpid]->Fill(tangle ,weight); // pi candidate changed
-                        if(tofPid==2212 && recoP==1 && recoPi==0 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // proton canditate
-                        if(tofPid==211 && recoP==0 && recoPi==1 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // pi candidate changed
+                        if(tofPid==2212 && ((recoP==1 && recoPi==0) || fEvent->GetType()==1)) fHistMcp[mcpid]->Fill(tangle ,weight); // proton canditate
+                        if(tofPid==211 && ((recoP==0 && recoPi==1)  || fEvent->GetType()==1)) fHistMcp[mcpid]->Fill(tangle ,weight); // pi candidate changed
+                        if(tofPid==2212 && fEvent->GetType()==1 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // proton canditate
+                        if(tofPid==211 &&  fEvent->GetType()==1 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // pi candidate changed
                     
                         solution_number++;
                         //if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
