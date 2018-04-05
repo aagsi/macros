@@ -13,12 +13,10 @@
 //#include "/u/aali/dirc/prttools/prttools.C"
 #include "/Users/ahmed/dirc/prttools/prttools.C"
 
-
 #define prt__sim
 #include "/Users/ahmed/dirc/prtdirc/src/PrtHit.h"
 #include "/Users/ahmed/dirc/prtdirc/src/PrtEvent.h"
 #include "/Users/ahmed/dirc/prttools/datainfo.C"
-
 
 #include "TMath.h"
 #include "TH1.h"
@@ -61,7 +59,6 @@ Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
 Double_t fAngleP = acos(sqrt(momentum*momentum+ mass[4]*mass[4])/momentum/1.4738)-0.00;
 Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.4738)-0.00;
 
-
 ////////////////////
 // proto types//////
 ////////////////////
@@ -73,7 +70,6 @@ bool exists_test (const std::string& name);
 
 Bool_t Bool_cherenkov_correction(true), Bool_separation_graph(false), Bool_photonyield_histo(false), Bool_cherenkov_PDF_histo(false);
 
-
 Bool_t bool_sim(true);
 Bool_t bool_data(false);
 
@@ -82,6 +78,11 @@ Double_t max_digi(5);
 Double_t min_digi(-5);
 //Int_t flag=1;
 //Int_t angle= 20;
+
+Double_t cherenkov_true_mean_p=0;
+Double_t cherenkov_true_sigma_p=0;
+Double_t cherenkov_true_mean_pi=0;
+Double_t cherenkov_true_sigma_pi=0;
 
 ////////////////////
 // function   //////
@@ -114,9 +115,10 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
     ///////////////////////
     int counter =0 ;
     TGraph *power_org = new TGraph();
-    TH1F *HistMcp_pi[12], *HistMcp_p[12];
+    TH1F *HistMcp_pi[12], *HistMcp_p[12], *HistMcp_same_path_p[12], *HistMcp_same_path_pi[12];
     TH1F *HistMcp_pi_diff[12], *HistMcp_p_diff[12];
     TFile *ffile_data_pi_spr, *ffile_data_p_spr;
+    TFile *ffile_sim_pi_spr, *ffile_sim_p_spr;
     
     
     TH2F * twoD_mcp =  new TH2F("twoD_mcp",";MCP number [#] ;Polar angle [degree]", 12, 0, 12, 13, 20, 150);
@@ -139,30 +141,41 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
     
     
     for (int i=20; i<=150; i+=10) {
-    //    {
-      //    int i = angle;
+    //{
+      //  int i = angle;
         TString separation_data_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_sph_data_separation.root", i);
         
         TString spr_data_p_path,spr_data_pi_path;
-        if (flag==1) spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/reco_proton_bar_3lsph_grease_theta_%d_sim_spr.root", i);
-        if (flag==1) spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/reco_pi_bar_3lsph_grease_theta_%d_sim_spr.root", i);
+        TString spr_sim_p_path,spr_sim_pi_path;
+        
+        if (flag==1) spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_sph_proton_sim_spr.root", i);
+        if (flag==1) spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_sph_pi_sim_spr.root", i);
+        
         if (flag==0)spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_p_data_spr.root", i);
         if (flag==0)spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_pi_data_spr.root", i);
         
-        
-        
-        
-        // reco_pi_bar_3lsph_grease_theta_100_sim_spr.root   // %d_test_p_data_spr.root
+        spr_sim_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_sph_proton_sim_spr.root", i);
+        spr_sim_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_sph_pi_sim_spr.root", i);
         
         cout<<"separation data path= " <<separation_data_path<<endl;
         cout<<"spr data p path= " <<spr_data_p_path<<endl;
         cout<<"spr data pi path= " <<spr_data_pi_path<<endl;
+        cout<<"spr sim p path= " <<spr_sim_p_path<<endl;
+        cout<<"spr sim pi path= " <<spr_sim_pi_path<<endl;
+        
         string path_data_separation = (string)separation_data_path;
         string path_data_p_spr = (string)spr_data_p_path;
         string path_data_pi_spr = (string)spr_data_pi_path;
+        
+        string path_sim_p_spr = (string)spr_sim_p_path;
+        string path_sim_pi_spr = (string)spr_sim_pi_path;
+        
         cout<<"exists test(separation path data)" <<exists_test(path_data_separation)<<endl;
         cout<<"exists test(spr path data p)" <<exists_test(path_data_p_spr)<<endl;
         cout<<"exists test(spr path data pi)" <<exists_test(path_data_pi_spr)<<endl;
+        
+        cout<<"exists test(spr path sim p)" <<exists_test(path_sim_p_spr)<<endl;
+        cout<<"exists test(spr path sim pi)" <<exists_test(path_sim_pi_spr)<<endl;
         //if (!exists_test(path_data_separation)) continue;
         //if (!exists_test(path_data_p_spr)) continue;
         //if (!exists_test(path_data_pi_spr)) continue;
@@ -185,20 +198,20 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
             ///////////////////////////
             ffile_data_p_spr  = new TFile(spr_data_p_path, "READ");
             ffile_data_pi_spr  = new TFile(spr_data_pi_path, "READ");
+            ffile_sim_p_spr  = new TFile(spr_sim_p_path, "READ");
+            ffile_sim_pi_spr  = new TFile(spr_sim_pi_path, "READ");
+            
+            
             for(Int_t mcp=0; mcp<prt_nmcp; mcp++) {
                 HistMcp_p[mcp] =(TH1F*)ffile_data_p_spr->Get(Form("fHistMcp_%d",mcp));
-            }
-            for(Int_t mcp=0; mcp<prt_nmcp; mcp++) {
                 HistMcp_pi[mcp] =(TH1F*)ffile_data_pi_spr->Get(Form("fHistMcp_%d",mcp));
+                
+                HistMcp_same_path_p[mcp] =(TH1F*)ffile_sim_p_spr->Get(Form("fHistMcp_same_path_%d",mcp));
+                HistMcp_same_path_pi[mcp] =(TH1F*)ffile_sim_pi_spr->Get(Form("fHistMcp_same_path_%d",mcp));
+                
             }
             
-            // proton correction
-            TF1 *Fit_MCP_p = new TF1("Fit_MCP_p","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            Fit_MCP_p->SetParameters(100,fAngleP,0.010);
-            Fit_MCP_p->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            Fit_MCP_p->SetParLimits(0,0.1,1E6);
-            Fit_MCP_p->SetParLimits(1,fAngleP-0.02,fAngleP+0.02);
-            Fit_MCP_p->SetParLimits(2,0.004,0.008);
+            
             for(Int_t mcp=0; mcp<prt_nmcp; mcp++) {
                 if(mcp==1 && i ==20) continue;
                 if(mcp==9 && i ==20) continue;
@@ -259,73 +272,118 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
                 if(mcp==11 && i ==150) continue;
                 ///////////////////////////////
                 
+                // Truth correction
+                // proton truth
+                cout << "MCP by MCP Truth"<< endl;
+                TF1 *Fit_MCP_truth_p = new TF1("Fit_MCP_truth_p","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+                Fit_MCP_truth_p->SetParameters(100,fAngleP,0.010);
+                Fit_MCP_truth_p->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+                Fit_MCP_truth_p->SetParLimits(0,0.1,1E6);
+                Fit_MCP_truth_p->SetParLimits(1,fAngleP-0.02,fAngleP+0.02);
+                Fit_MCP_truth_p->SetParLimits(2,0.004,0.008);
+//                prt_canvasAdd(Form("r_mcp_p_true_sim_%d_prtangle_%d",mcp,i),800,400);
+//                HistMcp_same_path_p[mcp]->SetTitle(Form("p truth sim mcp %d prtangle %d",mcp,i));
+                HistMcp_same_path_p[mcp]->Fit("Fit_MCP_truth_p","lq","",fAngleP-0.025,fAngleP+0.025);
+                HistMcp_same_path_p[mcp]->Draw();
+//                prt_canvasGet(Form("r_mcp_p_true_sim_%d_prtangle_%d",mcp,i))->Update();
+//                TLine *lin_ch_p_v_truth = new TLine(0,0,0,1000);
+//                lin_ch_p_v_truth->SetX1(fAngleP);
+//                lin_ch_p_v_truth->SetX2(fAngleP);
+//                lin_ch_p_v_truth->SetY1(gPad->GetUymin());
+//                lin_ch_p_v_truth->SetY2(gPad->GetUymax());
+//                lin_ch_p_v_truth->SetLineColor(kRed);
+//                lin_ch_p_v_truth->Draw();
+//                prt_canvasGet(Form("r_mcp_p_true_sim_%d_prtangle_%d",mcp,i))->Update();
+                // pi truth
+                TF1 *Fit_MCP_truth_pi = new TF1("Fit_MCP_truth_pi","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+                Fit_MCP_truth_pi->SetParameters(100,fAnglePi,0.010);
+                Fit_MCP_truth_pi->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+                Fit_MCP_truth_pi->SetParLimits(0,0.1,1E6);
+                Fit_MCP_truth_pi->SetParLimits(1,fAnglePi-0.02,fAnglePi+0.02);
+                Fit_MCP_truth_pi->SetParLimits(2,0.004,0.008);
+//                prt_canvasAdd(Form("r_mcp_pi_true_sim_%d_prtangle_%d",mcp,i),800,400);
+//                HistMcp_same_path_pi[mcp]-> SetTitle(Form("#pi truth sim mcp %d prtangle %d",mcp,i));
+                HistMcp_same_path_pi[mcp]->Fit("Fit_MCP_truth_pi","lq","",fAnglePi-0.025,fAnglePi+0.025);
+//                HistMcp_same_path_pi[mcp]->Draw();
+//                prt_canvasGet(Form("r_mcp_pi_true_sim_%d_prtangle_%d",mcp,i))->Update();
+//                TLine *lin_ch_pi_v_truth = new TLine(0,0,0,1000);
+//                lin_ch_pi_v_truth->SetX1(fAnglePi);
+//                lin_ch_pi_v_truth->SetX2(fAnglePi);
+//                lin_ch_pi_v_truth->SetY1(gPad->GetUymin());
+//                lin_ch_pi_v_truth->SetY2(gPad->GetUymax());
+//                lin_ch_pi_v_truth->SetLineColor(kBlue);
+//                lin_ch_pi_v_truth->Draw();
+//                prt_canvasGet(Form("r_mcp_pi_true_sim_%d_prtangle_%d",mcp,i))->Update();
+                
+                // calculate ranges
+                cherenkov_true_mean_p = Fit_MCP_truth_p->GetParameter(1);
+                cherenkov_true_sigma_p = Fit_MCP_truth_p->GetParameter(2);
+                Double_t cherenkov_p_minus_5_sgma = cherenkov_true_mean_p-5*cherenkov_true_sigma_p;
+                Double_t cherenkov_p_plus_5_sgma = cherenkov_true_mean_p+5*cherenkov_true_sigma_p;
+                Double_t cherenkov_p_minus_3_sgma = cherenkov_true_mean_p-3*cherenkov_true_sigma_p;
+                Double_t cherenkov_p_plus_3_sgma = cherenkov_true_mean_p+3*cherenkov_true_sigma_p;
+                
+                
+                cherenkov_true_mean_pi = Fit_MCP_truth_pi->GetParameter(1);
+                cherenkov_true_sigma_pi = Fit_MCP_truth_pi->GetParameter(2);
+                Double_t cherenkov_pi_minus_5_sgma = cherenkov_true_mean_pi-5*cherenkov_true_sigma_pi;
+                Double_t cherenkov_pi_plus_5_sgma = cherenkov_true_mean_pi+5*cherenkov_true_sigma_pi;
+                Double_t cherenkov_pi_minus_3_sgma = cherenkov_true_mean_pi-3*cherenkov_true_sigma_pi;
+                Double_t cherenkov_pi_plus_3_sgma = cherenkov_true_mean_pi+3*cherenkov_true_sigma_pi;
+                
+                
+                
+                // Proton Correction
                 cout << "MCP by MCP cherenvove angle correction for Proton"<< endl;
+                TF1 *Fit_MCP_p = new TF1("Fit_MCP_p","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+                Fit_MCP_p->SetParameters(100,fAngleP,0.010);
+                Fit_MCP_p->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+                Fit_MCP_p->SetParLimits(0,0.1,1E6);
+                Fit_MCP_p->SetParLimits(1,fAngleP-0.02,fAngleP+0.02);
+                Fit_MCP_p->SetParLimits(2,0.004,0.008);
+//                prt_canvasAdd(Form("r_mcp_p_%d_prtangle_%d",mcp,i),800,400);
+//                HistMcp_p[mcp]-> SetTitle(Form("p data mcp %d prtangle %d",mcp,i));
+                HistMcp_p[mcp]->Fit("Fit_MCP_p","lq","",cherenkov_p_minus_3_sgma, cherenkov_p_plus_3_sgma);
+//                HistMcp_p[mcp]->Draw();
+//                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
+//                TLine *lin_ch_p_v = new TLine(0,0,0,1000);
+//                lin_ch_p_v->SetX1(fAngleP);
+//                lin_ch_p_v->SetX2(fAngleP);
+//                lin_ch_p_v->SetY1(gPad->GetUymin());
+//                lin_ch_p_v->SetY2(gPad->GetUymax());
+//                lin_ch_p_v->SetLineColor(kRed);
+//                lin_ch_p_v->Draw();
+//                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
+//                std::cout<<"if(mcpid=="<< mcp<<") tangle += "<<fAngleP-Fit_MCP_p->GetParameter(1)<<";" <<std::endl;
                 
-                //                                prt_canvasAdd(Form("r_mcp_p_%d_prtangle_%d",mcp,i),800,400);
-                if(mcp ==3 && i ==600) {
-                    HistMcp_p[mcp]->Fit("Fit_MCP_p","lq","",fAngleP-0.025,fAngleP+0.03);
-                }
-                else if(mcp ==9 && i ==1200) {
-                    HistMcp_p[mcp]->Fit("Fit_MCP_p","lq","",fAngleP-0.025,fAngleP+0.010);
-                }
-                else if(mcp ==6 && i ==1400) {
-                    HistMcp_p[mcp]->Fit("Fit_MCP_p","lq","",fAngleP-0.025,fAngleP+0.03);
-                }
-                else {
-                    HistMcp_p[mcp]->Fit("Fit_MCP_p","lq","",fAngleP-0.025,fAngleP+0.025);
-                }
-                std::cout<<"if(mcpid=="<< mcp<<") tangle += "<<fAngleP-Fit_MCP_p->GetParameter(1)<<";" <<std::endl;
-                                                HistMcp_p[mcp]-> SetTitle(Form("p data mcp %d prtangle %d",mcp,i));
-                                                HistMcp_p[mcp]->Draw();
-                                                //prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
-                                                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
-                                                TLine *lin_ch_p_v = new TLine(0,0,0,1000);
-                                                lin_ch_p_v->SetX1(fAngleP);
-                                                lin_ch_p_v->SetX2(fAngleP);
-                                                lin_ch_p_v->SetY1(gPad->GetUymin());
-                                                lin_ch_p_v->SetY2(gPad->GetUymax());
-                                                lin_ch_p_v->SetLineColor(kRed);
-                                                lin_ch_p_v->Draw();
-                                                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
-                
-                
-                
-                cout << "MCP by MCP cherenvove angle correction for PION"<< endl;
                 
                 // pi correction
+                cout << "MCP by MCP cherenvove angle correction for PION"<< endl;
                 TF1 *Fit_MCP_pi = new TF1("Fit_MCP_pi","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
                 Fit_MCP_pi->SetParameters(100,fAnglePi,0.010);
                 Fit_MCP_pi->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
                 Fit_MCP_pi->SetParLimits(0,0.1,1E6);
                 Fit_MCP_pi->SetParLimits(1,fAnglePi-0.02,fAnglePi+0.02);
                 Fit_MCP_pi->SetParLimits(2,0.004,0.008);
+//                prt_canvasAdd(Form("r_mcp_pi_%d_prtangle_%d",mcp,i),800,400);
+//                HistMcp_pi[mcp]-> SetTitle(Form("#pi data mcp %d prtangle %d",mcp,i));
+                HistMcp_pi[mcp]->Fit("Fit_MCP_pi","lq","",cherenkov_p_minus_3_sgma, cherenkov_p_plus_3_sgma);
+//                HistMcp_pi[mcp]->Draw();
+//                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
+//                TLine *lin_ch_pi_v = new TLine(0,0,0,1000);
+//                lin_ch_pi_v->SetX1(fAnglePi);
+//                lin_ch_pi_v->SetX2(fAnglePi);
+//                lin_ch_pi_v->SetY1(gPad->GetUymin());
+//                lin_ch_pi_v->SetY2(gPad->GetUymax());
+//                lin_ch_pi_v->SetLineColor(kBlue);
+//                lin_ch_pi_v->Draw();
+//                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
+//                std::cout<<"if(mcpid=="<< mcp<<") tangle += "<<fAnglePi-Fit_MCP_pi->GetParameter(1)<<";" <<std::endl;
                 
-                //                               prt_canvasAdd(Form("r_mcp_pi_%d_prtangle_%d",mcp,i),800,400);
                 
-                if(mcp ==11 && i ==100) {
-                    HistMcp_pi[mcp]->Fit("Fit_MCP_pi","lq","",fAnglePi-0.025,fAnglePi+0.03);
-                }
-                else if(mcp ==9 && i ==1200) {
-                    HistMcp_pi[mcp]->Fit("Fit_MCP_pi","lq","",fAnglePi-0.025,fAnglePi+0.010);
-                }
-                else if(mcp ==6 && i ==1400) {
-                    HistMcp_pi[mcp]->Fit("Fit_MCP_pi","lq","",fAnglePi-0.025,fAnglePi+0.03);
-                }
-                else {
-                    HistMcp_pi[mcp]->Fit("Fit_MCP_pi","lq","",fAnglePi-0.025,fAnglePi+0.025);
-                }
-                std::cout<<"if(mcpid=="<< mcp<<") tangle += "<<fAnglePi-Fit_MCP_pi->GetParameter(1)<<";" <<std::endl;
-                                                HistMcp_pi[mcp]-> SetTitle(Form("#pi data mcp %d prtangle %d",mcp,i));
-                                                HistMcp_pi[mcp]->Draw();
-                                                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
-                                                TLine *lin_ch_pi_v = new TLine(0,0,0,1000);
-                                                lin_ch_pi_v->SetX1(fAnglePi);
-                                                lin_ch_pi_v->SetX2(fAnglePi);
-                                                lin_ch_pi_v->SetY1(gPad->GetUymin());
-                                                lin_ch_pi_v->SetY2(gPad->GetUymax());
-                                                lin_ch_pi_v->SetLineColor(kBlue);
-                                                lin_ch_pi_v->Draw();
-                                                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
+
+                
+                
                 
                 
                 Double_t delta_theta=fAngleP-Fit_MCP_p->GetParameter(1) - (fAnglePi-Fit_MCP_pi->GetParameter(1));
@@ -368,138 +426,138 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
     
     if(Bool_cherenkov_correction) {
         
-        
-        
-        //            ffile_data_p_spr->Close();
-        //            ffile_data_pi_spr->Close();
-        //            delete ffile_data_p_spr;
-        //            delete ffile_data_pi_spr;
-        
-        prt_canvasAdd("r_shift_all",800,400);
-        prt_canvasGet("r_shift_all")->SetGridx();
-        prt_canvasGet("r_shift_all")->SetGridy();
-        twoD_mcp->GetXaxis()->SetNdivisions(13);
-        twoD_mcp->GetYaxis()->SetNdivisions(13);
-        twoD_mcp->SetMaximum(11.5);
-        twoD_mcp->SetMinimum(-8);
-        prt_canvasGet("r_shift_all")->Update();
-        twoD_mcp->SetStats(0);
-        twoD_mcp-> SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
-        twoD_mcp->Draw("colztext");
-        
-        
-        prt_canvasAdd("r_shift_p",800,400);
-        prt_canvasGet("r_shift_p")->SetGridx();
-        prt_canvasGet("r_shift_p")->SetGridy();
-        twoD_mcp_p->GetXaxis()->SetNdivisions(13);
-        twoD_mcp_p->GetYaxis()->SetNdivisions(13);
-        twoD_mcp_p->SetMaximum(13.5);
-        twoD_mcp_p->SetMinimum(-8);
-        
-        prt_canvasGet("r_shift_p")->Update();
-        twoD_mcp_p->SetStats(0);
-        twoD_mcp_p-> SetTitle("MCP by MCP #Delta#theta_{C}P [mrad]" );
-        twoD_mcp_p->Draw("colztext");
-        
-        
-        prt_canvasAdd("r_shift_pi",800,400);
-        prt_canvasGet("r_shift_pi")->SetGridx();
-        prt_canvasGet("r_shift_pi")->SetGridy();
-        twoD_mcp_pi->GetXaxis()->SetNdivisions(13);
-        twoD_mcp_pi->GetYaxis()->SetNdivisions(13);
-        twoD_mcp_pi->SetMaximum(13.5);
-        twoD_mcp_pi->SetMinimum(-8);
-        
-        prt_canvasGet("r_shift_pi")->Update();
-        
-        twoD_mcp_pi->SetStats(0);
-        twoD_mcp_pi-> SetTitle("MCP by MCP #Delta#theta_{C} #pi [mrad]" );
-        twoD_mcp_pi->Draw("colztext");
-        
-        
-        
-        
-        //        prt_canvasAdd("r_twoD_mcp_one_bin_p",800,400);
-        //        twoD_mcp_one_bin_p->SetStats(0);
-        //        twoD_mcp_one_bin_p->SetTitle("MCP by MCP #Delta#theta_{C} correction P [mrad]" );
-        //        twoD_mcp_one_bin_p->Draw("colztext");
-        //
-        //
-        //        prt_canvasAdd("r_twoD_mcp_one_bin_pi",800,400);
-        //        twoD_mcp_one_bin_pi->SetStats(0);
-        //        twoD_mcp_one_bin_pi->SetTitle("MCP by MCP #Delta#theta_{C} correction #pi [mrad]" );
-        //        twoD_mcp_one_bin_pi->Draw("colztext");
-        //
-        //        prt_canvasAdd("r_twoD_mcp_one_bin_all",800,400);
-        //        twoD_mcp_one_bin_all->SetStats(0);
-        //        twoD_mcp_one_bin_all->SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
-        //        twoD_mcp_one_bin_all->Draw("colztext");
-        //
-        //        prt_canvasAdd("r_twoD_angle_one_bin_p",800,400);
-        //        twoD_angle_one_bin_p->SetStats(0);
-        //        twoD_angle_one_bin_p->SetTitle("MCP by MCP #Delta#theta_{C} correction P [mrad]" );
-        //        twoD_angle_one_bin_p->Draw("colztext");
-        //        prt_canvasAdd("r_twoD_angle_one_bin_pi",800,400);
-        //        twoD_angle_one_bin_pi->SetStats(0);
-        //        twoD_angle_one_bin_pi->SetTitle("MCP by MCP #Delta#theta_{C} correction #pi [mrad]" );
-        //        twoD_angle_one_bin_pi->Draw("colztext");
-        //        prt_canvasAdd("r_twoD_angle_one_bin_all",800,400);
-        //        twoD_angle_one_bin_all->SetStats(0);
-        //        twoD_angle_one_bin_all->SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
-        //        twoD_angle_one_bin_all->Draw("colztext");
-        
-        
-        TLegend * legend_thetac_correction= new TLegend(0.12, 0.58,  0.33,   0.87  );
-        //legend_thetac_correction->SetHeader("#pi and P #theta_{c} correction","C");
-        legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_p,"P #sum #Delta#theta_{c} correction","l");
-        legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_pi,"#pi #sum #Delta#theta_{c} correction ","l");
-        
-        
-        
-        prt_canvasAdd("r_oneD_angle_one_bin",800,400);
-        prt_canvasGet("r_oneD_angle_one_bin")->SetGridx();
-        prt_canvasGet("r_oneD_angle_one_bin")->SetGridy();
-        oneD_angle_one_bin_p-> SetTitle("#sum #Delta#theta_{c} correction all angles" );
-        oneD_angle_one_bin_pi-> SetTitle("#sum #Delta#theta_{c} correction all angles" );
-        oneD_angle_one_bin_p->SetLineColor(kRed);
-        oneD_angle_one_bin_p->SetLineStyle(1);
-        oneD_angle_one_bin_p->SetLineWidth(3);
-        oneD_angle_one_bin_pi->SetLineWidth(3);
-        oneD_angle_one_bin_p->SetMarkerStyle(20);
-        oneD_angle_one_bin_pi->SetLineColor(kBlue);
-        oneD_angle_one_bin_pi->SetLineStyle(1);
-        oneD_angle_one_bin_pi->SetMarkerStyle(20);
-        
-        oneD_angle_one_bin_pi->SetStats(0);
-        oneD_angle_one_bin_p->SetStats(0);
-        oneD_angle_one_bin_p->SetTitle("MCP by MCP #Delta#theta_{C}" );
-        oneD_angle_one_bin_pi->Draw("histo");
-        oneD_angle_one_bin_p->Draw("histosame");
-        legend_thetac_correction->Draw();
-        
-        
-        prt_canvasAdd("r_oneD_mcp_one_bin",800,400);
-        prt_canvasGet("r_oneD_mcp_one_bin")->SetGridx();
-        prt_canvasGet("r_oneD_mcp_one_bin")->SetGridy();
-        oneD_mcp_one_bin_p_p-> SetTitle("#sum #Delta#theta_{c} correction all MCP's" );
-        oneD_mcp_one_bin_p_pi-> SetTitle("#sum #Delta#theta_{c} correction all MCP's" );
-        oneD_mcp_one_bin_p_p->SetLineColor(kRed);
-        oneD_mcp_one_bin_p_p->SetLineStyle(1);
-        oneD_mcp_one_bin_p_p->SetMarkerStyle(20);
-        oneD_mcp_one_bin_p_pi->SetLineColor(kBlue);
-        oneD_mcp_one_bin_p_pi->SetLineWidth(3);
-        oneD_mcp_one_bin_p_p->SetLineWidth(3);
-        oneD_mcp_one_bin_p_pi->SetLineStyle(1);
-        oneD_mcp_one_bin_p_pi->SetMarkerStyle(20);
-        
-        oneD_mcp_one_bin_p_pi->SetStats(0);
-        oneD_mcp_one_bin_p_p->SetStats(0);
-        oneD_mcp_one_bin_p_p->SetTitle("MCP by MCP #Delta#theta_{C}" );
-        oneD_mcp_one_bin_p_pi->Draw("histo");
-        oneD_mcp_one_bin_p_p->Draw("histosame");
-        legend_thetac_correction->Draw();
-        
-        if(false){
+     
+            
+            //            ffile_data_p_spr->Close();
+            //            ffile_data_pi_spr->Close();
+            //            delete ffile_data_p_spr;
+            //            delete ffile_data_pi_spr;
+            
+            prt_canvasAdd("r_shift_all",800,400);
+            prt_canvasGet("r_shift_all")->SetGridx();
+            prt_canvasGet("r_shift_all")->SetGridy();
+            twoD_mcp->GetXaxis()->SetNdivisions(13);
+            twoD_mcp->GetYaxis()->SetNdivisions(13);
+            twoD_mcp->SetMaximum(11.5);
+            twoD_mcp->SetMinimum(-8);
+            prt_canvasGet("r_shift_all")->Update();
+            twoD_mcp->SetStats(0);
+            twoD_mcp-> SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
+            twoD_mcp->Draw("colztext");
+            
+            
+            prt_canvasAdd("r_shift_p",800,400);
+            prt_canvasGet("r_shift_p")->SetGridx();
+            prt_canvasGet("r_shift_p")->SetGridy();
+            twoD_mcp_p->GetXaxis()->SetNdivisions(13);
+            twoD_mcp_p->GetYaxis()->SetNdivisions(13);
+            twoD_mcp_p->SetMaximum(13.5);
+            twoD_mcp_p->SetMinimum(-8);
+            
+            prt_canvasGet("r_shift_p")->Update();
+            twoD_mcp_p->SetStats(0);
+            twoD_mcp_p-> SetTitle("MCP by MCP #Delta#theta_{C}P [mrad]" );
+            twoD_mcp_p->Draw("colztext");
+            
+            
+            prt_canvasAdd("r_shift_pi",800,400);
+            prt_canvasGet("r_shift_pi")->SetGridx();
+            prt_canvasGet("r_shift_pi")->SetGridy();
+            twoD_mcp_pi->GetXaxis()->SetNdivisions(13);
+            twoD_mcp_pi->GetYaxis()->SetNdivisions(13);
+            twoD_mcp_pi->SetMaximum(13.5);
+            twoD_mcp_pi->SetMinimum(-8);
+            
+            prt_canvasGet("r_shift_pi")->Update();
+            
+            twoD_mcp_pi->SetStats(0);
+            twoD_mcp_pi-> SetTitle("MCP by MCP #Delta#theta_{C} #pi [mrad]" );
+            twoD_mcp_pi->Draw("colztext");
+            
+       if(false){
+            
+            
+            //        prt_canvasAdd("r_twoD_mcp_one_bin_p",800,400);
+            //        twoD_mcp_one_bin_p->SetStats(0);
+            //        twoD_mcp_one_bin_p->SetTitle("MCP by MCP #Delta#theta_{C} correction P [mrad]" );
+            //        twoD_mcp_one_bin_p->Draw("colztext");
+            //
+            //
+            //        prt_canvasAdd("r_twoD_mcp_one_bin_pi",800,400);
+            //        twoD_mcp_one_bin_pi->SetStats(0);
+            //        twoD_mcp_one_bin_pi->SetTitle("MCP by MCP #Delta#theta_{C} correction #pi [mrad]" );
+            //        twoD_mcp_one_bin_pi->Draw("colztext");
+            //
+            //        prt_canvasAdd("r_twoD_mcp_one_bin_all",800,400);
+            //        twoD_mcp_one_bin_all->SetStats(0);
+            //        twoD_mcp_one_bin_all->SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
+            //        twoD_mcp_one_bin_all->Draw("colztext");
+            //
+            //        prt_canvasAdd("r_twoD_angle_one_bin_p",800,400);
+            //        twoD_angle_one_bin_p->SetStats(0);
+            //        twoD_angle_one_bin_p->SetTitle("MCP by MCP #Delta#theta_{C} correction P [mrad]" );
+            //        twoD_angle_one_bin_p->Draw("colztext");
+            //        prt_canvasAdd("r_twoD_angle_one_bin_pi",800,400);
+            //        twoD_angle_one_bin_pi->SetStats(0);
+            //        twoD_angle_one_bin_pi->SetTitle("MCP by MCP #Delta#theta_{C} correction #pi [mrad]" );
+            //        twoD_angle_one_bin_pi->Draw("colztext");
+            //        prt_canvasAdd("r_twoD_angle_one_bin_all",800,400);
+            //        twoD_angle_one_bin_all->SetStats(0);
+            //        twoD_angle_one_bin_all->SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
+            //        twoD_angle_one_bin_all->Draw("colztext");
+            
+            
+            TLegend * legend_thetac_correction= new TLegend(0.12, 0.58,  0.33,   0.87  );
+            //legend_thetac_correction->SetHeader("#pi and P #theta_{c} correction","C");
+            legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_p,"P #sum #Delta#theta_{c} correction","l");
+            legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_pi,"#pi #sum #Delta#theta_{c} correction ","l");
+            
+            
+            
+            prt_canvasAdd("r_oneD_angle_one_bin",800,400);
+            prt_canvasGet("r_oneD_angle_one_bin")->SetGridx();
+            prt_canvasGet("r_oneD_angle_one_bin")->SetGridy();
+            oneD_angle_one_bin_p-> SetTitle("#sum #Delta#theta_{c} correction all angles" );
+            oneD_angle_one_bin_pi-> SetTitle("#sum #Delta#theta_{c} correction all angles" );
+            oneD_angle_one_bin_p->SetLineColor(kRed);
+            oneD_angle_one_bin_p->SetLineStyle(1);
+            oneD_angle_one_bin_p->SetLineWidth(3);
+            oneD_angle_one_bin_pi->SetLineWidth(3);
+            oneD_angle_one_bin_p->SetMarkerStyle(20);
+            oneD_angle_one_bin_pi->SetLineColor(kBlue);
+            oneD_angle_one_bin_pi->SetLineStyle(1);
+            oneD_angle_one_bin_pi->SetMarkerStyle(20);
+            
+            oneD_angle_one_bin_pi->SetStats(0);
+            oneD_angle_one_bin_p->SetStats(0);
+            oneD_angle_one_bin_p->SetTitle("MCP by MCP #Delta#theta_{C}" );
+            oneD_angle_one_bin_pi->Draw("histo");
+            oneD_angle_one_bin_p->Draw("histosame");
+            legend_thetac_correction->Draw();
+            
+            
+            prt_canvasAdd("r_oneD_mcp_one_bin",800,400);
+            prt_canvasGet("r_oneD_mcp_one_bin")->SetGridx();
+            prt_canvasGet("r_oneD_mcp_one_bin")->SetGridy();
+            oneD_mcp_one_bin_p_p-> SetTitle("#sum #Delta#theta_{c} correction all MCP's" );
+            oneD_mcp_one_bin_p_pi-> SetTitle("#sum #Delta#theta_{c} correction all MCP's" );
+            oneD_mcp_one_bin_p_p->SetLineColor(kRed);
+            oneD_mcp_one_bin_p_p->SetLineStyle(1);
+            oneD_mcp_one_bin_p_p->SetMarkerStyle(20);
+            oneD_mcp_one_bin_p_pi->SetLineColor(kBlue);
+            oneD_mcp_one_bin_p_pi->SetLineWidth(3);
+            oneD_mcp_one_bin_p_p->SetLineWidth(3);
+            oneD_mcp_one_bin_p_pi->SetLineStyle(1);
+            oneD_mcp_one_bin_p_pi->SetMarkerStyle(20);
+            
+            oneD_mcp_one_bin_p_pi->SetStats(0);
+            oneD_mcp_one_bin_p_p->SetStats(0);
+            oneD_mcp_one_bin_p_p->SetTitle("MCP by MCP #Delta#theta_{C}" );
+            oneD_mcp_one_bin_p_pi->Draw("histo");
+            oneD_mcp_one_bin_p_p->Draw("histosame");
+            legend_thetac_correction->Draw();
+            
+            
             
             max_digi =max_min_array[0];
             min_digi =max_min_array[0];
