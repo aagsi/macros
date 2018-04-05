@@ -67,6 +67,7 @@ Int_t gg_i(0), gg_ind(0);
 TGraph gg_gr;
 PrtLutNode *fLutNode[5000];
 TH1F*  fHistMcp[12]; // changed
+TH1F*  fHistMcp_same_path[12]; // changed
 TH1F*  fHistCh[960], *fHistCh_read_p[960], *fHistCh_read_pi[960], *hist_nph_wtc_p, *hist_nph_wtc_pi;
 TGraph *fHistCh_graph_p[960], *fHistCh_graph_pi[960];
 
@@ -197,6 +198,11 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     for(Int_t i=0; i<prt_nmcp; i++) {
         fHistMcp[i] = new TH1F(Form("fHistMcp_%d",i),Form("fHistMcp_%d;#theta_{C} [rad];entries [#]",i), 80,0.6,1); //150
     }
+    
+    for(Int_t i=0; i<prt_nmcp; i++) {
+        fHistMcp_same_path[i] = new TH1F(Form("fHistMcp_same_path_%d",i),Form("fHistMcp_same_path_%d;#theta_{C} [rad];entries [#]",i), 80,0.6,1); //150
+    }
+    
     for(Int_t i=0; i<960; i++) {
         fHistCh[i] = new TH1F(Form("fHistCh_%d",i),Form("fHistCh_%d;#theta_{C} [rad];entries [#]",i), 2000,0.6,1); //150
     }
@@ -2013,6 +2019,11 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         if(!samepath) fHist_bg->Fill(tangle ,weight);
                         if(tofPid==2212 && recoP==1 && recoPi==0) fHistMcp[mcpid]->Fill(tangle ,weight); // proton canditate
                         if(tofPid==211 && recoP==0 && recoPi==1) fHistMcp[mcpid]->Fill(tangle ,weight); // pi candidate changed
+                        
+                        if(tofPid==2212 && recoP==1 && recoPi==0 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // proton canditate
+                        if(tofPid==211 && recoP==0 && recoPi==1 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // pi candidate changed
+                        
+                        
                         solution_number++;
                         //if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
                         
@@ -2760,6 +2771,9 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     }
     for(Int_t i=0; i<prt_nmcp; i++) {
         fHistMcp[i]->Write();
+    }
+    for(Int_t i=0; i<prt_nmcp; i++) {
+        fHistMcp_same_path[i]->Write();
     }
     file.Write();
     std::cout<<"no problem 3 13"<<std::endl;
