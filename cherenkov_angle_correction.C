@@ -76,18 +76,25 @@ Bool_t Bool_cherenkov_correction(true), Bool_separation_graph(false), Bool_photo
 
 Bool_t bool_sim(true);
 Bool_t bool_data(false);
-//Double_t max_digi(5);
-//Double_t min_digi(-5);
+
+Double_t max_min_array[prt_nmcp];
+Double_t max_digi(5);
+Double_t min_digi(-5);
 //Int_t flag=1;
 //Int_t angle= 20;
 
 ////////////////////
 // function   //////
 ////////////////////
-void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20, Double_t min_digi=-5, Double_t max_digi=5 ) {
+
+//root -b -q ../cherenkov_angle_correction.C'(0,150)' for data
+//root -b -q ../cherenkov_angle_correction.C'(1,20)' for simulation
+// you can run it using a script
+void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
     prt_initDigi();
     
-    gStyle->SetPalette(kGreenPink);
+    //gStyle->SetPalette(kGreenPink);
+    gStyle->SetPalette(kBird);
     TString nid = Form("_%2.0d", 150);
     prt_savepath="pdf";
     std::cout<<"fSavePath  "<< prt_savepath <<std::endl;
@@ -112,39 +119,35 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20, Double_t min_d
     TFile *ffile_data_pi_spr, *ffile_data_p_spr;
     
     
-    TH2F * twoD_mcp =  new TH2F("twoD_mcp",";MCP number ;Polar angle [degree]", 12, 0, 12, 14, 10, 150);
-    TH2F * twoD_mcp_pi =  new TH2F("twoD_mcp_pi",";MCP number ;Polar angle [degree]", 12, 0, 12, 14, 10, 150);
-    TH2F * twoD_mcp_p =  new TH2F("twoD_mcp_p",";MCP number ;Polar angle [degree]", 12, 0, 12, 14, 10, 150);
+    TH2F * twoD_mcp =  new TH2F("twoD_mcp",";MCP number [#] ;Polar angle [degree]", 12, 0, 12, 13, 20, 150);
+    TH2F * twoD_mcp_pi =  new TH2F("twoD_mcp_pi",";MCP number [#] ;Polar angle [degree]", 12, 0, 12, 13, 20, 150);
+    TH2F * twoD_mcp_p =  new TH2F("twoD_mcp_p",";MCP number [#] ;Polar angle [degree]", 12, 0, 12, 13, 20, 150);
     
-    TH2F * twoD_mcp_one_bin_p =  new TH2F("twoD_mcp_one_bin_p",";All MCPs  ;Polar angle [degree]", 1, 0, 1, 14, 10, 150);
-    TH2F * twoD_mcp_one_bin_pi =  new TH2F("twoD_mcp_one_bin_pi",";All MCPs ;Polar angle [degree]", 1, 0, 1, 14, 10, 150);
-    TH2F * twoD_mcp_one_bin_all =  new TH2F("twoD_mcp_one_bin_all",";All MCPs ;Polar angle [degree]", 1, 0, 1, 14, 10, 150);
+    TH2F * twoD_mcp_one_bin_p =  new TH2F("twoD_mcp_one_bin_p",";All MCPs  ;Polar angle [degree]", 1, 0, 1, 13, 20, 150);
+    TH2F * twoD_mcp_one_bin_pi =  new TH2F("twoD_mcp_one_bin_pi",";All MCPs ;Polar angle [degree]", 1, 0, 1, 13, 20, 150);
+    TH2F * twoD_mcp_one_bin_all =  new TH2F("twoD_mcp_one_bin_all",";All MCPs ;Polar angle [degree]", 1, 0, 1, 13, 20, 150);
     
+    TH2F * twoD_angle_one_bin_p =  new TH2F("twoD_angle_one_bin_p",";MCP number [#] ;All polar angle [degree]", 12, 0, 12, 1, 0, 1);
+    TH2F * twoD_angle_one_bin_pi =  new TH2F("twoD_angle_one_bin_pi",";MCP number [#] ;All polar angle [degree]", 12, 0, 12, 1, 0, 1);
+    TH2F * twoD_angle_one_bin_all =  new TH2F("twoD_angle_one_bin_all",";MCP number [#] ;All polar angleangle [degree]", 12, 0, 12, 1, 0, 1);
     
-    TH2F * twoD_angle_one_bin_p =  new TH2F("twoD_angle_one_bin_p",";MCP number ;All polar angle [degree]", 12, 0, 12, 1, 0, 1);
-    TH2F * twoD_angle_one_bin_pi =  new TH2F("twoD_angle_one_bin_pi",";MCP number ;All polar angle [degree]", 12, 0, 12, 1, 0, 1);
-    TH2F * twoD_angle_one_bin_all =  new TH2F("twoD_angle_one_bin_all",";MCP number ;All polar angleangle [degree]", 12, 0, 12, 1, 0, 1);
+    TH1F *oneD_angle_one_bin_p =new TH1F("oneD_angle_one_bin_p",";MCP number [#] ;#sum #Delta#theta_{c} [mrad]", 12, 0, 12);
+    TH1F *oneD_angle_one_bin_pi =new TH1F("oneD_angle_one_bin_pi",";MCP number [#] ;#sum #Delta#theta_{c} [mrad]", 12, 0, 12);
     
-    
-    TH1F *oneD_angle_one_bin_p =new TH1F("oneD_angle_one_bin_p",";MCP number ;#Delta#theta_{c} [mrad]", 12, 0, 12);
-    TH1F *oneD_angle_one_bin_pi =new TH1F("oneD_angle_one_bin_pi",";MCP number ;#Delta#theta_{c} [mrad]", 12, 0, 12);
-    
-    TH1F *oneD_mcp_one_bin_p_p =new TH1F("oneD_mcp_one_bin_p_p",";MCP number ;#Delta#theta_{c} [mrad]", 14, 10, 150);
-    TH1F *oneD_mcp_one_bin_p_pi =new TH1F("oneD_mcp_one_bin_p_pi",";Polar angle [degree] ;#Delta#theta_{c} [mrad]", 14, 10, 150);
+    TH1F *oneD_mcp_one_bin_p_p =new TH1F("oneD_mcp_one_bin_p_p",";MCP number [#] ;#sum #Delta#theta_{c} [mrad]", 13, 20, 150);
+    TH1F *oneD_mcp_one_bin_p_pi =new TH1F("oneD_mcp_one_bin_p_pi",";Polar angle [degree] ;#sum #Delta#theta_{c} [mrad]", 13, 20, 150);
     
     
-    
-    //for (int i=20; i<=150; i+=10) {
-    //if (Bool_cherenkov_correction== true && i >20) break;
-    {
-        int i = angle;
+    for (int i=20; i<=150; i+=10) {
+        //{
+        //  int i = angle;
         TString separation_data_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_sph_data_separation.root", i);
         
         TString spr_data_p_path,spr_data_pi_path;
-        if (bool_sim) spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/reco_proton_bar_3lsph_grease_theta_%d_sim_spr.root", i);
-        if (bool_sim) spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/reco_pi_bar_3lsph_grease_theta_%d_sim_spr.root", i);
-        if (bool_data)spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_p_data_spr.root", i);
-        if (bool_data)spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_pi_data_spr.root", i);
+        if (flag==1) spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/reco_proton_bar_3lsph_grease_theta_%d_sim_spr.root", i);
+        if (flag==1) spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/reco_pi_bar_3lsph_grease_theta_%d_sim_spr.root", i);
+        if (flag==0)spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_p_data_spr.root", i);
+        if (flag==0)spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_pi_data_spr.root", i);
         
         
         // reco_pi_bar_3lsph_grease_theta_100_sim_spr.root   // %d_test_p_data_spr.root
@@ -348,8 +351,9 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20, Double_t min_d
                 for(Int_t m=0; m<64; m++)
                     for(Int_t n=0; n<64; n++){
                         prt_hdigi[mcp]->Fill(m,n, val_1);
-                        
                     }
+                
+                max_min_array[mcp]=val_1;
                 
                 
             }
@@ -366,18 +370,34 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20, Double_t min_d
         //            delete ffile_data_pi_spr;
         
         prt_canvasAdd("r_shift_all",800,400);
+        prt_canvasGet("r_shift_all")->SetGridx();
+        prt_canvasGet("r_shift_all")->SetGridy();
+        twoD_mcp->GetXaxis()->SetNdivisions(13);
+        twoD_mcp->GetYaxis()->SetNdivisions(13);
+        prt_canvasGet("r_shift_all")->Update();
         twoD_mcp->SetStats(0);
         twoD_mcp-> SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
         twoD_mcp->Draw("colztext");
         
         
         prt_canvasAdd("r_shift_p",800,400);
+        prt_canvasGet("r_shift_p")->SetGridx();
+        prt_canvasGet("r_shift_p")->SetGridy();
+        twoD_mcp_p->GetXaxis()->SetNdivisions(13);
+        twoD_mcp_p->GetYaxis()->SetNdivisions(13);
+        prt_canvasGet("r_shift_p")->Update();
         twoD_mcp_p->SetStats(0);
         twoD_mcp_p-> SetTitle("MCP by MCP #Delta#theta_{C}P [mrad]" );
         twoD_mcp_p->Draw("colztext");
         
         
         prt_canvasAdd("r_shift_pi",800,400);
+        prt_canvasGet("r_shift_pi")->SetGridx();
+        prt_canvasGet("r_shift_pi")->SetGridy();
+        twoD_mcp_pi->GetXaxis()->SetNdivisions(13);
+        twoD_mcp_pi->GetYaxis()->SetNdivisions(13);
+        prt_canvasGet("r_shift_pi")->Update();
+        
         twoD_mcp_pi->SetStats(0);
         twoD_mcp_pi-> SetTitle("MCP by MCP #Delta#theta_{C} #pi [mrad]" );
         twoD_mcp_pi->Draw("colztext");
@@ -417,14 +437,20 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20, Double_t min_d
         
         TLegend * legend_thetac_correction= new TLegend(0.12, 0.58,  0.33,   0.87  );
         //legend_thetac_correction->SetHeader("#pi and P #theta_{c} correction","C");
-        legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_p,"P #Delta#theta_{c} correction","l");
-        legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_pi,"#pi #Delta#theta_{c} correction ","l");
+        legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_p,"P #sum #Delta#theta_{c} correction","l");
+        legend_thetac_correction->AddEntry(oneD_mcp_one_bin_p_pi,"#pi #sum #Delta#theta_{c} correction ","l");
         
         
         
-        prt_canvasAdd("r_oneD_angle_one_bin_p",800,400);
+        prt_canvasAdd("r_oneD_angle_one_bin",800,400);
+        prt_canvasGet("r_oneD_angle_one_bin")->SetGridx();
+        prt_canvasGet("r_oneD_angle_one_bin")->SetGridy();
+        oneD_angle_one_bin_p-> SetTitle("#sum #Delta#theta_{c} correction all angles" );
+        oneD_angle_one_bin_pi-> SetTitle("#sum #Delta#theta_{c} correction all angles" );
         oneD_angle_one_bin_p->SetLineColor(kRed);
         oneD_angle_one_bin_p->SetLineStyle(1);
+        oneD_angle_one_bin_p->SetLineWidth(3);
+        oneD_angle_one_bin_pi->SetLineWidth(3);
         oneD_angle_one_bin_p->SetMarkerStyle(20);
         oneD_angle_one_bin_pi->SetLineColor(kBlue);
         oneD_angle_one_bin_pi->SetLineStyle(1);
@@ -438,12 +464,17 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20, Double_t min_d
         legend_thetac_correction->Draw();
         
         
-        prt_canvasAdd("r_oneD_mcp_one_bin_p",800,400);
-        
+        prt_canvasAdd("r_oneD_mcp_one_bin",800,400);
+        prt_canvasGet("r_oneD_mcp_one_bin")->SetGridx();
+        prt_canvasGet("r_oneD_mcp_one_bin")->SetGridy();
+        oneD_mcp_one_bin_p_p-> SetTitle("#sum #Delta#theta_{c} correction all MCP's" );
+        oneD_mcp_one_bin_p_pi-> SetTitle("#sum #Delta#theta_{c} correction all MCP's" );
         oneD_mcp_one_bin_p_p->SetLineColor(kRed);
         oneD_mcp_one_bin_p_p->SetLineStyle(1);
         oneD_mcp_one_bin_p_p->SetMarkerStyle(20);
         oneD_mcp_one_bin_p_pi->SetLineColor(kBlue);
+        oneD_mcp_one_bin_p_pi->SetLineWidth(3);
+        oneD_mcp_one_bin_p_p->SetLineWidth(3);
         oneD_mcp_one_bin_p_pi->SetLineStyle(1);
         oneD_mcp_one_bin_p_pi->SetMarkerStyle(20);
         
@@ -454,11 +485,93 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20, Double_t min_d
         oneD_mcp_one_bin_p_p->Draw("histosame");
         legend_thetac_correction->Draw();
         
-        prt_drawDigi("m,p,v\n",2017, max_digi,min_digi);
-        prt_cdigi->SetName(Form("hp_dataProtonS332_%d_%d",angle,flag));
-        prt_canvasAdd(prt_cdigi);
-        prt_cdigi_palette->Draw();
-        prt_canvasSave(1,0);
+        if(false){
+            
+            max_digi =max_min_array[0];
+            min_digi =max_min_array[0];
+            
+            for (Int_t i = 0; i < prt_nmcp; i++)
+            {
+                if (max_min_array[i] > max_digi)
+                {
+                    max_digi = max_min_array[i];
+                }
+                else if (max_min_array[i] < min_digi)
+                {
+                    min_digi = max_min_array[i];
+                }
+            }
+            
+            cout <<"#################"<< max_digi << endl;
+            cout <<"#################"<< min_digi << endl;
+            
+            
+            if(angle==20){
+                max_digi=0.54;
+                min_digi=-7.41;
+            }
+            if(angle==30){
+                max_digi=2.06;
+                min_digi=-5.69;
+            }
+            if(angle==40){
+                max_digi=4.92;
+                min_digi=-2.45;
+            }
+            if(angle==50){
+                max_digi=3.37;
+                min_digi=-3.91;
+            }
+            if(angle==60){
+                max_digi=5.95;
+                min_digi=-4.68;
+            }
+            if(angle==70){
+                max_digi=7.05;
+                min_digi=-4.89;
+            }
+            if(angle==80){
+                max_digi=8.59;
+                min_digi=0;
+            }
+            if(angle==90){
+                max_digi=9.54;
+                min_digi=-4.19;
+            }
+            if(angle==100){
+                max_digi=8.58;
+                min_digi=0;
+            }
+            if(angle==110){
+                max_digi=7.38;
+                min_digi=-4.29;
+            }
+            if(angle==120){
+                max_digi=6.68;
+                min_digi=-6.24;
+            }
+            if(angle==130){
+                max_digi=6.31;
+                min_digi=-4.03;
+            }
+            if(angle==140){
+                max_digi=5.42;
+                min_digi=-4.52;
+            }
+            if(angle==150){
+                max_digi=7.77;
+                min_digi=-5.13;
+            }
+            
+            
+            
+            prt_drawDigi("m,p,v\n",2017, max_digi,min_digi);
+            prt_cdigi->SetName(Form("hp_dataProtonS332_%d_%d",angle,flag));
+            prt_canvasAdd(prt_cdigi);
+            prt_cdigi_palette->Draw();
+            prt_canvasSave(2,0);
+            
+        }
     }
     
     
