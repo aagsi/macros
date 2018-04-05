@@ -93,8 +93,8 @@ Double_t min_digi(-5);
 void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
     prt_initDigi();
     
-    //gStyle->SetPalette(kGreenPink);
-    gStyle->SetPalette(kBird);
+    gStyle->SetPalette(kGreenPink);
+    //gStyle->SetPalette(kBird);
     TString nid = Form("_%2.0d", 150);
     prt_savepath="pdf";
     std::cout<<"fSavePath  "<< prt_savepath <<std::endl;
@@ -139,8 +139,8 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
     
     
     for (int i=20; i<=150; i+=10) {
-        //{
-        //  int i = angle;
+    //    {
+      //    int i = angle;
         TString separation_data_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_sph_data_separation.root", i);
         
         TString spr_data_p_path,spr_data_pi_path;
@@ -148,6 +148,8 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
         if (flag==1) spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/reco_pi_bar_3lsph_grease_theta_%d_sim_spr.root", i);
         if (flag==0)spr_data_p_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_p_data_spr.root", i);
         if (flag==0)spr_data_pi_path = Form("/Users/ahmed/dirc/cherenkov_correction/%d_test_pi_data_spr.root", i);
+        
+        
         
         
         // reco_pi_bar_3lsph_grease_theta_100_sim_spr.root   // %d_test_p_data_spr.root
@@ -189,6 +191,7 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
             for(Int_t mcp=0; mcp<prt_nmcp; mcp++) {
                 HistMcp_pi[mcp] =(TH1F*)ffile_data_pi_spr->Get(Form("fHistMcp_%d",mcp));
             }
+            
             // proton correction
             TF1 *Fit_MCP_p = new TF1("Fit_MCP_p","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
             Fit_MCP_p->SetParameters(100,fAngleP,0.010);
@@ -272,16 +275,18 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
                     HistMcp_p[mcp]->Fit("Fit_MCP_p","lq","",fAngleP-0.025,fAngleP+0.025);
                 }
                 std::cout<<"if(mcpid=="<< mcp<<") tangle += "<<fAngleP-Fit_MCP_p->GetParameter(1)<<";" <<std::endl;
-                //                                HistMcp_p[mcp]->Draw();
-                //                                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
-                //                                TLine *lin_ch_p_v = new TLine(0,0,0,1000);
-                //                                lin_ch_p_v->SetX1(fAngleP);
-                //                                lin_ch_p_v->SetX2(fAngleP);
-                //                                lin_ch_p_v->SetY1(gPad->GetUymin());
-                //                                lin_ch_p_v->SetY2(gPad->GetUymax());
-                //                                lin_ch_p_v->SetLineColor(kRed);
-                //                                lin_ch_p_v->Draw();
-                //                                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
+                                                HistMcp_p[mcp]-> SetTitle(Form("p data mcp %d prtangle %d",mcp,i));
+                                                HistMcp_p[mcp]->Draw();
+                                                //prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
+                                                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
+                                                TLine *lin_ch_p_v = new TLine(0,0,0,1000);
+                                                lin_ch_p_v->SetX1(fAngleP);
+                                                lin_ch_p_v->SetX2(fAngleP);
+                                                lin_ch_p_v->SetY1(gPad->GetUymin());
+                                                lin_ch_p_v->SetY2(gPad->GetUymax());
+                                                lin_ch_p_v->SetLineColor(kRed);
+                                                lin_ch_p_v->Draw();
+                                                prt_canvasGet(Form("r_mcp_p_%d_prtangle_%d",mcp,i))->Update();
                 
                 
                 
@@ -310,16 +315,17 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
                     HistMcp_pi[mcp]->Fit("Fit_MCP_pi","lq","",fAnglePi-0.025,fAnglePi+0.025);
                 }
                 std::cout<<"if(mcpid=="<< mcp<<") tangle += "<<fAnglePi-Fit_MCP_pi->GetParameter(1)<<";" <<std::endl;
-                //                                HistMcp_pi[mcp]->Draw();
-                //                                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
-                //                                TLine *lin_ch_pi_v = new TLine(0,0,0,1000);
-                //                                lin_ch_pi_v->SetX1(fAnglePi);
-                //                                lin_ch_pi_v->SetX2(fAnglePi);
-                //                                lin_ch_pi_v->SetY1(gPad->GetUymin());
-                //                                lin_ch_pi_v->SetY2(gPad->GetUymax());
-                //                                lin_ch_pi_v->SetLineColor(kBlue);
-                //                                lin_ch_pi_v->Draw();
-                //                                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
+                                                HistMcp_pi[mcp]-> SetTitle(Form("#pi data mcp %d prtangle %d",mcp,i));
+                                                HistMcp_pi[mcp]->Draw();
+                                                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
+                                                TLine *lin_ch_pi_v = new TLine(0,0,0,1000);
+                                                lin_ch_pi_v->SetX1(fAnglePi);
+                                                lin_ch_pi_v->SetX2(fAnglePi);
+                                                lin_ch_pi_v->SetY1(gPad->GetUymin());
+                                                lin_ch_pi_v->SetY2(gPad->GetUymax());
+                                                lin_ch_pi_v->SetLineColor(kBlue);
+                                                lin_ch_pi_v->Draw();
+                                                prt_canvasGet(Form("r_mcp_pi_%d_prtangle_%d",mcp,i))->Update();
                 
                 
                 Double_t delta_theta=fAngleP-Fit_MCP_p->GetParameter(1) - (fAnglePi-Fit_MCP_pi->GetParameter(1));
@@ -374,6 +380,8 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
         prt_canvasGet("r_shift_all")->SetGridy();
         twoD_mcp->GetXaxis()->SetNdivisions(13);
         twoD_mcp->GetYaxis()->SetNdivisions(13);
+        twoD_mcp->SetMaximum(11.5);
+        twoD_mcp->SetMinimum(-8);
         prt_canvasGet("r_shift_all")->Update();
         twoD_mcp->SetStats(0);
         twoD_mcp-> SetTitle("MCP by MCP (#Delta#theta_{C}P - #Delta#theta_{C} #pi [mrad])" );
@@ -385,6 +393,9 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
         prt_canvasGet("r_shift_p")->SetGridy();
         twoD_mcp_p->GetXaxis()->SetNdivisions(13);
         twoD_mcp_p->GetYaxis()->SetNdivisions(13);
+        twoD_mcp_p->SetMaximum(13.5);
+        twoD_mcp_p->SetMinimum(-8);
+        
         prt_canvasGet("r_shift_p")->Update();
         twoD_mcp_p->SetStats(0);
         twoD_mcp_p-> SetTitle("MCP by MCP #Delta#theta_{C}P [mrad]" );
@@ -396,6 +407,9 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
         prt_canvasGet("r_shift_pi")->SetGridy();
         twoD_mcp_pi->GetXaxis()->SetNdivisions(13);
         twoD_mcp_pi->GetYaxis()->SetNdivisions(13);
+        twoD_mcp_pi->SetMaximum(13.5);
+        twoD_mcp_pi->SetMinimum(-8);
+        
         prt_canvasGet("r_shift_pi")->Update();
         
         twoD_mcp_pi->SetStats(0);
@@ -566,7 +580,7 @@ void cherenkov_angle_correction(Int_t flag = 1, Int_t angle = 20) {
             
             
             prt_drawDigi("m,p,v\n",2017, max_digi,min_digi);
-            prt_cdigi->SetName(Form("hp_dataProtonS332_%d_%d",angle,flag));
+            prt_cdigi->SetName(Form("hp_dataProtonS332_%d_%d",flag, angle));
             prt_canvasAdd(prt_cdigi);
             prt_cdigi_palette->Draw();
             prt_canvasSave(2,0);
