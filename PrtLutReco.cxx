@@ -1,4 +1,4 @@
-//2017  ok// ----------w-------------------------------
+//2018  ok// ----------w-------------------------------
 // PrtLutReco.cpp
 //
 // Created on: 13.07.2013
@@ -458,8 +458,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     if (method_type == 3) {
         fChain->GetEntry(20);
         prtangle_pdf = fEvent->GetAngle();
-        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
-        cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
+        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_pi_data_cherenkovPDF.root", 40);
         cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
@@ -1870,12 +1870,12 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         
                         //if(tofPid==211 &&fabs(tangle-fAnglePi)> chAngleCut) continue;
                         //if(tofPid==2212 &&fabs(tangle-fAngleP)> chAngleCut) continue;
-                        /*
+                /*        
                          if(true && tangle>0.65 && tangle<0.95 ) {
                          sum1 += TMath::Log(gF1->Eval(tangle)+noise);
                          sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                          }
-                         */
+                  */       
                         //~ if(method_type =! 3 && tangle>0.65 && tangle<0.95 ) {
                         //~ sum1 += TMath::Log(gr_p->Eval(tangle));
                         //~ sum2 += TMath::Log(gr_pi->Eval(tangle));
@@ -1883,13 +1883,16 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         //~ }
                         // old separation power calculations
                         
-                        //~ if(method_type == 3 && tangle>0.65 && tangle<0.95 ) {
-                        //~ sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle));
-                        //~ sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle));
-                        //~ //std::cout<<"No Problem  separation  " <<sum1<<""<<sum2<<std::endl;
-                        //~ }
-                        
-                        
+                        if(method_type == 3 && tangle>0.65 && tangle<0.95 ) {
+                        //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle));
+                        //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle));
+			Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
+			Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
+                        sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
+                        sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
+                        //std::cout<<"No Problem  separation  " <<sum1<<""<<sum2<<std::endl;
+                        }
+
                         if(fVerbose==3) {
                             TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
                             rdir.RotateUz(cz);
@@ -1913,7 +1916,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             histo_photon_ambiguity_wo->Fill(photon_ambiguity_counter_wo,weight);
             histo_photon_ambiguity_wt->Fill(photon_ambiguity_counter_wt,weight);
             histo_photon_ambiguity_wtc->Fill(photon_ambiguity_counter_wtc,weight);
-            
+           /*
             //fHist_copy->Fill(min_diff_time_tangle ,weight);
             if(gPDF ==1) fHistCh[ch]->Fill(min_diff_time_tangle ,weight);
             // old separation power calculations
@@ -1923,10 +1926,9 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                 solution_number_approach_selection++;
                 //sum1 += TMath::Log(gF1->Eval(tangle)+noise);
                 //sum2 += TMath::Log(gF2->Eval(tangle)+noise);
-                //std::cout<<"No Problem  separation  " <<sum1<<" "<<sum2<<std::endl;
+         //       std::cout<<"No Problem  separation  " <<sum1<<" "<<sum2<<std::endl;
             }
-            
-            
+           */             
             
             
             //std::cout<<"No Problem  lut loop  " <<std::endl;
