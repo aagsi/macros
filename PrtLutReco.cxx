@@ -1,4 +1,4 @@
-//2018  ok// ----------w-------------------------------
+ //2018  ok// ----------w-------------------------------
 // PrtLutReco.cpp
 //
 // Created on: 13.07.2013
@@ -52,8 +52,8 @@ TH1F*  nHits_dac = new TH1F("nHits_dac",";number of photons solutions per proton
 TH1F*  nHits_dac_syscut_p = new TH1F("nHits_dac_syscut_p",";number of photons per proton track after sys cut [#];entries [#]",   100,0,200);
 TH1F*  fnHits_true_sim = new TH1F("fnHits_true_sim",";number of photons per track [#];entries [#]",   100,0,200);
 
-TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-200,200);
-TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-200,200);
+TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
+TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
 
 //TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",1000,-1000,1000);
 //TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",1000,-1000,1000);
@@ -458,11 +458,15 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     if (method_type == 3) {
         fChain->GetEntry(20);
         prtangle_pdf = fEvent->GetAngle();
-        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
-        cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
-        //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
+        //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
+        //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
+	cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
+	//cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_pi_data_cherenkovPDF.root", 40);
-        cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
+	cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
         cout<<"cherenkov_data_pi_path= " <<cherenkov_data_pi_path<<endl;
         ffile_data_p  = new TFile(cherenkov_data_p_path, "READ");
         ffile_data_pi  = new TFile(cherenkov_data_pi_path, "READ");
@@ -502,9 +506,6 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             fHistCh_graph_pi[pix] =new TGraph(fHistCh_read_pi[pix]);
         }
     }
-    
-    
-    
     TString outFile;
     if(method_type==3) {
         outFile = PrtManager::Instance()->GetOutName()+"_separation.root";
@@ -513,9 +514,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     } else {
         outFile = PrtManager::Instance()->GetOutName()+"_spr.root";
     }
-    
-    
-    
+
     //TString outFile =PrtManager::Instance()->GetOutName()+"_spr.root" ;
     
     
@@ -1497,14 +1496,14 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                 //if(fLutNode[sensorId]->GetNRefl(i)!=1 ) continue;
                 //if(pathid != 130000 && pathid != 199000) continue;
                 //std::cout<<"pathid "<< pathid <<std::endl;
-                for(int u=0; u<2; u++) {
+                for(int u=0; u<4; u++) { // u<2 ,u<4
                     // if((pathid==190000 || pathid==210000) && u == 0) continue; //one from left-right
                     // if((pathid==290000 || pathid==310000) && u == 0) continue; //two from left-right
                     // if((pathid==130000 || pathid==199000) && u == 0) continue; //from up-bottom
                     if(u == 0) dir = dird;
                     if(u == 1) dir.SetXYZ( -dird.X(), dird.Y(), dird.Z());
-                    //if(u == 2) dir.SetXYZ( dird.X(),-dird.Y(),  dird.Z()); //no need when no divergence in vertical plane
-                    //if(u == 3) dir.SetXYZ( -dird.X(),-dird.Y(), dird.Z()); //no need when no divergence in vertical plane
+                    if(u == 2) dir.SetXYZ( dird.X(),-dird.Y(),  dird.Z()); //no need when no divergence in vertical plane  // commint un commint 
+                    if(u == 3) dir.SetXYZ( -dird.X(),-dird.Y(), dird.Z()); //no need when no divergence in vertical plane  // commint unn commint 
                     if(reflected) dir.SetXYZ( dir.X(), dir.Y(), -dir.Z());
                     if(dir.Angle(fnX1) < criticalAngle || dir.Angle(fnY1) < criticalAngle) continue; // warning
                     luttheta = dir.Theta();
@@ -1853,7 +1852,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         if(tofPid==211 &&  fEvent->GetType()==1 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // pi candidate changed
                         
                         solution_number++;
-                        //if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
+                        if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
                         
                         if(0.7<tangle && tangle<0.9) {
                             if(fabs(tangle-recoAngle)<chAngleCut) {
@@ -1884,13 +1883,17 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         // old separation power calculations
                         
                         if(method_type == 3 && tangle>0.65 && tangle<0.95 ) {
-                        //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle));
-                        //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle));
+                        //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs 
+                        //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
+			
+			// use histograms with normalization 
 			Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
 			Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
-                        sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
-                        sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
-                        //std::cout<<"No Problem  separation  " <<sum1<<""<<sum2<<std::endl;
+                        //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
+                        //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
+                        sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
+                        sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
+                        //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
                         }
 
                         if(fVerbose==3) {
