@@ -34,8 +34,6 @@ TH1F*  fHist0i_bg = new TH1F("timediffi_bg",";t_{calc}-t_{measured} [ns];entries
 //TH1F*  fHist1 = new TH1F("time1",";measured time [ns];entries [#]",   1000,-500,500);  // test
 //TH1F*  fHist2 = new TH1F("time2",";calculated time [ns];entries [#]", 1000,-500,500); //test
 
-TH1F*  hist_ambiguity = new TH1F("hist_ambiguity",";Pixel number [#]; Ambiguity [#]", 770,0,770); //test
-
 TH1F*  fHist1 = new TH1F("time1",";measured time [ns];entries [#]",   500,0,50);  // test
 TH1F*  fHist2 = new TH1F("time2",";calculated time [ns];entries [#]", 500,0,50); //test
 
@@ -570,6 +568,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     Int_t nEvents = fChain->GetEntries();
     if(end==0) end = nEvents;
     if (gPDF==1)start = 500001;
+    cout<<"@@@@@@@@@@@@ test1="<< test1 << endl;
+    cout<<"@@@@@@@@@@@@ test2="<< test2 << endl;
     
     cout<<"@@@@@@@@@@@@ gPDF="<< gPDF << "    start= "<< start << endl;
     
@@ -1480,7 +1480,6 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Bool_t isCandidat(false);
             //  if(radiator==2) isGoodHit=true;
             Int_t size =fLutNode[sensorId]->Entries();
-            hist_ambiguity->Fill(sensorId, size);
             Double_t min_time = 1000;
             Double_t min_diff_time_tangle = 0;
             
@@ -1894,9 +1893,15 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
 			Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
                         //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
                         //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
-                        sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
-                        sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
+                        //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
+                        //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
                         //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
+			// use  function 
+                         sum1 += TMath::Log(gF1->Eval(tangle)+noise);
+                         sum2 += TMath::Log(gF2->Eval(tangle)+noise);
+
+
+
                         }
 
                         if(fVerbose==3) {
@@ -1987,7 +1992,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                 //   if(fVerbose>0)  if(!FindPeak(cangle,spr, prtangle, tofPid)) continue;
                 // }
                 FindPeak(cangle,spr, prtangle, tofPid);
-                test1 = fTest;
+                //test1 = fTest;
                 distPid = FindPdg(momentum,cangle);
                 nph = nsHits/(Double_t)ninfit;
                 //std::cout<<"@@@@@@@@@@@@@ nph "<<nph <<std::endl;
@@ -2101,9 +2106,6 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     std::cout<<"solution_number_approach_selection= "<<solution_number_approach_selection<<std::endl;
     std::cout<<"solution_number= "<<solution_number<<std::endl;
     tree.Write();
-    
-    hist_ambiguity->Write();
-    
     fHist->Write();
     fHist_copy->Write();
     fHist_correction->Write();
