@@ -195,6 +195,16 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     for(Int_t i=0; i<5000; i++) {
         fLutNode[i] = (PrtLutNode*) fLut->At(i);
     }
+    
+    
+    for(Int_t i=0; i<770; i++) {
+    Int_t direction_lut =fLutNode[i]->Entries();
+    hist_ambiguity->Fill(i, direction_lut);
+    }
+    
+    
+    
+    
     cout << "-I- PrtLutReco: Intialization successfull" << endl;
     for(Int_t i=0; i<prt_nmcp; i++) {
         fHistMcp[i] = new TH1F(Form("fHistMcp_%d",i),Form("fHistMcp_%d;#theta_{C} [rad];entries [#]",i), 80,0.6,1); //150
@@ -1481,7 +1491,6 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Bool_t isCandidat(false);
             //  if(radiator==2) isGoodHit=true;
             Int_t size =fLutNode[sensorId]->Entries();
-            hist_ambiguity->Fill(sensorId, size);
             Double_t min_time = 1000;
             Double_t min_diff_time_tangle = 0;
             
