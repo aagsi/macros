@@ -34,6 +34,8 @@ TH1F*  fHist0i_bg = new TH1F("timediffi_bg",";t_{calc}-t_{measured} [ns];entries
 //TH1F*  fHist1 = new TH1F("time1",";measured time [ns];entries [#]",   1000,-500,500);  // test
 //TH1F*  fHist2 = new TH1F("time2",";calculated time [ns];entries [#]", 1000,-500,500); //test
 
+TH1F*  hist_ambiguity = new TH1F("hist_ambiguity",";Pixel number [#]; Ambiguity [#]", 770,0,770); //test
+
 TH1F*  fHist1 = new TH1F("time1",";measured time [ns];entries [#]",   500,0,50);  // test
 TH1F*  fHist2 = new TH1F("time2",";calculated time [ns];entries [#]", 500,0,50); //test
 
@@ -1478,6 +1480,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Bool_t isCandidat(false);
             //  if(radiator==2) isGoodHit=true;
             Int_t size =fLutNode[sensorId]->Entries();
+            hist_ambiguity->Fill(sensorId, size);
             Double_t min_time = 1000;
             Double_t min_diff_time_tangle = 0;
             
@@ -2098,6 +2101,9 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     std::cout<<"solution_number_approach_selection= "<<solution_number_approach_selection<<std::endl;
     std::cout<<"solution_number= "<<solution_number<<std::endl;
     tree.Write();
+    
+    hist_ambiguity->Write();
+    
     fHist->Write();
     fHist_copy->Write();
     fHist_correction->Write();
