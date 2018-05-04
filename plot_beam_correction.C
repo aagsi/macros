@@ -1,9 +1,18 @@
-#include "/Users/ahmed/dirc/prttools/prttools.C"
+//#include "/Users/ahmed/dirc/prttools/prttools.C"
+#include "/u/aali/dirc/prttools/prttools.C"
 // file existance
 bool exists_test (const std::string& name);
 
 //root plot_beam_correction.C'(20)'
 void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
+
+
+
+
+Double_t momentum=7.0;
+Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
+Double_t fAngleP = acos(sqrt(momentum*momentum+ mass[4]*mass[4])/momentum/1.4738)-0.00;
+Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.4738)-0.00; 
     
     prt_savepath="opt";
     std::cout<<"fSavePath  "<< prt_savepath <<std::endl;
@@ -12,6 +21,7 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
     Int_t nf = 40;
     TH2F * twoD_spr =  new TH2F("twoD_spr",";#Delta#Theta[mrad]; #Delta#Phi[mrad]", nf, -20, 20, nf, -10,10);
     TH2F * twoD_mean =  new TH2F("twoD_mean",";#Delta#Theta[mrad]; #Delta#Phi[mrad]", nf, -20, 20, nf, -10,10);
+    TH2F * twoD_mean_expected =  new TH2F("twoD_mean_expected",";#Delta#Theta[mrad]; #Delta#Phi[mrad]", nf, -20, 20, nf, -10,10);
     
     //Int_t angle;
     TFile *ffile;
@@ -30,7 +40,7 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_p_correction_spr.root",i, i);
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_pi_correction_spr.root",i, i);
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_p_correction_spr.root",i, i);
-                    TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_wo_correction_spr.root",i, i);
+                    TString cherenkov_data_path = Form("/data.local/beam_correction/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_wo_correction_spr.root",i, i);
                     //cout<<"cherenkov_data_path= " <<cherenkov_data_path<<endl;
                     
                     string path = (string)cherenkov_data_path;
@@ -71,7 +81,9 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
                     Double_t sumundercurve = fFit->Integral(cangle_minus_3_sgma,cangle_plus_3_sgma);
                     
                     twoD_spr->Fill(jj*1000, kk*1000, spr*1000); // /14.0
-                    twoD_mean->Fill(jj*1000, kk*1000, cangle);
+                    twoD_mean->Fill(jj*1000, kk*1000, cangle-fAnglePi);
+                    
+                    //if( (cangle < (fAnglePi-0.0003)) || (cangle > (fAnglePi +0.0003)) ) twoD_mean_expected->Fill(jj*1000, kk*1000, cangle);
                     
                     /*
                     TString nid = Form("_%2.0d", angle);
@@ -117,10 +129,38 @@ void plot_beam_correction(/*TString inFile = "r_spr.root",*/ Int_t angle= 20) {
     //twoD_mean->SetMaximum(0.84);
     //twoD_mean->SetMinimum(0.81);
     twoD_mean-> Draw("colz");
+    
+   
+    
+    prt_canvasAdd("r_mean_pi_expected_wo"+nid,800,400);
+    
+   TExec *ex1 = new TExec("ex1","grey();");
+   TExec *ex2 = new TExec("ex2","gStyle->SetPalette(53,0,0.4);");
+   twoD_mean->Draw("col");
+   ex1->Draw();
+   twoD_mean->Draw("col same");
+   ex2->Draw();
+   twoD_mean_expected->Draw("col same");
+    
+    
 
    prt_canvasSave(2,0);
    prt_canvasDel("*");
 }
+
+
+
+void grey()
+{
+   Double_t Red[2]   = { 0.10, 0.10};
+   Double_t Green[2] = { 0.20, 0.50};
+   Double_t Blue[2]  = { 0.60, 0.90};
+   Double_t Stops[2] = { 0.00, 1.00};
+
+   Int_t nb=50;
+   TColor::CreateGradientColorTable(2,Stops,Red,Green,Blue,nb);
+}
+
 
 //////////////////////////
 // check file existance //
