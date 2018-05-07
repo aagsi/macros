@@ -1,10 +1,11 @@
 #include "/u/aali/dirc/prttools/prttools.C"
+//root plot_beam_correction_power.C'("/data.local/beam_correction/beam_correction/opt_20_3sph_t1_*_t2_*_data_wo_correction_separation.root", 20)'
 
-//root plot_beam_correction.C'("/data.local/beam_correction/db_20_3sph_t1_*_t2_*_proton_data_spr.root", 20)'
 void plot_beam_correction_power(TString inFile = "r_spr.root", Int_t angle= 20) {
 
 
-gStyle->SetPalette(kGreenPink);
+//gStyle->SetPalette(kGreenPink);
+gStyle->SetPalette(kRainBow);
     prt_savepath="opt";
     std::cout<<"fSavePath  "<< prt_savepath <<std::endl;
     TChain ch("dirc");

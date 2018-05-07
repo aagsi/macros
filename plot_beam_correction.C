@@ -36,11 +36,11 @@ Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.473
                     TString jj_string = Form("t1_%.3f", jj);
                     TString kk_string = Form("_t2_%.4f", kk);
                     cout<< "enter the if condition"<<endl;
-                    //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_wo_correction_spr.root",i, i);
+                    TString cherenkov_data_path = Form("/data.local/beam_correction/beam_correction_old/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_wo_correction_spr.root",i, i);
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_proton_data_p_correction_spr.root",i, i);
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_pi_correction_spr.root",i, i);
                     //TString cherenkov_data_path = Form("/Users/ahmed/dirc/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_p_correction_spr.root",i, i);
-                    TString cherenkov_data_path = Form("/data.local/beam_correction/beam_correction/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_wo_correction_spr.root",i, i);
+                    //TString cherenkov_data_path = Form("/data.local/beam_correction/beam_correction_old/beam_correction_%d/opt_%d_3sph_"+jj_string+kk_string+"_pi_data_wo_correction_spr.root",i, i);
                     //cout<<"cherenkov_data_path= " <<cherenkov_data_path<<endl;
                     
                     string path = (string)cherenkov_data_path;
@@ -81,7 +81,7 @@ Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.473
                     Double_t sumundercurve = fFit->Integral(cangle_minus_3_sgma,cangle_plus_3_sgma);
                     
                     twoD_spr->Fill(jj*1000, kk*1000, spr*1000); // /14.0
-                    twoD_mean->Fill(jj*1000, kk*1000, cangle-fAnglePi);
+                    twoD_mean->Fill(jj*1000, kk*1000, cangle-fAngleP);
                     
                     //if( (cangle < (fAnglePi-0.0003)) || (cangle > (fAnglePi +0.0003)) ) twoD_mean_expected->Fill(jj*1000, kk*1000, cangle);
                     
@@ -111,29 +111,30 @@ Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.473
     
     prt_canvasAdd("r_spr_pi_wo"+ nid,800,400);
     twoD_spr->SetStats(0);
-    twoD_spr-> SetTitle(Form("SPR #pi data without mcp by mcp #theta_{c} correction %d",angle) );
+    twoD_spr-> SetTitle(Form("SPR #pi data without mcp by mcp #theta_{c} correction %d deg",angle) );
     //twoD_spr-> SetTitle(Form("SPR P data without mcp by mcp #theta_{c} correction %d",angle) );
     //twoD_spr-> SetTitle("SPR P data without mcp by mcp #theta_{c} correction" );
     //twoD_spr-> SetTitle("SPR P data with mcp by mcp #theta_{c} correction" );
     //twoD_spr-> SetTitle("SPR #pi data with mcp by mcp #theta_{c} correction for #pi" );
     //twoD_spr-> SetTitle("SPR #pi data with mcp by mcp #theta_{c} correction for P" );
     //twoD_spr-> SetTitle("SPR #pi data without mcp by mcp #theta_{c} correction" );
-    
+    twoD_spr->SetMaximum(10.5);
+    twoD_spr->SetMinimum(7.25);
     twoD_spr-> Draw("colz");
     
     prt_canvasAdd("r_mean_pi_wo"+nid,800,400);
     gStyle->SetPaintTextFormat(".3f");
     twoD_mean->SetStats(0);
-    twoD_mean-> SetTitle(Form("Mean #pi data without mcp by mcp #theta_{c} correction %d",angle) );
+    twoD_mean-> SetTitle(Form("Mean #theta_{c} #pi data - expected value without #theta_{c} correction at %d deg",angle) );
     //twoD_mean-> SetTitle(Form("Mean P data without mcp by mcp #theta_{c} correction %d",angle) );
     //twoD_mean->SetMaximum(0.84);
     //twoD_mean->SetMinimum(0.81);
     twoD_mean-> Draw("colz");
     
    
-    
+    /*
     prt_canvasAdd("r_mean_pi_expected_wo"+nid,800,400);
-    
+
    TExec *ex1 = new TExec("ex1","grey();");
    TExec *ex2 = new TExec("ex2","gStyle->SetPalette(53,0,0.4);");
    twoD_mean->Draw("col");
@@ -142,6 +143,7 @@ Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.473
    ex2->Draw();
    twoD_mean_expected->Draw("col same");
     
+  */
     
 
    prt_canvasSave(2,0);
@@ -149,7 +151,7 @@ Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.473
 }
 
 
-
+/*
 void grey()
 {
    Double_t Red[2]   = { 0.10, 0.10};
@@ -160,7 +162,7 @@ void grey()
    Int_t nb=50;
    TColor::CreateGradientColorTable(2,Stops,Red,Green,Blue,nb);
 }
-
+*/
 
 //////////////////////////
 // check file existance //
