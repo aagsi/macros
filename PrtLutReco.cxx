@@ -617,20 +617,20 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             if(fEvent->GetType()==0) {
 
 		// 332 study ID beam correction 
-		if (prtangle==20){test1=0.5*1000  ;test2= 6.4  *1000 ;}
-		if (prtangle==30){test1=-0.5*1000 ;test2= 6.0  *1000 ;}
-		if (prtangle==40){test1=1.5*1000  ;test2= -5.3 *1000 ;}
-		if (prtangle==50){test1=2.5*1000  ;test2= 0.0 *1000 ;}
-		if (prtangle==60){test1=1.5*1000  ;test2= 0.0  *1000 ;}
-		if (prtangle==70){test1=0.5*1000  ;test2= -7.0 *1000 ;}
-		if (prtangle==80){test1=2.5*1000   ;test2= 0.0 *1000 ;}
-		if (prtangle==90){test1=-0.5*1000 ;test2= 0.0  *1000 ;}
-		if (prtangle==100){test1=0.5*1000 ;test2= -7.2  *1000 ;}
-		if (prtangle==110){test1=-0.5*1000 ;test2= 0.0 *1000 ;}
-		if (prtangle==120){test1=-0.5*1000 ;test2=-4.0 *1000 ;}
-		if (prtangle==130){test1=0.5*1000  ;test2=-2.0 *1000 ;}
-		if (prtangle==140){test1=0.5*1000 ;test2=0.0   *1000 ;}
-		if (prtangle==150){test1=0.5*1000 ;test2=-7.0  *1000 ;}
+		if (prtangle==20){test1=0.5/1000  ;test2= 6.4/1000 ;}
+		if (prtangle==30){test1=-0.5/1000 ;test2= 6.0/1000 ;}
+		if (prtangle==40){test1=1.5/1000  ;test2= -5.3/1000 ;}
+		if (prtangle==50){test1=2.5/1000  ;test2= 0.0/1000 ;}
+		if (prtangle==60){test1=1.5/1000  ;test2= 0.0/1000 ;}
+		if (prtangle==70){test1=0.5/1000  ;test2= -7.0/1000 ;}
+		if (prtangle==80){test1=2.5/1000   ;test2= 0.0/1000 ;}
+		if (prtangle==90){test1=-0.5/1000 ;test2= 0.0/1000 ;}
+		if (prtangle==100){test1=0.5/1000 ;test2= -7.2/1000 ;}
+		if (prtangle==110){test1=-0.5/1000 ;test2= 0.0/1000 ;}
+		if (prtangle==120){test1=-0.5/1000 ;test2=-4.0/1000 ;}
+		if (prtangle==130){test1=0.5/1000  ;test2=-2.0/1000 ;}
+		if (prtangle==140){test1=0.5/1000 ;test2=0.0/1000 ;}
+		if (prtangle==150){test1=0.5/1000 ;test2=-7.0/1000 ;}
 
                 momInBar.RotateY(TMath::Pi()-prtangle*rad-test1);// 0  test1
                 momInBar.RotateX(test2);//0 test2
