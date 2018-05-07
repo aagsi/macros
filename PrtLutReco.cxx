@@ -1,4 +1,4 @@
- //2018  ok// ----------w-------------------------------
+//2018  ok// ----------w-------------------------------
 // PrtLutReco.cpp
 //
 // Created on: 13.07.2013
@@ -198,8 +198,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     
     
     for(Int_t i=0; i<770; i++) {
-    Int_t direction_lut =fLutNode[i]->Entries();
-    hist_ambiguity->Fill(i, direction_lut);
+        Int_t direction_lut =fLutNode[i]->Entries();
+        hist_ambiguity->Fill(i, direction_lut);
     }
     
     
@@ -473,11 +473,11 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
-	cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
-	//cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
+        //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_pi_data_cherenkovPDF.root", 40);
-	cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
+        cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
         cout<<"cherenkov_data_pi_path= " <<cherenkov_data_pi_path<<endl;
         ffile_data_p  = new TFile(cherenkov_data_p_path, "READ");
         ffile_data_pi  = new TFile(cherenkov_data_pi_path, "READ");
@@ -505,8 +505,6 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             //fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
             fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
             axis_data_pi[pix] = fHistCh_read_pi[pix]->GetXaxis();
-            if (prtangle_pdf==90)xmin_data = 0.9;
-            if (prtangle_pdf==90)xmax_data = 1.0;
             bmin_data_pi[pix] = axis_data_pi[pix]->FindBin(xmin_data);
             bmax_data_pi[pix] = axis_data_pi[pix]->FindBin(xmax_data);
             integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
@@ -525,7 +523,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     } else {
         outFile = PrtManager::Instance()->GetOutName()+"_spr.root";
     }
-
+    
     //TString outFile =PrtManager::Instance()->GetOutName()+"_spr.root" ;
     
     
@@ -578,7 +576,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     fMethod = PrtManager::Instance()->GetRunType();
     Int_t nEvents = fChain->GetEntries();
     if(end==0) end = nEvents;
-    if (gPDF==1)start = 500001;
+    if (gPDF==1 && fEvent->GetType()==0 )start = 500001;
+    if (gPDF==1 && fEvent->GetType()==1 )start = 5001;
     cout<<"@@@@@@@@@@@@ test1="<< test1 << endl;
     cout<<"@@@@@@@@@@@@ test2="<< test2 << endl;
     
@@ -615,23 +614,23 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             // if(studyId==151) beam_corr = -0.003; // 25 deg
             //beam_corr = 0.002; // 125 deg s160
             if(fEvent->GetType()==0) {
-
-		// 332 study ID beam correction 
-		if (prtangle==20){test1=0.5/1000  ;test2= 6.4/1000 ;}
-		if (prtangle==30){test1=-0.5/1000 ;test2= 6.0/1000 ;}
-		if (prtangle==40){test1=1.5/1000  ;test2= -5.3/1000 ;}
-		if (prtangle==50){test1=2.5/1000  ;test2= 0.0/1000 ;}
-		if (prtangle==60){test1=1.5/1000  ;test2= 0.0/1000 ;}
-		if (prtangle==70){test1=0.5/1000  ;test2= -7.0/1000 ;}
-		if (prtangle==80){test1=2.5/1000   ;test2= 0.0/1000 ;}
-		if (prtangle==90){test1=-0.5/1000 ;test2= 0.0/1000 ;}
-		if (prtangle==100){test1=0.5/1000 ;test2= -7.2/1000 ;}
-		if (prtangle==110){test1=-0.5/1000 ;test2= 0.0/1000 ;}
-		if (prtangle==120){test1=-0.5/1000 ;test2=-4.0/1000 ;}
-		if (prtangle==130){test1=0.5/1000  ;test2=-2.0/1000 ;}
-		if (prtangle==140){test1=0.5/1000 ;test2=0.0/1000 ;}
-		if (prtangle==150){test1=0.5/1000 ;test2=-7.0/1000 ;}
-
+                
+                // 332 study ID beam correction
+                if (prtangle==20){test1=0.5/1000  ;test2= 6.4/1000 ;}
+                if (prtangle==30){test1=-0.5/1000 ;test2= 6.0/1000 ;}
+                if (prtangle==40){test1=1.5/1000  ;test2= -5.3/1000 ;}
+                if (prtangle==50){test1=2.5/1000  ;test2= 0.0/1000 ;}
+                if (prtangle==60){test1=1.5/1000  ;test2= 0.0/1000 ;}
+                if (prtangle==70){test1=0.5/1000  ;test2= -7.0/1000 ;}
+                if (prtangle==80){test1=2.5/1000   ;test2= 0.0/1000 ;}
+                if (prtangle==90){test1=-0.5/1000 ;test2= 0.0/1000 ;}
+                if (prtangle==100){test1=0.5/1000 ;test2= -7.2/1000 ;}
+                if (prtangle==110){test1=-0.5/1000 ;test2= 0.0/1000 ;}
+                if (prtangle==120){test1=-0.5/1000 ;test2=-4.0/1000 ;}
+                if (prtangle==130){test1=0.5/1000  ;test2=-2.0/1000 ;}
+                if (prtangle==140){test1=0.5/1000 ;test2=0.0/1000 ;}
+                if (prtangle==150){test1=0.5/1000 ;test2=-7.0/1000 ;}
+                
                 momInBar.RotateY(TMath::Pi()-prtangle*rad-test1);// 0  test1
                 momInBar.RotateX(test2);//0 test2
                 
@@ -1532,8 +1531,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                     // if((pathid==130000 || pathid==199000) && u == 0) continue; //from up-bottom
                     if(u == 0) dir = dird;
                     if(u == 1) dir.SetXYZ( -dird.X(), dird.Y(), dird.Z());
-                    if(u == 2) dir.SetXYZ( dird.X(),-dird.Y(),  dird.Z()); //no need when no divergence in vertical plane  // commint un commint 
-                    if(u == 3) dir.SetXYZ( -dird.X(),-dird.Y(), dird.Z()); //no need when no divergence in vertical plane  // commint unn commint 
+                    if(u == 2) dir.SetXYZ( dird.X(),-dird.Y(),  dird.Z()); //no need when no divergence in vertical plane  // commint un commint
+                    if(u == 3) dir.SetXYZ( -dird.X(),-dird.Y(), dird.Z()); //no need when no divergence in vertical plane  // commint unn commint
                     if(reflected) dir.SetXYZ( dir.X(), dir.Y(), -dir.Z());
                     if(dir.Angle(fnX1) < criticalAngle || dir.Angle(fnY1) < criticalAngle) continue; // warning
                     luttheta = dir.Theta();
@@ -1882,7 +1881,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         if(tofPid==211 &&  fEvent->GetType()==1 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // pi candidate changed
                         
                         solution_number++;
-                        if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // not used
+                        if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight);
                         
                         if(0.7<tangle && tangle<0.9) {
                             if(fabs(tangle-recoAngle)<chAngleCut) {
@@ -1893,45 +1892,27 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(fabs(tangle-recoAngle)<chAngleCut) isGoodHit=true;
                             }
                         }
-                        
-                        
-                        
-                        
                         //if(tofPid==211 &&fabs(tangle-fAnglePi)> chAngleCut) continue;
                         //if(tofPid==2212 &&fabs(tangle-fAngleP)> chAngleCut) continue;
-                /*        
-                         if(true && tangle>0.65 && tangle<0.95 ) {
-                         sum1 += TMath::Log(gF1->Eval(tangle)+noise);
-                         sum2 += TMath::Log(gF2->Eval(tangle)+noise);
-                         }
-                  */       
-                        //~ if(method_type =! 3 && tangle>0.65 && tangle<0.95 ) {
-                        //~ sum1 += TMath::Log(gr_p->Eval(tangle));
-                        //~ sum2 += TMath::Log(gr_pi->Eval(tangle));
-                        //~ //std::cout<<"No Problem  separation  " <<sum1<<""<<sum2<<std::endl;
-                        //~ }
-                        // old separation power calculations
-                        
-                        if(method_type == 3 && tangle>0.65 && tangle<0.95 ) {
-                        //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs 
-                        //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
-			
-			// use histograms with normalization 
-			Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
-			Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
-                        //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
-                        //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
-                        //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
-                        //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
-                        //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
-			// use  function 
-                         sum1 += TMath::Log(gF1->Eval(tangle)+noise);
-                         sum2 += TMath::Log(gF2->Eval(tangle)+noise);
-
-
-
+                        if(method_type == 3 && tangle>0.75 && tangle<0.88 ) {
+                            // use graphs
+                            //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs
+                            //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
+                            // use histograms with normalization
+                            Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
+                            Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
+                            // use PDF without normalization
+                            //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
+                            //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
+                            // use PDF with normalization
+                            sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
+                            sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
+                            //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
+                            // use  function
+                            // sum1 += TMath::Log(gF1->Eval(tangle)+noise);
+                            // sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                         }
-
+                        
                         if(fVerbose==3) {
                             TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
                             rdir.RotateUz(cz);
@@ -1951,25 +1932,22 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                 }// end of bar ambiguity loop
                 //std::cout<<"No Problem  ambiguity  " <<std::endl;
             }// end of lut loop
-            
             histo_photon_ambiguity_wo->Fill(photon_ambiguity_counter_wo,weight);
             histo_photon_ambiguity_wt->Fill(photon_ambiguity_counter_wt,weight);
             histo_photon_ambiguity_wtc->Fill(photon_ambiguity_counter_wtc,weight);
-           /*
-            //fHist_copy->Fill(min_diff_time_tangle ,weight);
-            if(gPDF ==1) fHistCh[ch]->Fill(min_diff_time_tangle ,weight);
-            // old separation power calculations
-            if(method_type == 3 && min_diff_time_tangle>0.65 && min_diff_time_tangle<0.95 && isGoodHit_TimeCutOnly && isGoodHit) {
-                sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(min_diff_time_tangle));
-                sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(min_diff_time_tangle));
-                solution_number_approach_selection++;
-                //sum1 += TMath::Log(gF1->Eval(tangle)+noise);
-                //sum2 += TMath::Log(gF2->Eval(tangle)+noise);
-         //       std::cout<<"No Problem  separation  " <<sum1<<" "<<sum2<<std::endl;
-            }
-           */             
-            
-            
+            /*
+             // closest approach method
+             //fHist_copy->Fill(min_diff_time_tangle ,weight);
+             if(gPDF ==1) fHistCh[ch]->Fill(min_diff_time_tangle ,weight);
+             if(method_type == 3 && min_diff_time_tangle>0.65 && min_diff_time_tangle<0.95 && isGoodHit_TimeCutOnly && isGoodHit) {
+             sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(min_diff_time_tangle));
+             sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(min_diff_time_tangle));
+             solution_number_approach_selection++;
+             //sum1 += TMath::Log(gF1->Eval(tangle)+noise);
+             //sum2 += TMath::Log(gF2->Eval(tangle)+noise);
+             //std::cout<<"No Problem  separation  " <<sum1<<" "<<sum2<<std::endl;
+             }
+             */
             //std::cout<<"No Problem  lut loop  " <<std::endl;
             if(isGoodHit) {
                 nsHits++;
@@ -1979,14 +1957,12 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             if(isGoodHit_true_sim)nGoodPhotons_true_sim++;
             if(isGoodHit_TimeCutOnly) nGoodPhotons_TimeCutOnly++;
             if(isCandidat) nCandidat++;
-            
         }// end of hit loop
         fnHits_p_good->Fill(nGoodPhotons);
         fnHits_p->Fill(nGoodPhotons_TimeCutOnly);
         fnHits->Fill(nCandidat);
         fnHits_true_sim->Fill(nGoodPhotons_true_sim);
         //std::cout<<"@@@@@@@@@@@"<<" nGoodPhotons= "<<nGoodPhotons<<std::endl;
-        
         // for(Int_t j=0; j<prt_nmcp; j++){
         //   for(Int_t i=0; i<65; i++){
         // 	mcpdata[j][i]=0;
@@ -2084,7 +2060,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         }
         std::cout<<"no problem 3 9"<<std::endl;
         separation = (fabs(m2-m1))/(0.5*(s1+s2));
-        std::cout<<"separation "<< separation <<std::endl;
+        std::cout<<"################ separation "<< separation <<std::endl;
         //gStyle->SetOptFit(0);
         //gStyle->SetOptStat(0);
         hLnDiffP->SetName(Form("s_%2.2f",separation));
