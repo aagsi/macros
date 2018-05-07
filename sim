@@ -1,0 +1,61 @@
+#!/bin/bash
+# Task name
+#SBATCH -J 3l_sph_sim
+# Run time limit
+#SBATCH --time=8:00:00
+# Working directory on shared storage
+#SBATCH -D /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/log
+# Standard and error output in different files
+#SBATCH -o %j_%N.out.log
+#SBATCH -e %j_%N.err.log
+# Execute application code
+
+
+#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/root-6.08.06/bin/thisroot.sh
+#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin/geant4.sh
+
+#export LD_LIBRARY_PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/lib:$LD_LIBRARY_PATH
+#export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin:$PATH
+#export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/prttools/bin:$PATH
+
+
+
+
+
+source /cvmfs/fairroot.gsi.de/fairsoft/may16_root5/bin/thisroot.sh
+#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/root-6.08.06/bin/thisroot.sh
+source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin/geant4.sh
+export LD_LIBRARY_PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/lib:$LD_LIBRARY_PATH
+export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin:$PATH
+export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/prttools/bin:$PATH
+
+
+
+
+
+t=$1
+
+DIRs="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/sim/332"
+
+cd /lustre/nyx/panda/aali/prtdrc_2017/final_2017/prtdirc/build
+nevents=500
+
+# step(1) simulation 
+#./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1
+#./prtdirc -a $t -l 3 -x "pi+" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1
+
+
+#./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/forPDF_theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1 -r 890136
+#./prtdirc -a $t -l 3 -x "pi+"    -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/forPDF_theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1 -r 890136
+
+# i did not run this part
+./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/smallForAna_theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1 -r 0
+./prtdirc -a $t -l 3 -x "pi+"    -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/smallForAna_theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1 -r 0
+
+
+
+#X step= 67 mm
+#Y step= 14.7 mm
+
+
+#hadd "${DIRs}/theta_${t}_3lsph_all_sim.root" "${DIRs}/theta_${t}_3lsph_proton_sim.root" "${DIRs}/theta_${t}_3lsph_pi_sim.root"

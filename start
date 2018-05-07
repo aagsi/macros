@@ -1,0 +1,22 @@
+
+#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/root-6.08.06/bin/thisroot.sh
+#source /cvmfs/fairroot.gsi.de/fairsoft/oct17_root6/bin/thisroot.sh
+source /cvmfs/fairroot.gsi.de/fairsoft/may16_root5/bin/thisroot.sh
+
+source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin/geant4.sh
+export LD_LIBRARY_PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/lib:$LD_LIBRARY_PATH
+export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin:$PATH
+export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/prttools/bin:$PATH
+
+
+
+
+
+
+
+#source /cvmfs/fairroot.gsi.de/fairsoft/may16_root5/bin/thisroot.sh
+#export LD_LIBRARY_PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/lib:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install:$LD_LIBRARY_PATH
+#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/bin/geant4.sh
+#export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/bin:$PATH
+#export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/prttools/bin:$PATH
