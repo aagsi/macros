@@ -64,7 +64,7 @@ void sep_pdf_proton_plots() {
     int counter =0 ;
     TLegend* legend = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
     legend->SetHeader("cherenkov angle","C"); // option "C" allows to center the header
-    prt_savepath="proton_pdf";
+    prt_savepath="separation_output";
     std::cout<<"fSavePath  "<< prt_savepath <<std::endl;
     //Int_t nf = 30;
     //TH2F * photon_yield_map =  new TH2F("photon_yield_map",";Time Cut [ns];cherenkov angle cut[mrad]", nf, 0.1, 6, nf, 0.001,0.06);
@@ -74,6 +74,7 @@ void sep_pdf_proton_plots() {
     TGraph *power_sim = new TGraph();
     TGraph *power_modle = new TGraph();
     TGraph *power_pdf = new TGraph();
+    TGraph *power_corrected = new TGraph();
     TGraph *power_2BarReflpdf = new TGraph();
     TGraph *calc_mom = new TGraph();
     TGraph *calc_e_mom = new TGraph();
@@ -106,23 +107,28 @@ void sep_pdf_proton_plots() {
 
                     // separation
                     TString separation_data_path = Form("/u/aali/work/new/sep_old_%d_sph_data_separation.root", i);
+                    TString separation_data_path_corrected = Form("/u/aali/work/corrected/sep_old_%d_sph_data_separation.root", i);
+                    //TString separation_pdf_data_path = Form("/u/aali/work/notcorrected/sep_old_%d_sph_data_separation.root", i);
                     TString separation_pdf_data_path = Form("/u/aali/work/new/sep_4BarReflpdf_%d_sph_data_separation.root", i);
 
                     cout<<"cherenkov_sim_path= " <<cherenkov_sim_path<<endl;
                     cout<<"cherenkov_data_path= " <<cherenkov_data_path<<endl;
                     cout<<"separation_data_path= " <<separation_data_path<<endl;
+                    cout<<"separation_data_path_corrected= " <<separation_data_path_corrected<<endl;
                     cout<<"separation_pdf_data_path= " <<separation_pdf_data_path<<endl;
 
 
                     string path_sim = (string)cherenkov_sim_path;
                     string path_data = (string)cherenkov_data_path;
                     string path_data_separation = (string)separation_data_path;
+                    string path_data_separation_corrected = (string)separation_data_path_corrected;
                     string path_data_separation_pdf = (string)separation_pdf_data_path;
 
                     cout<<"exists_test(path_sim)" <<exists_test(path_sim)<<endl;
                     cout<<"exists_test(path_data)" <<exists_test(path_data)<<endl;
                     cout<<"exists_test(separation path_data)" <<exists_test(path_data_separation)<<endl;
-                    cout<<"exists_test(separation path_data shift pdf)" <<exists_test(path_data_separation_pdf)<<endl;
+                    cout<<"exists_test(separation path_data corrected)" <<exists_test(path_data_separation_corrected)<<endl;
+                    cout<<"exists_test(separation path_data pdf)" <<exists_test(path_data_separation_pdf)<<endl;
 
 
                     if (!exists_test(path_sim)) continue;
@@ -139,23 +145,27 @@ void sep_pdf_proton_plots() {
                     ////////////////
                     // READ Tree ///
                     ////////////////
-                    Double_t separation(-9), separation_org(-1),separation_pdf(-1);
-                    Double_t separation1(-9);
+                    Double_t separation(-9), separation_org(-1),separation_pdf(-1),separation_corrected(-1);
+                    Double_t separation1(-9), separation2(-9);
 
                     TChain ch_pdf("dirc");
+                    TChain ch_corrected("dirc");
                     TChain ch("dirc");
 
 
                     ch_pdf.Add(separation_pdf_data_path);
+                    ch_corrected.Add(separation_data_path_corrected);
                     ch.Add(separation_data_path);
                     
 
                     ch.SetBranchAddress("separation",&separation);
                     ch_pdf.SetBranchAddress("separation",&separation1);
+                    ch_corrected.SetBranchAddress("separation",&separation2);
 
                 
                     Int_t nent = ch.GetEntries();
                     Int_t nent_pdf = ch_pdf.GetEntries();
+                    Int_t nent_corrected = ch_corrected.GetEntries();
  
                     ch.GetEvent(nent-1);
                     separation_org=separation;
@@ -166,6 +176,11 @@ void sep_pdf_proton_plots() {
                     ch_pdf.GetEvent(nent_pdf-1);
                     separation_pdf=separation1;
                     std::cout<<"############  separation_pdf = "<< separation_pdf  <<std::endl;
+                    
+                    
+                    ch_corrected.GetEvent(nent_corrected-1);
+                    separation_corrected=separation2;
+                    std::cout<<"############  separation_corrected = "<< separation_corrected  <<std::endl;
                     
                     
 
@@ -180,6 +195,7 @@ void sep_pdf_proton_plots() {
                         x[counter]=i;
                         power_org->SetPoint(counter,i,separation_org);
                         power_pdf->SetPoint(counter,i,separation_pdf);
+                        power_corrected->SetPoint(counter,i,separation_corrected);
 
                         counter++;
                     }
@@ -215,6 +231,20 @@ void sep_pdf_proton_plots() {
         power_pdf->GetXaxis()->SetLabelSize(0.05);
         power_pdf->GetXaxis()->SetTitleSize(0.06);
         power_pdf->GetXaxis()->SetTitleOffset(0.84);
+        
+        
+        
+        power_corrected->Sort();
+        power_corrected->SetLineColor(kGreen);
+        power_corrected->SetMarkerColor(kGreen);
+        power_corrected->SetMarkerStyle(21);
+        power_corrected->SetMarkerSize(0.7);
+        power_corrected->SetName("separation");
+        power_corrected->GetYaxis()->SetRangeUser(0,20);
+        power_corrected->GetYaxis()->SetTitle("Separation [s.d]");
+        power_corrected->GetXaxis()->SetLabelSize(0.05);
+        power_corrected->GetXaxis()->SetTitleSize(0.06);
+        power_corrected->GetXaxis()->SetTitleOffset(0.84);
 
 
         /////////////////////////////
@@ -227,9 +257,11 @@ void sep_pdf_proton_plots() {
             leg_separation->SetFillColor(0);
             leg_separation->AddEntry(power_org, "Data (standared method w/o #theta_{c} correction)", "lp");
             leg_separation->AddEntry(power_pdf, " Cherenkov PDF Method", "lp");
+            leg_separation->AddEntry(power_corrected, " Cherenkov standared method corrected", "lp");
             TMultiGraph *mg_separation = new TMultiGraph();
-            mg_separation->Add(power_org);
+            //mg_separation->Add(power_org);
             mg_separation->Add(power_pdf);
+            mg_separation->Add(power_corrected);
             mg_separation->SetTitle(" separation power geometrical reconstruction ;#theta [degree]; separation [s.d.]");
             mg_separation->Draw("APL");
             leg_separation->Draw();
