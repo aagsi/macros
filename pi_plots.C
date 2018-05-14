@@ -10,8 +10,8 @@
 #include "TH2F.h"
 #include "TCanvas.h"
 #include <TLegend.h>
-#include "/u/aali/dirc/prttools/prttools.C"
-//#include "/Users/ahmed/dirc/prttools/prttools.C"
+//#include "/u/aali/dirc/prttools/prttools.C"
+#include "/Users/ahmed/dirc/prttools/prttools.C"
 #include "TMath.h"
 #include "TH1.h"
 #include "TF1.h"
@@ -121,11 +121,6 @@ void pi_plots() {
     }
     THStack *hs, *hs2, *hs3, *hs4, *hs5, *hs6, *hs7, *hs8;
     std::cout<<"############"<< " no problem 0 " <<std::endl;
-    TGraph *power_org = new TGraph();
-    TGraph *power_sim = new TGraph();
-    TGraph *power_modle_shift = new TGraph();
-    TGraph *power_p_shift = new TGraph();
-    TGraph *power_custom_shift = new TGraph();
     TGraph *calc_mom = new TGraph();
     TGraph *calc_e_mom = new TGraph();
     TGraph *calc_tof1tof2_distance = new TGraph();
@@ -153,42 +148,21 @@ void pi_plots() {
                     //TString cherenkov_data_path = Form("/u/aali/work/%d_sph_proton_data_spr.root", i);
                     //TString cherenkov_sim_path = Form("/u/aali/work/reco_proton_bar_3lsph_grease_theta_%d_sim_spr.root", i);
                     // pi
-                    TString cherenkov_data_path = Form("/u/aali/work/%d_sph_pi_data_spr.root", i);
+                    TString cherenkov_data_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wtb_%d_sph_pi_data_spr.root", i);
                     //TString cherenkov_sim_path = Form("/u/aali/work/reco_pi_bar_3lsph_grease_theta_%d_sim_spr.root", i);
-                    TString cherenkov_sim_path = Form("/u/aali/work/%d_sph_pi_sim_spr.root", i);
-
-                    // separation
-                    TString separation_data_path = Form("/u/aali/work/separation_%d_sph_data_spr.root", i);
-                    TString separation_shift_model_data_path = Form("/u/aali/work/separation_shift_model_%d_sph_data_spr.root", i);
-                    TString separation_shift_p_data_path = Form("/u/aali/work/separation_shift_p_%d_sph_data_spr.root", i);
-                    TString separation_shift_custom_data_path = Form("/u/aali/work/separation_shift_custom_%d_sph_data_spr.root", i);
-                    TString separation_sim_path = Form("/u/aali/work/separation_%d_sph_sim_spr.root", i);
-
-
+                    TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_pi_sim_spr.root", i);
 
                     cout<<"cherenkov_sim_path= " <<cherenkov_sim_path<<endl;
                     cout<<"cherenkov_data_path= " <<cherenkov_data_path<<endl;
-                    cout<<"separation_data_path= " <<separation_data_path<<endl;
-                    cout<<"separation_sim_path= " <<separation_sim_path<<endl;
-                    cout<<"separation_shift_model_data_path= " <<separation_shift_model_data_path<<endl;
-                    cout<<"separation_shift_p_data_path= " <<separation_shift_p_data_path<<endl;
-                    cout<<"separation_shift_custom_data_path= " <<separation_shift_custom_data_path<<endl;
+
 
                     string path_sim = (string)cherenkov_sim_path;
                     string path_data = (string)cherenkov_data_path;
-                    string path_data_separation = (string)separation_data_path;
-                    string path_sim_separation = (string)separation_sim_path;
-                    string path_data_separation_shift_model = (string)separation_shift_model_data_path;
-                    string path_data_separation_shift_p = (string)separation_shift_p_data_path;
-                    string path_data_separation_shift_custom = (string)separation_shift_custom_data_path;
+
 
                     cout<<"exists_test(path_sim)" <<exists_test(path_sim)<<endl;
                     cout<<"exists_test(path_data)" <<exists_test(path_data)<<endl;
-                    cout<<"exists_test(separation path_data)" <<exists_test(path_data_separation)<<endl;
-                    cout<<"exists_test(separation path_sim)" <<exists_test(path_sim_separation)<<endl;
-                    cout<<"exists_test(separation path_data shift_model)" <<exists_test(path_data_separation_shift_model)<<endl;
-                    cout<<"exists_test(separation path_data shift_p)" <<exists_test(path_data_separation_shift_p)<<endl;
-                    cout<<"exists_test(separation path_data shift_custom)" <<exists_test(path_data_separation_shift_custom)<<endl;
+
 
                     if (!exists_test(path_sim)) continue;
                     if (!exists_test(path_data)) continue;
@@ -209,45 +183,6 @@ void pi_plots() {
                     ffile_sim  = new TFile(cherenkov_sim_path, "READ");
                     ffile_data  = new TFile(cherenkov_data_path, "READ");
 
-                    ////////////////
-                    // READ Tree ///
-                    ////////////////
-                    Double_t separation(-9), separation_org(-1),separation_sim(-1), separation_shift_p(-2), separation_shift_model(-3), separation_shift_custom(-4);
-                    TChain ch_shift_model("dirc");
-                    TChain ch_shift_p("dirc");
-                    TChain ch_shift_custom("dirc");
-                    TChain ch("dirc");
-                    TChain ch_sim("dirc");
-                    ch_shift_model.Add(separation_shift_model_data_path);
-                    ch_shift_p.Add(separation_shift_p_data_path);
-                    ch_shift_custom.Add(separation_shift_custom_data_path);
-                    ch.Add(separation_data_path);
-                    ch_sim.Add(separation_sim_path);
-
-                    ch.SetBranchAddress("separation",&separation);
-                    ch_sim.SetBranchAddress("separation",&separation);
-                    ch_shift_model.SetBranchAddress("separation",&separation);
-                    ch_shift_p.SetBranchAddress("separation",&separation);
-                    ch_shift_custom.SetBranchAddress("separation",&separation);
-                    Int_t nent = ch.GetEntries();
-                    ch.GetEvent(nent-1);
-                    separation_org=separation;
-                    std::cout<<"############  separation = "<< separation  <<std::endl;
-                    ch_shift_model.GetEvent(nent-1);
-                    separation_shift_model=separation;
-                    std::cout<<"############  separation_shift_model = "<< separation_shift_model  <<std::endl;
-                    ch_shift_p.GetEvent(nent-1);
-                    separation_shift_p=separation;
-                    std::cout<<"############  separation_shift_p = "<< separation_shift_p  <<std::endl;
-                    ch_shift_custom.GetEvent(nent-1);
-                    separation_shift_custom=separation;
-                    std::cout<<"############  separation_shift_custom = "<< separation_shift_custom  <<std::endl;
-
-                    Int_t nent_sim = ch_sim.GetEntries();
-                    ch_sim.GetEvent(nent_sim-1);
-                    separation_sim=separation;
-                    std::cout<<"############  separation sim= "<< separation_sim  <<std::endl;
-
                     //////////////////////////
                     // cherenkov histogram //
                     //////////////////////////
@@ -260,7 +195,7 @@ void pi_plots() {
                     p_cherenkov_mc_same_path=(TH1F*)ffile_sim->Get("fHist_same_path");
                     p_cherenkov_bg_sim=(TH1F*)ffile_sim->Get("fHist_bg");
                     p_cherenkov_data_correction=(TH1F*)ffile_data->Get("fHist_correction");
-                    //p_cherenkov_sim_correction=(TH1F*)ffile_sim->Get("fHist_correction");
+                    p_cherenkov_sim_correction=(TH1F*)ffile_sim->Get("fHist_correction");
 
                     ////////////////////////////
                     // photon yield histogram //
@@ -300,19 +235,7 @@ void pi_plots() {
                     /////////////
                     tof_pid=(TH1F*)ffile_data->Get("hdelta_tof2tof1");
 
-                    //////////////////////////////////////////////////////
-                    // add the commented part of cherenkov correction  //
-                    //////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
+                    
                     ///////////////////
                     ///// part I //////
                     ///////////////////
@@ -352,14 +275,27 @@ void pi_plots() {
                         if(true) {
                             prt_canvasAdd("r_correction"+nid,800,400);
                             p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f (pi data)", prtangle));
-                            HistoStyleMatch(p_cherenkov_data_copy,p_cherenkov_data_correction);
+                            HistoStyleMatch(p_cherenkov_data,p_cherenkov_data_correction);
                             p_cherenkov_data_correction->Draw();
-                            p_cherenkov_data_copy->Draw("same");
+                            p_cherenkov_data->Draw("same");
                             TLegend *legend_correction= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
+                            
+                            
+                            TF1 *fFit_cor = new TF1("fFit_cor","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+                            fFit_cor->SetLineColor(1);
+                            Double_t cangle_cor =  p_cherenkov_data_correction->GetXaxis()->GetBinCenter(p_cherenkov_sim->GetMaximumBin());
+                            if(cangle_cor>0.85) cangle_cor=0.82;
+                            fFit_cor->SetParameters(100,cangle_cor,0.010);
+                            fFit_cor->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+                            fFit_cor->SetParLimits(0,0.1,1E6);
+                            fFit_cor->SetParLimits(1,cangle_cor-0.04,cangle_cor+0.04);
+                            fFit_cor->SetParLimits(2,0.005,0.018); // changed 0.014
+                            p_cherenkov_data_correction->Fit("fFit_cor","M","",cangle_cor-0.06,cangle_cor+0.06);
+
 
                             legend_correction->SetHeader("Ambiguity distribution (pi data)","C");
-                            legend_correction->AddEntry(p_cherenkov_data_correction,"Ambiguity distribution","f");
-                            legend_correction->AddEntry(p_cherenkov_data_copy," Ambiguity distribution p correction ","f");
+                            legend_correction->AddEntry(p_cherenkov_data,"Ambiguity distribution","f");
+                            legend_correction->AddEntry(p_cherenkov_data_correction," Ambiguity distribution corrected ","f");
                             legend_correction->Draw();
                             prt_canvasGet("r_correction"+nid)->Update();
                             TLine *line_ch_p_v = new TLine(0,0,0,1000);
@@ -379,6 +315,41 @@ void pi_plots() {
                             line_ch_pi_v->Draw();
                             prt_canvasGet("r_correction"+nid)->Update();
                         }
+                        
+                        
+                        
+                        if(false) {
+                            DiffNorm(p_cherenkov_sim_correction, p_cherenkov_data_correction);
+                            prt_canvasAdd("r_corrected_match"+nid,800,400);
+                            p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f (pion data)", prtangle));
+                            HistoStyleMatch(p_cherenkov_sim_correction,p_cherenkov_data_correction);
+                            p_cherenkov_data_correction->Draw();
+                            p_cherenkov_sim_correction->Draw("same");
+                            TLegend *legend_correction= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
+                            
+                            legend_correction->SetHeader("Ambiguity distribution corrected match )","C");
+                            legend_correction->AddEntry(p_cherenkov_data_correction,"Ambiguity distribution (pion data corrected )","p");
+                            legend_correction->AddEntry(p_cherenkov_sim_correction,"Ambiguity distribution (pion sim corrected )","f");
+                            legend_correction->Draw();
+                            prt_canvasGet("r_corrected_match"+nid)->Update();
+                            TLine *line_ch_p_v = new TLine(0,0,0,1000);
+                            line_ch_p_v->SetX1(fAngleP);
+                            line_ch_p_v->SetX2(fAngleP);
+                            line_ch_p_v->SetY1(gPad->GetUymin());
+                            line_ch_p_v->SetY2(gPad->GetUymax());
+                            line_ch_p_v->SetLineColor(kRed);
+                            
+                            TLine *line_ch_pi_v = new TLine(0,0,0,1000);
+                            line_ch_pi_v->SetX1(fAnglePi);
+                            line_ch_pi_v->SetX2(fAnglePi);
+                            line_ch_pi_v->SetY1(gPad->GetUymin());
+                            line_ch_pi_v->SetY2(gPad->GetUymax());
+                            line_ch_pi_v->SetLineColor(kBlue);
+                            line_ch_p_v->Draw();
+                            line_ch_pi_v->Draw();
+                            prt_canvasGet("r_corrected_match"+nid)->Update();
+                        }
+                        
                         if (false) { // done 2
                             gStyle->SetOptFit(1);
                             gStyle->SetOptStat(0);
@@ -392,7 +363,8 @@ void pi_plots() {
                             fFit->SetParLimits(0,0.1,1E6);
                             fFit->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
                             fFit->SetParLimits(2,0.005,0.018); // changed 0.014
-                            p_cherenkov_sim_copy->Fit("fFit","M","",cangle_sim-0.06,cangle_sim+0.06);
+                            p_cherenkov_data_copy->Fit("fFit","M","",cangle_sim-0.06,cangle_sim+0.06);
+                            if (prtangle== 90 ) p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.02,cangle_sim+0.08);
                             p_cherenkov_data_copy->SetTitle(Form("Polar angle %3.1f", prtangle));
                             p_cherenkov_data_copy->Draw();
 
@@ -403,7 +375,8 @@ void pi_plots() {
                             fFit_copy->SetParLimits(0,0.1,1E6);
                             fFit_copy->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
                             fFit_copy->SetParLimits(2,0.005,0.016); // changed 0.014
-                            p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.06,cangle_sim+0.06);
+                            p_cherenkov_sim_copy->Fit("fFit_copy","M","",cangle_sim-0.06,cangle_sim+0.06);
+                            if (prtangle== 90 ) p_cherenkov_sim_copy->Fit("fFit_copy","M","",cangle_sim-0.02,cangle_sim+0.08);
                             p_cherenkov_sim_copy->SetTitle(Form("Polar angle %3.1f", prtangle));
                             p_cherenkov_sim_copy->Draw();
 
@@ -419,26 +392,26 @@ void pi_plots() {
                         /////////////////////////////
                         //p_cherenkov_data->Scale(p_cherenkov_sim->GetMaximum() /p_cherenkov_data->GetMaximum());
                         //p_cherenkov_data_sub->Scale(p_cherenkov_sim->GetMaximum() /p_cherenkov_data_sub->GetMaximum());
-                        TAxis *axis = p_cherenkov_sim->GetXaxis();
+                        TAxis *axis = p_cherenkov_sim_correction->GetXaxis();
                         double xmin = 0.6;
                         double xmax = 0.74;
                         if (i==90)xmin = 0.9;
                         if (i==90)xmax = 1.0;
                         int bmin = axis->FindBin(xmin);
                         int bmax = axis->FindBin(xmax);
-                        double integral = p_cherenkov_sim->Integral(bmin,bmax);
+                        double integral = p_cherenkov_sim_correction->Integral(bmin,bmax);
                         // std::cout<<"############  integral= "<< integral <<std::endl;
                         // integral -= p_cherenkov_bg_sim->GetBinContent(bmin)*(xmin-axis->GetBinLowEdge(bmin))/axis->GetBinWidth(bmin);
                         // integral -= p_cherenkov_bg_sim->GetBinContent(bmax)*(axis->GetBinUpEdge(bmax)-xmax)/axis->GetBinWidth(bmax);
                         // std::cout<<"############  integral= "<< integral <<std::endl;
-                        TAxis *axis_data = p_cherenkov_data->GetXaxis();
+                        TAxis *axis_data = p_cherenkov_data_correction->GetXaxis();
                         double xmin_data = 0.6;
                         double xmax_data = 0.74;
                         if (i==90)xmin_data = 0.9;
                         if (i==90)xmax_data = 1.0;
                         int bmin_data = axis_data->FindBin(xmin_data);
                         int bmax_data = axis_data->FindBin(xmax_data);
-                        double integral_data = p_cherenkov_data->Integral(bmin_data,bmax_data);
+                        double integral_data = p_cherenkov_data_correction->Integral(bmin_data,bmax_data);
                         // std::cout<<"############  integral_data= "<< integral_data <<std::endl;
                         // integral_data -= p_cherenkov_data->GetBinContent(bmin_data)*(xmin_data-axis->GetBinLowEdge(bmin_data))/axis_data->GetBinWidth(bmin_data);
                         // integral_data -= p_cherenkov_data->GetBinContent(bmax_data)*(axis_data->GetBinUpEdge(bmax_data)-xmax_data)/axis_data->GetBinWidth(bmax_data);
@@ -514,11 +487,7 @@ void pi_plots() {
                         y_cangle_data_correction[counter]=out_array[25]; //cangle data correction
                         y_spr_data_correction[counter]=out_array[26]; //spr data correction
 
-                        power_org->SetPoint(counter,i,separation_org);
-                        power_sim->SetPoint(counter,i,separation_sim);
-                        power_modle_shift->SetPoint(counter,i,separation_shift_model);
-                        power_p_shift->SetPoint(counter,i,separation_shift_p);
-                        power_custom_shift->SetPoint(counter,i,separation_shift_custom);
+
 
 
                         ////////////////////////////////
@@ -903,7 +872,7 @@ void pi_plots() {
                         //  MC BG, Data, Data -BG  ///
                         //////////////////////////////
 
-                        if(false) { // done
+                        if(true) { // done
                             gStyle->SetOptFit(0);
                             gStyle->SetOptStat(0);
                             gPad->UseCurrentStyle();
@@ -1032,7 +1001,7 @@ void pi_plots() {
     ///// part III ////
     ///////////////////
 
-    if(true) {
+    if(false) {
 
         calc_mom->SetLineColor(kBlack);
         calc_mom->SetMarkerColor(kBlack);
@@ -1052,67 +1021,7 @@ void pi_plots() {
         calc_tof1tof2_distance->GetXaxis()->SetTitleSize(0.06);
         calc_tof1tof2_distance->GetXaxis()->SetTitleOffset(0.84);
 
-        power_org->Sort();
-        power_org->SetLineColor(kBlack);
-        power_org->SetMarkerColor(kBlack);
-        power_org->SetMarkerStyle(21);
-        power_org->SetMarkerSize(0.7);
-        power_org->SetName("separation");
-        power_org->GetYaxis()->SetRangeUser(0,20);
-        power_org->GetYaxis()->SetTitle("Separation [s.d]");
-        power_org->GetXaxis()->SetLabelSize(0.05);
-        power_org->GetXaxis()->SetTitleSize(0.06);
-        power_org->GetXaxis()->SetTitleOffset(0.84);
-
-        power_sim->Sort();
-        power_sim->SetLineColor(kBlack);
-        power_sim->SetMarkerColor(kBlack);
-        power_sim->SetLineStyle(2);
-        power_sim->SetMarkerStyle(21);
-        power_sim->SetMarkerSize(0.7);
-        power_sim->SetName("separation");
-        power_sim->GetYaxis()->SetRangeUser(0,20);
-        power_sim->GetYaxis()->SetTitle("Separation [s.d]");
-        power_sim->GetXaxis()->SetLabelSize(0.05);
-        power_sim->GetXaxis()->SetTitleSize(0.06);
-        power_sim->GetXaxis()->SetTitleOffset(0.84);
-
-        power_modle_shift->Sort();
-        power_modle_shift->SetLineColor(kRed);
-        power_modle_shift->SetMarkerColor(kRed);
-        power_modle_shift->SetMarkerStyle(21);
-        power_modle_shift->SetMarkerSize(0.7);
-        power_modle_shift->SetName("separation");
-        power_modle_shift->GetYaxis()->SetRangeUser(0,20);
-        power_modle_shift->GetYaxis()->SetTitle("Separation [s.d]");
-        power_modle_shift->GetXaxis()->SetLabelSize(0.05);
-        power_modle_shift->GetXaxis()->SetTitleSize(0.06);
-        power_modle_shift->GetXaxis()->SetTitleOffset(0.84);
-
-        power_p_shift->Sort();
-        power_p_shift->SetLineColor(kBlue);
-        power_p_shift->SetMarkerColor(kBlue);
-        power_p_shift->SetMarkerStyle(21);
-        power_p_shift->SetMarkerSize(0.7);
-        power_p_shift->SetName("separation");
-        power_p_shift->GetYaxis()->SetRangeUser(0,20);
-        power_p_shift->GetYaxis()->SetTitle("Separation [s.d]");
-        power_p_shift->GetXaxis()->SetLabelSize(0.05);
-        power_p_shift->GetXaxis()->SetTitleSize(0.06);
-        power_p_shift->GetXaxis()->SetTitleOffset(0.84);
-
-        power_custom_shift->Sort();
-        power_custom_shift->SetLineColor(kMagenta);
-        power_custom_shift->SetMarkerColor(kMagenta);
-        power_custom_shift->SetMarkerStyle(21);
-        power_custom_shift->SetMarkerSize(0.7);
-        power_custom_shift->SetName("separation");
-        power_custom_shift->GetYaxis()->SetRangeUser(0,20);
-        power_custom_shift->GetYaxis()->SetTitle("Separation [s.d]");
-        power_custom_shift->GetXaxis()->SetLabelSize(0.05);
-        power_custom_shift->GetXaxis()->SetTitleSize(0.06);
-        power_custom_shift->GetXaxis()->SetTitleOffset(0.84);
-
+        
         ////////////////////////////////////////////
         // SPR after/befor Background subtraction///
         ////////////////////////////////////////////
@@ -1480,33 +1389,6 @@ void pi_plots() {
             line_dis->SetLineColor(kRed);
             line_dis->Draw();
         }
-        /////////////////////////////
-        //// separation power   /////
-        /////////////////////////////
-
-        if(false) {
-            prt_canvasAdd("r_separation",800,400);
-
-            TLegend *leg_separation = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
-            leg_separation->SetHeader("separation power ","C");
-            leg_separation->SetFillColor(0);
-            leg_separation->AddEntry(power_org, "without cherenkov angle correction", "lp");
-            leg_separation->AddEntry(power_sim, "Sim without cherenkov angle correction", "lp");
-            leg_separation->AddEntry(power_p_shift, "p correction", "lp");
-            leg_separation->AddEntry(power_custom_shift, "custom correction", "lp");
-            leg_separation->AddEntry(power_modle_shift, "shift model", "lp");
-
-            TMultiGraph *mg_separation = new TMultiGraph();
-            mg_separation->Add(power_org);
-            mg_separation->Add(power_sim);
-            mg_separation->Add(power_modle_shift);
-            mg_separation->Add(power_p_shift);
-            mg_separation->Add(power_custom_shift);
-            mg_separation->SetTitle(" separatin power geometrical reconstruction ;#theta [degree]; separation [s.d.]");
-            mg_separation->Draw("APL");
-            leg_separation->Draw();
-
-        }
         gStyle->SetOptStat(0);
     }
     //////////////////////////
@@ -1523,6 +1405,37 @@ void pi_plots() {
         //~ // warning switch between p and pi
         //~ //Printf("if(prtangle == %d)gF2->SetParameter(1,%f);", prtangle_vector[d], recoAngle[d]);
     //~ }
+    
+    
+    delete p_cherenkov_sim ;
+    delete p_cherenkov_data;
+    delete p_cherenkov_data_copy;
+    delete p_cherenkov_sim_copy;
+    delete p_cherenkov_mc_same_path;
+    delete p_cherenkov_bg_sim;
+    delete p_cherenkov_data_correction;
+    delete nph_sim;
+    delete p_nph_sim;
+    delete p_nph_good_sim;
+    delete p_nph_true_sim;
+    delete nph_data;
+    delete p_nph_data;
+    delete p_nph_good_data;
+    delete p_diff_time_sim;
+    delete p_diff_time_mctruth;
+    delete p_diff_time_bg_sim;
+    delete p_diff_time_data;
+    delete p_photon_time_sim;
+    delete p_photon_time_data;
+    delete p_photon_time_sim_calc;
+    delete p_photon_time_data_calc;
+    delete p_cherenkov_sim_correction;
+    
+    
+    ffile_sim->Close();
+    ffile_data->Close();
+    
+    
     std::cout<<"#################################################################"<<std::endl;
     std::cout<<"############ P cherenkov angle= "<< fAngleP <<std::endl;
     std::cout<<"############ Pi cherenkov angle= "<< fAnglePi <<std::endl;
@@ -2311,104 +2224,4 @@ void FitStyle() {
 
 
 
-/*
-
-
-                    for(Int_t mcp=0; mcp<prt_nmcp; mcp++) {
-                        HistMcp[mcp] =(TH1F*)ffile_data->Get(Form("fHistMcp_%d",mcp));
-                    }
-
-                    // proton correction
-                    TF1 *Fit_MCP = new TF1("Fit_MCP","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-                    Fit_MCP->SetParameters(100,fAnglePi,0.010);
-                    Fit_MCP->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-                    Fit_MCP->SetParLimits(0,0.1,1E6);
-                    Fit_MCP->SetParLimits(1,fAnglePi-0.02,fAnglePi+0.02);
-                    Fit_MCP->SetParLimits(2,0.004,0.008);
-                    for(Int_t mcp=0; mcp<prt_nmcp; mcp++) {
-                        if(mcp==1 && i ==20) continue;
-                        if(mcp==9 && i ==20) continue;
-                        if(mcp==10 && i ==20) continue;
-                        if(mcp==11 && i ==20) continue;
-                        //////////////////////////////
-                        if(mcp==6 && i ==30) continue;
-                        if(mcp==7 && i ==30) continue;
-                        if(mcp==8 && i ==30) continue;
-                        if(mcp==9 && i ==30) continue;
-                        if(mcp==11 && i ==30) continue;
-                        //////////////////////////////
-                        if(mcp==4 && i ==40) continue;
-                        if(mcp==9 && i ==40) continue;
-                        if(mcp==11 && i ==40) continue;
-                        /////////////////////////////
-                        if(mcp==9 && i ==50) continue;
-                        if(mcp==11 && i ==50) continue;
-                        ///////////////////////////////
-                        if(mcp==0 && i ==70) continue;
-                        if(mcp==1 && i ==70) continue;
-                        if(mcp==2 && i ==70) continue;
-                        //////////////////////////////
-                        if(mcp==0 && i ==80) continue;
-                        if(mcp==1 && i ==80) continue;
-                        if(mcp==2 && i ==80) continue;
-                        if(mcp==3 && i ==80) continue;
-                        if(mcp==4 && i ==80) continue;
-                        if(mcp==5 && i ==80) continue;
-                        //////////////////////////////
-                        if(mcp==0 && i ==90) continue;
-                        if(mcp==1 && i ==90) continue;
-                        if(mcp==2 && i ==90) continue;
-                        if(mcp==3 && i ==90) continue;
-                        if(mcp==4 && i ==90) continue;
-                        if(mcp==5 && i ==90) continue;
-                        //////////////////////////////
-                        if(mcp==0 && i ==100) continue;
-                        if(mcp==1 && i ==100) continue;
-                        if(mcp==2 && i ==100) continue;
-                        if(mcp==3 && i ==100) continue;
-                        if(mcp==4 && i ==100) continue;
-                        if(mcp==5 && i ==100) continue;
-                        ///////////////////////////////
-                        if(mcp==0 && i ==110) continue;
-                        if(mcp==1 && i ==110) continue;
-                        if(mcp==2 && i ==110) continue;
-                        //////////////////////////////
-                        if(mcp==9 && i ==130) continue;
-                        if(mcp==10 && i ==130) continue;
-                        if(mcp==11 && i ==130) continue;
-                        ///////////////////////////////
-                        if(mcp==4 && i ==140) continue;
-                        if(mcp==9 && i ==140) continue;
-                        if(mcp==11 && i ==140) continue;
-                        ///////////////////////////////
-                        if(mcp==9 && i ==150) continue;
-                        if(mcp==11 && i ==150) continue;
-                        ///////////////////////////////
-                        prt_canvasAdd(Form("r_mcp_%d",mcp),800,400);
-
-                        if(mcp ==11 && i ==100) {
-                            HistMcp[mcp]->Fit("Fit_MCP","lq","",fAnglePi-0.025,fAnglePi+0.03);
-                        }
-                        else if(mcp ==9 && i ==1200) {
-                            HistMcp[mcp]->Fit("Fit_MCP","lq","",fAnglePi-0.025,fAnglePi+0.010);
-                        }
-                        else if(mcp ==6 && i ==1400) {
-                            HistMcp[mcp]->Fit("Fit_MCP","lq","",fAnglePi-0.025,fAnglePi+0.03);
-                        }
-                        else {
-                            HistMcp[mcp]->Fit("Fit_MCP","lq","",fAnglePi-0.025,fAnglePi+0.025);
-                        }
-                        std::cout<<"if(mcpid=="<< mcp<<") tangle += "<<fAnglePi-Fit_MCP->GetParameter(1)<<";" <<std::endl;
-                        HistMcp[mcp]->Draw();
-
-                        prt_canvasGet(Form("r_mcp_%d",mcp))->Update();
-                        TLine *lin_ch_p_v = new TLine(0,0,0,1000);
-                        lin_ch_p_v->SetX1(fAnglePi);
-                        lin_ch_p_v->SetX2(fAnglePi);
-                        lin_ch_p_v->SetY1(gPad->GetUymin());
-                        lin_ch_p_v->SetY2(gPad->GetUymax());
-                        lin_ch_p_v->SetLineColor(kRed);
-                        lin_ch_p_v->Draw();
-                    }
-*/
 
