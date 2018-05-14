@@ -574,6 +574,7 @@ void pi_plots() {
                             y_spr_data_correction_error[counter]=p_cherenkov_data_correction->GetRMSError();
                         }
                         counter++;
+                        
 
                         //std::cout<<"#################################################################"<<std::endl;
                         //Printf("if(prtangle==%d) hitTime=hitTime+%f;", i, out_array[13]);
@@ -581,11 +582,12 @@ void pi_plots() {
                         //Printf("timeCut%d=%f;", i, out_array[14]);
                         //Printf("chAngleCut%d=%f;", i, out_array[11]);
                         //std::cout<<"#################################################################"<<std::endl;
-
-                        recoAngle[counter]=out_array[19];
-                        timeCut[counter]=out_array[16]*5;
-                        chAngleCut[counter]=out_array[11]*5;
-                        prtangle_vector[counter]= i;
+                        
+                        // uncommint to get cuts
+                        //recoAngle[counter]=out_array[24]; // cangle_sim_true
+                        //timeCut[counter]=out_array[16]*5; // true
+                        //chAngleCut[counter]=out_array[10]*5; // true
+                        //prtangle_vector[counter]= i;
 
                         ////////////
                         // hstack //
@@ -872,7 +874,7 @@ void pi_plots() {
                         //  MC BG, Data, Data -BG  ///
                         //////////////////////////////
 
-                        if(true) { // done
+                        if(false) { // done
                             gStyle->SetOptFit(0);
                             gStyle->SetOptStat(0);
                             gPad->UseCurrentStyle();
@@ -890,16 +892,16 @@ void pi_plots() {
                             legend_bg_sub->Draw();
                             prt_canvasGet("r_bg_sub"+nid)->Update();
                             TLine *line_chcut_r = new TLine(0,0,0,1000);
-                            line_chcut_r->SetX1(out_array[19]+5*out_array[11]);
-                            line_chcut_r->SetX2(out_array[19]+5*out_array[11]);
+                            line_chcut_r->SetX1(out_array[24]+5*out_array[10]);
+                            line_chcut_r->SetX2(out_array[24]+5*out_array[10]);
                             line_chcut_r->SetY1(gPad->GetUymin());
                             line_chcut_r->SetY2(gPad->GetUymax());
                             line_chcut_r->SetLineColor(kRed);
                             line_chcut_r->Draw();
 
                             TLine *line_chcut_l = new TLine(0,0,0,1000);
-                            line_chcut_l->SetX1(out_array[19]-5*out_array[11]);
-                            line_chcut_l->SetX2(out_array[19]-5*out_array[11]);
+                            line_chcut_l->SetX1(out_array[24]-5*out_array[10]);
+                            line_chcut_l->SetX2(out_array[24]-5*out_array[10]);
                             line_chcut_l->SetY1(gPad->GetUymin());
                             line_chcut_l->SetY2(gPad->GetUymax());
                             line_chcut_l->SetLineColor(kRed);
@@ -990,6 +992,7 @@ void pi_plots() {
                         // newBranch_sumunderLine->Fill();
                         // dirc->Write("",TObject::kOverwrite);
                         // }
+                        std::cout<<"############"<< " no problem *** " <<std::endl;
                     }
 
                 }
@@ -1398,13 +1401,13 @@ void pi_plots() {
     prt_canvasSave(2,0);
     prt_canvasDel("*");
 
-    //~ for (int d=1; d<=14; d++) {
-        //~ //Printf("recoAngle%d_pi=%f", prtangle_vector[d], recoAngle[d]);
-        //~ //Printf("timeCut%d_pi=%f", prtangle_vector[d], timeCut[d]);
-        //~ //Printf("chAngleCut%d_pi=%f", prtangle_vector[d], chAngleCut[d]);
+    //for (int d=1; d<=14; d++) {
+        //Printf("recoAngle%d_pi=%f", prtangle_vector[d], recoAngle[d]);
+        //Printf("timeCut%d_pi=%f", prtangle_vector[d], timeCut[d]);
+        //Printf("chAngleCut%d_pi=%f", prtangle_vector[d], chAngleCut[d]);
         //~ // warning switch between p and pi
-        //~ //Printf("if(prtangle == %d)gF2->SetParameter(1,%f);", prtangle_vector[d], recoAngle[d]);
-    //~ }
+        //Printf("if(prtangle == %d)gF2->SetParameter(1,%f);", prtangle_vector[d], recoAngle[d]);
+     //}
     
     
     delete p_cherenkov_sim ;
