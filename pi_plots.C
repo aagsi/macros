@@ -66,7 +66,7 @@ TCanvas *c1 = new TCanvas("c1","A Simple Graph Example",200,10,700,500);
 // proto types//////
 ////////////////////
 // fitting functions
-Double_t* FitHisto(TH1F *p_cherenkov_sim,TH1F * p_cherenkov_mc_same_path, TH1F *p_cherenkov_data_sub, Double_t &kk, TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i, TH1F *p_cherenkov_data_copy, TH1F *p_cherenkov_data_correction);
+Double_t* FitHisto(TH1F *p_cherenkov_sim,TH1F * p_cherenkov_mc_same_path, TH1F *p_cherenkov_data_sub, Double_t &kk, TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i, TH1F *p_cherenkov_data_copy,TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_correction);
 // file existance
 bool exists_test (const std::string& name);
 // sideband method
@@ -100,7 +100,7 @@ void pi_plots() {
     Double_t x[n], y_spr_data_sub[n], y_spr_data[n], y_spr_sim_true[n], y_spr_sim[n], y_diff_true[n], y_diff_data[n], y_mean_diff_data[n], y_mean_diff_sim[n], y_mean_diff_true[n], y_diff_sim[n];
     Double_t y_cangle_data_sub[n], y_cangle_data[n], y_deviation_cangle_data_sub[n], y_cangle_sim[n], y_deviation_cangle_sim_true[n];
     Double_t y_cangle_sim_true[n];
-    Double_t y_spr_data_cuts[n], y_spr_sim_cuts[n], y_spr_data_sub_cuts[n], y_spr_sim_true_cuts[n], y_yield_nph_sim[n], y_yield_p_nph_sim[n], y_yield_p_nph_good_sim[n],  y_yield_p_nph_true_sim[n], y_yield_nph_data[n], y_yield_p_nph_data[n], y_yield_p_nph_good_data[n], y_yield_dac_hits_sys_cus_data[n], y_cangle_data_correction[n], y_spr_data_correction[n], y_spr_data_correction_error[n];
+    Double_t y_spr_data_cuts[n], y_spr_sim_cuts[n], y_spr_data_sub_cuts[n], y_spr_sim_true_cuts[n], y_yield_nph_sim[n], y_yield_p_nph_sim[n], y_yield_p_nph_good_sim[n],  y_yield_p_nph_true_sim[n], y_yield_nph_data[n], y_yield_p_nph_data[n], y_yield_p_nph_good_data[n], y_yield_dac_hits_sys_cus_data[n], y_cangle_data_correction[n], y_spr_data_org[n], y_cangle_data_org[n], y_spr_data_correction[n], y_spr_data_correction_error[n];
 
     Double_t y_yield_nph_sim_error[n], y_yield_p_nph_sim_error[n], y_yield_p_nph_good_sim_error[n], y_yield_p_nph_true_sim_error[n], y_yield_nph_data_error[n], y_yield_p_nph_data_error[n], y_yield_p_nph_good_data_error[n];
 
@@ -272,7 +272,7 @@ void pi_plots() {
                             prt_canvasGet("r_ch_match"+nid)->Update();
                         }
 
-                        if(true) {
+                        if(false) {
                             prt_canvasAdd("r_correction"+nid,800,400);
                             p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f (pi data)", prtangle));
                             HistoStyleMatch(p_cherenkov_data,p_cherenkov_data_correction);
@@ -350,7 +350,7 @@ void pi_plots() {
                             prt_canvasGet("r_corrected_match"+nid)->Update();
                         }
                         
-                        if (false) { // done 2
+                        if (true) { // done 2
                             gStyle->SetOptFit(1);
                             gStyle->SetOptStat(0);
 
@@ -364,7 +364,8 @@ void pi_plots() {
                             fFit->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
                             fFit->SetParLimits(2,0.005,0.018); // changed 0.014
                             p_cherenkov_data_copy->Fit("fFit","M","",cangle_sim-0.06,cangle_sim+0.06);
-                            if (prtangle== 90 ) p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.02,cangle_sim+0.08);
+                            if (prtangle== 90 ) p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.03,cangle_sim+0.06);
+                            if (prtangle== 100 ) p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.03,cangle_sim+0.06);
                             p_cherenkov_data_copy->SetTitle(Form("Polar angle %3.1f", prtangle));
                             p_cherenkov_data_copy->Draw();
 
@@ -376,7 +377,8 @@ void pi_plots() {
                             fFit_copy->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
                             fFit_copy->SetParLimits(2,0.005,0.016); // changed 0.014
                             p_cherenkov_sim_copy->Fit("fFit_copy","M","",cangle_sim-0.06,cangle_sim+0.06);
-                            if (prtangle== 90 ) p_cherenkov_sim_copy->Fit("fFit_copy","M","",cangle_sim-0.02,cangle_sim+0.08);
+                            if (prtangle== 90 ) p_cherenkov_sim_copy->Fit("fFit_copy","M","",cangle_sim-0.03,cangle_sim+0.06);
+                            if (prtangle== 100 ) p_cherenkov_sim_copy->Fit("fFit_copy","M","",cangle_sim-0.03,cangle_sim+0.06);
                             p_cherenkov_sim_copy->SetTitle(Form("Polar angle %3.1f", prtangle));
                             p_cherenkov_sim_copy->Draw();
 
@@ -441,7 +443,7 @@ void pi_plots() {
                         // histogram style
                         HistoStyle(p_cherenkov_sim, p_cherenkov_data, p_cherenkov_data_sub, p_cherenkov_mc_same_path, p_cherenkov_bg_sim, nph_sim, p_nph_sim, p_nph_good_sim, p_nph_true_sim, p_diff_time_sim, p_diff_time_data, p_diff_time_data_sub, p_diff_time_mctruth, p_diff_time_bg_sim, p_cherenkov_data_copy, p_photon_time_sim, p_photon_time_data, p_photon_time_sim_calc, p_photon_time_data_calc, nph_data, p_nph_data, p_nph_good_data, dac_hits_data, dac_hits_sys_cus_data);
                         // fitting histograms
-                        Double_t  *out_array = FitHisto(p_cherenkov_sim, p_cherenkov_mc_same_path, p_cherenkov_data_sub, kk, p_diff_time_data, p_diff_time_mctruth, p_diff_time_sim, i, p_cherenkov_data_copy,p_cherenkov_data_correction);
+                        Double_t  *out_array = FitHisto(p_cherenkov_sim, p_cherenkov_mc_same_path, p_cherenkov_data_sub, kk, p_diff_time_data, p_diff_time_mctruth, p_diff_time_sim, i, p_cherenkov_data_copy,p_cherenkov_data, p_cherenkov_data_correction);
                         //~ // cal photon yield fit function
                         //~ Double_t  *out_yield_array_nph_sim = YieldGausFit(nph_sim);
                         //~ std::cout<<"############  1 = "<< out_yield_array_nph_sim[0] <<std::endl;
@@ -486,6 +488,10 @@ void pi_plots() {
 
                         y_cangle_data_correction[counter]=out_array[25]; //cangle data correction
                         y_spr_data_correction[counter]=out_array[26]; //spr data correction
+                        
+                        
+                        y_cangle_data_org[counter]=out_array[27]; //cangle data correction
+                        y_spr_data_org[counter]=out_array[28]; //spr data correction
 
 
 
@@ -608,7 +614,7 @@ void pi_plots() {
                         hs2->Add(nph_sim);
                         hs2->Add(p_nph_sim);
                         hs2->Add(p_nph_good_sim);
-                        hs2->Add(p_nph_true_sim);
+                        //hs2->Add(p_nph_true_sim);
 
                         hs6->Add(nph_data);
                         hs6->Add(p_nph_data);
@@ -793,7 +799,7 @@ void pi_plots() {
                             legend_nph_sim->AddEntry(nph_sim," DIRC hits without cuts  ","l");
                             legend_nph_sim->AddEntry(p_nph_sim,"DIRC hits with time cut ","l");
                             legend_nph_sim->AddEntry(p_nph_good_sim,"DIRC hits with #theta_{C} and time cuts","l");
-                            legend_nph_sim->AddEntry(p_nph_true_sim," DIRC hits true path inside prism","l");
+                            //legend_nph_sim->AddEntry(p_nph_true_sim," DIRC hits true path inside prism","l");
 
                             hs2->SetTitle(Form("Polar angle %3.1f", prtangle));
                             hs2->Draw("nostack");
@@ -1004,7 +1010,7 @@ void pi_plots() {
     ///// part III ////
     ///////////////////
 
-    if(false) {
+    if(true) {
 
         calc_mom->SetLineColor(kBlack);
         calc_mom->SetMarkerColor(kBlack);
@@ -1033,7 +1039,8 @@ void pi_plots() {
         TGraph *graph_spr_sim = new TGraph(n,x,y_spr_sim);
         TGraph *graph_spr_data_sub = new TGraph(n,x,y_spr_data_sub);
         TGraph *graph_spr_sim_true = new TGraph(n,x,y_spr_sim_true);
-        //TGraph *graph_spr_data_correction = new TGraph(n,x,y_spr_data_correction);
+        TGraph *graph_spr_data_correction = new TGraph(n,x,y_spr_data_correction);
+        TGraph *graph_spr_data_org = new TGraph(n,x,y_spr_data_org);
 
         TGraph *graph_spr_data_cuts = new TGraph(n,x,y_spr_data_cuts);
         TGraph *graph_spr_sim_cuts = new TGraph(n,x,y_spr_sim_cuts);
@@ -1055,17 +1062,28 @@ void pi_plots() {
         TGraph *graph_cangle_sim = new TGraph(n,x,y_cangle_sim);
         TGraph *graph_cangle_sim_true = new TGraph(n,x,y_cangle_sim_true);
         TGraph *graph_cangle_data_correction = new TGraph(n,x,y_cangle_data_correction);
+        TGraph *graph_cangle_data_org = new TGraph(n,x,y_cangle_data_org);
         TGraph *graph_deviation_cangle_data_sub = new TGraph(n,x,y_deviation_cangle_data_sub);
 
-        TGraphErrors *graph_yield_DIRC_wo_cuts_sim = new TGraphErrors(n,x,y_yield_nph_sim,0, y_yield_nph_sim_error);
-        TGraphErrors *graph_yield_DIRC_wt_cuts_sim = new TGraphErrors(n,x,y_yield_p_nph_sim,0, y_yield_p_nph_sim_error);
-        TGraphErrors *graph_yield_DIRC_wtc_cuts_sim = new TGraphErrors(n,x,y_yield_p_nph_good_sim,0, y_yield_p_nph_good_sim_error);
-        TGraphErrors *graph_yield_DIRC_true_sim = new TGraphErrors(n,x,y_yield_p_nph_true_sim,0, y_yield_p_nph_true_sim_error);
-        TGraphErrors *graph_yield_DIRC_wo_cuts_data = new TGraphErrors(n,x,y_yield_nph_data,0, y_yield_nph_data_error);
-        TGraphErrors *graph_yield_DIRC_wt_cuts_data = new TGraphErrors(n,x,y_yield_p_nph_data,0, y_yield_p_nph_data_error);
-        TGraphErrors *graph_yield_DIRC_wtc_cuts_data = new TGraphErrors(n,x,y_yield_p_nph_good_data,0, y_yield_p_nph_good_data_error);
+        //        TGraphErrors *graph_yield_DIRC_wo_cuts_sim = new TGraphErrors(n,x,y_yield_nph_sim,0, y_yield_nph_sim_error);
+        //        TGraphErrors *graph_yield_DIRC_wt_cuts_sim = new TGraphErrors(n,x,y_yield_p_nph_sim,0, y_yield_p_nph_sim_error);
+        //        TGraphErrors *graph_yield_DIRC_wtc_cuts_sim = new TGraphErrors(n,x,y_yield_p_nph_good_sim,0, y_yield_p_nph_good_sim_error);
+        //        TGraphErrors *graph_yield_DIRC_true_sim = new TGraphErrors(n,x,y_yield_p_nph_true_sim,0, y_yield_p_nph_true_sim_error);
+        //        TGraphErrors *graph_yield_DIRC_wo_cuts_data = new TGraphErrors(n,x,y_yield_nph_data,0, y_yield_nph_data_error);
+        //        TGraphErrors *graph_yield_DIRC_wt_cuts_data = new TGraphErrors(n,x,y_yield_p_nph_data,0, y_yield_p_nph_data_error);
+        //        TGraphErrors *graph_yield_DIRC_wtc_cuts_data = new TGraphErrors(n,x,y_yield_p_nph_good_data,0, y_yield_p_nph_good_data_error);
+        
+        
+        
+        TGraph *graph_yield_DIRC_wo_cuts_sim = new TGraph(n,x,y_yield_nph_sim);
+        TGraph *graph_yield_DIRC_wt_cuts_sim = new TGraph(n,x,y_yield_p_nph_sim);
+        TGraph *graph_yield_DIRC_wtc_cuts_sim = new TGraph(n,x,y_yield_p_nph_good_sim);
+        TGraph *graph_yield_DIRC_true_sim     = new TGraph(n,x,y_yield_p_nph_true_sim);
+        TGraph *graph_yield_DIRC_wo_cuts_data = new TGraph(n,x,y_yield_nph_data);
+        TGraph *graph_yield_DIRC_wt_cuts_data = new TGraph(n,x,y_yield_p_nph_data);
+        TGraph *graph_yield_DIRC_wtc_cuts_data = new TGraph(n,x,y_yield_p_nph_good_data);
 
-        TGraphErrors *graph_spr_data_correction = new TGraphErrors(n,x,y_spr_data_correction,0,y_spr_data_correction_error);
+        //TGraphErrors *graph_spr_data_correction = new TGraphErrors(n,x,y_spr_data_correction,0,y_spr_data_correction_error);
 
         graph_spr_data->SetLineColor(1);
         graph_spr_data->SetLineWidth(4);
@@ -1112,11 +1130,17 @@ void pi_plots() {
         graph_spr_sim_true_cuts->SetMarkerStyle(21);
         graph_spr_sim_true_cuts->SetLineStyle(2);
 
-        graph_spr_data_correction->SetLineColor(kMagenta);
+        graph_spr_data_correction->SetLineColor(kBlack);
         graph_spr_data_correction->SetLineWidth(4);
-        graph_spr_data_correction->SetMarkerColor(kMagenta);
+        graph_spr_data_correction->SetMarkerColor(kBlack);
         graph_spr_data_correction->SetMarkerStyle(21);
         graph_spr_data_correction->SetLineStyle(5);
+        
+        graph_spr_data_org->SetLineColor(kRed);
+        graph_spr_data_org->SetLineWidth(4);
+        graph_spr_data_org->SetMarkerColor(kRed);
+        graph_spr_data_org->SetMarkerStyle(21);
+        graph_spr_data_org->SetLineStyle(6);
 
         ///////////////////////////////
         graph_diff_true->SetLineColor(2);
@@ -1159,11 +1183,17 @@ void pi_plots() {
         graph_cangle_data->SetMarkerColor(2);
         graph_cangle_data->SetMarkerStyle(21);
 
-        graph_cangle_data_correction->SetLineColor(kMagenta);
+        graph_cangle_data_correction->SetLineColor(kBlack);
         graph_cangle_data_correction->SetLineWidth(4);
-        graph_cangle_data_correction->SetMarkerColor(kMagenta);
+        graph_cangle_data_correction->SetMarkerColor(kBlack);
         graph_cangle_data_correction->SetMarkerStyle(21);
         graph_cangle_data_correction->SetLineStyle(5);
+        
+        graph_cangle_data_org->SetLineColor(kRed);
+        graph_cangle_data_org->SetLineWidth(4);
+        graph_cangle_data_org->SetMarkerColor(kRed);
+        graph_cangle_data_org->SetMarkerStyle(21);
+        graph_cangle_data_org->SetLineStyle(6);
 
         graph_cangle_sim_true->SetLineColor(1);
         graph_cangle_sim_true->SetLineWidth(4);
@@ -1268,21 +1298,21 @@ void pi_plots() {
         //////////////
         //// cangle //
         //////////////
-        if(true) {
+        if(false) {
             prt_canvasAdd("r_graph_cangle",800,400);
             TLegend *leg_cangle_data_sub = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_cangle_data_sub->SetHeader("(pi #theta_{c} data)","C");
-            leg_cangle_data_sub->AddEntry(graph_cangle_data, "Data", "lp");
-            leg_cangle_data_sub->AddEntry(graph_cangle_data_sub, "Data - BG", "lp");
-            leg_cangle_data_sub->AddEntry(graph_cangle_sim, "Sim", "lp");
-            leg_cangle_data_sub->AddEntry(graph_cangle_sim_true, "Sim true inside prism", "lp");
-            leg_cangle_data_sub->AddEntry(graph_cangle_data_correction, "data cherenkov correction", "lp");
+            leg_cangle_data_sub->AddEntry(graph_cangle_data_org, "Data befor correction", "lp");
+            //leg_cangle_data_sub->AddEntry(graph_cangle_data_sub, "Data - BG", "lp");
+            //leg_cangle_data_sub->AddEntry(graph_cangle_sim, "Sim", "lp");
+            //leg_cangle_data_sub->AddEntry(graph_cangle_sim_true, "Sim true inside prism", "lp");
+            leg_cangle_data_sub->AddEntry(graph_cangle_data_correction, "Data after corrected", "lp");
 
             TMultiGraph *mg_cangle_data_sub = new TMultiGraph();
-            mg_cangle_data_sub->Add(graph_cangle_data_sub);
-            mg_cangle_data_sub->Add(graph_cangle_data);
-            mg_cangle_data_sub->Add(graph_cangle_sim);
-            mg_cangle_data_sub->Add(graph_cangle_sim_true);
+            //mg_cangle_data_sub->Add(graph_cangle_data_sub);
+            mg_cangle_data_sub->Add(graph_cangle_data_org);
+            //mg_cangle_data_sub->Add(graph_cangle_sim);
+            //mg_cangle_data_sub->Add(graph_cangle_sim_true);
             mg_cangle_data_sub->Add(graph_cangle_data_correction);
 
             mg_cangle_data_sub->SetTitle("reco cherenkov angle ; #theta [degree]; #theta_{C} [rad]");
@@ -1308,21 +1338,21 @@ void pi_plots() {
         //////////////
         //// spr /////
         //////////////
-        if(true) {
+        if(false) {
             prt_canvasAdd("r_spr",800,400);
             TLegend *leg = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg->SetHeader("spr (pi)","C");
-            leg->AddEntry(graph_spr_data, "Data", "lp");
-            leg->AddEntry(graph_spr_data_sub, "Data - BG", "lp");
-            leg->AddEntry(graph_spr_sim, "Simulation", "lp");
-            leg->AddEntry(graph_spr_sim_true, "Sim true path inside prism", "lp");
-            leg->AddEntry(graph_spr_data_correction, "data cherenkov correction", "lp");
+            leg->AddEntry(graph_spr_data_org, "Data befor correction", "lp");
+            //leg->AddEntry(graph_spr_data_sub, "Data - BG", "lp");
+            //leg->AddEntry(graph_spr_sim, "Simulation", "lp");
+            //leg->AddEntry(graph_spr_sim_true, "Sim true path inside prism", "lp");
+            leg->AddEntry(graph_spr_data_correction, "Data after correction", "lp");
 
             TMultiGraph *mg = new TMultiGraph();
-            mg->Add(graph_spr_data_sub);
-            mg->Add(graph_spr_data);
-            mg->Add(graph_spr_sim);
-            mg->Add(graph_spr_sim_true);
+            //mg->Add(graph_spr_data_sub);
+            mg->Add(graph_spr_data_org);
+            //mg->Add(graph_spr_sim);
+            //mg->Add(graph_spr_sim_true);
             mg->Add(graph_spr_data_correction);
             mg->SetTitle("Single Photon Resolution; #theta [degree]; SPR [rad]");
             mg->Draw("APL");
@@ -1333,27 +1363,27 @@ void pi_plots() {
         //////////////
         //// yield ///
         //////////////
-        if(false) {
+        if(true) {
             prt_canvasAdd("r_photon_yield_all",800,400);
             TLegend *leg_yield = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_yield->SetHeader("photon yield (pi)","C");
             leg_yield->AddEntry(graph_yield_DIRC_wo_cuts_sim, "graph_yield_DIRC_wo_cuts_sim ", "lp");
-            leg_yield->AddEntry(graph_yield_DIRC_wt_cuts_sim, "graph_yield_DIRC_wt_cuts_sim", "lp");
-            leg_yield->AddEntry(graph_yield_DIRC_wtc_cuts_sim, "graph_yield_DIRC_wtc_cuts_sim ", "lp");
+            //leg_yield->AddEntry(graph_yield_DIRC_wt_cuts_sim, "graph_yield_DIRC_wt_cuts_sim", "lp");
+            //leg_yield->AddEntry(graph_yield_DIRC_wtc_cuts_sim, "graph_yield_DIRC_wtc_cuts_sim ", "lp");
             leg_yield->AddEntry(graph_yield_DIRC_wo_cuts_data, "graph_yield_DIRC_wo_cuts_data", "lp");
-            leg_yield->AddEntry(graph_yield_DIRC_wt_cuts_data, "graph_yield_DIRC_wt_cuts_data", "lp");
-            leg_yield->AddEntry(graph_yield_DIRC_wtc_cuts_data, "graph_yield_DIRC_wtc_cuts_data", "lp");
-            leg_yield->AddEntry(graph_yield_DIRC_true_sim, "graph_yield_DIRC_true_sim", "lp");
+            //leg_yield->AddEntry(graph_yield_DIRC_wt_cuts_data, "graph_yield_DIRC_wt_cuts_data", "lp");
+            //leg_yield->AddEntry(graph_yield_DIRC_wtc_cuts_data, "graph_yield_DIRC_wtc_cuts_data", "lp");
+            //leg_yield->AddEntry(graph_yield_DIRC_true_sim, "graph_yield_DIRC_true_sim", "lp");
             //leg_yield->AddEntry(graph_yield_sys_wo_cuts_data, "graph_yield_sys_wo_cuts_data", "lp");
 
             TMultiGraph *mg_yield = new TMultiGraph();
             mg_yield->Add(graph_yield_DIRC_wo_cuts_sim);
-            mg_yield->Add(graph_yield_DIRC_wt_cuts_sim);
-            mg_yield->Add(graph_yield_DIRC_wtc_cuts_sim);
+            //mg_yield->Add(graph_yield_DIRC_wt_cuts_sim);
+            //mg_yield->Add(graph_yield_DIRC_wtc_cuts_sim);
             mg_yield->Add(graph_yield_DIRC_wo_cuts_data);
-            mg_yield->Add(graph_yield_DIRC_wt_cuts_data);
-            mg_yield->Add(graph_yield_DIRC_wtc_cuts_data);
-            mg_yield->Add(graph_yield_DIRC_true_sim);
+            //mg_yield->Add(graph_yield_DIRC_wt_cuts_data);
+            //mg_yield->Add(graph_yield_DIRC_wtc_cuts_data);
+            //mg_yield->Add(graph_yield_DIRC_true_sim);
             //mg_yield->Add(graph_yield_sys_wo_cuts_data);
             mg_yield->SetTitle("photon yield ;#theta [degree]; count [#]");
             mg_yield->Draw("APL");
@@ -1452,7 +1482,7 @@ void pi_plots() {
 
 
 
-Double_t* FitHisto(TH1F *p_cherenkov_sim, TH1F * p_cherenkov_mc_same_path, TH1F * p_cherenkov_data_sub, Double_t &kk, TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i, TH1F *p_cherenkov_data_copy, TH1F * p_cherenkov_data_correction) {
+Double_t* FitHisto(TH1F *p_cherenkov_sim, TH1F * p_cherenkov_mc_same_path, TH1F * p_cherenkov_data_sub, Double_t &kk, TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i, TH1F *p_cherenkov_data_copy, TH1F *p_cherenkov_data, TH1F * p_cherenkov_data_correction) {
     gStyle->SetOptFit(1);
     std::cout<<"############"<< " Inside the FitHisto function  " <<  "     kk= "<<kk<<std::endl;
     TF1 *fFit = new TF1("fFit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
@@ -1495,7 +1525,43 @@ Double_t* FitHisto(TH1F *p_cherenkov_sim, TH1F * p_cherenkov_mc_same_path, TH1F 
         p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.06,cangle_sim+0.06);
         Double_t cangle_data = fFit_copy->GetParameter(1);
         Double_t spr_data = fFit_copy->GetParameter(2);
-
+        
+        
+        //        TF1 *fFit_org = new TF1("fFit_org","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+        //        fFit_org->SetParameters(100,cangle_sim,0.010);
+        //        fFit_org->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+        //        fFit_org->SetParLimits(0,0.1,1E6);
+        //        fFit_org->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+        //        fFit_org->SetParLimits(2,0.005,0.016); // changed 0.014
+        //        p_cherenkov_data->Fit("fFit_org","M","",cangle_sim-0.06,cangle_sim+0.06);
+        //        Double_t cangle_data_org = fFit_org->GetParameter(1);
+        //        Double_t spr_data_org = fFit_org->GetParameter(2);
+        
+        
+        //        TF1 *fFit_correction = new TF1("fFit_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+        //        fFit_correction->SetParameters(100,cangle_sim,0.010);
+        //        fFit_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+        //        fFit_correction->SetParLimits(0,0.1,1E6);
+        //        fFit_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+        //        fFit_correction->SetParLimits(2,0.005,0.016); // changed 0.014
+        //        p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.06,cangle_sim+0.06);
+        //        Double_t cangle_data_correction = fFit_correction->GetParameter(1);
+        //        Double_t spr_data_correction = fFit_correction->GetParameter(2);
+        
+        
+        
+        TF1 *fFit_org = new TF1("fFit_org","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+        fFit_org->SetParameters(100,cangle_sim,0.010);
+        fFit_org->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+        fFit_org->SetParLimits(0,0.1,1E6);
+        fFit_org->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+        fFit_org->SetParLimits(2,0.005,0.016); // changed 0.014
+        p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.06,cangle_sim+0.06);
+        if (i== 90 ) p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.02,cangle_sim+0.08);
+        Double_t cangle_data_org = fFit_org->GetParameter(1);
+        Double_t spr_data_org = fFit_org->GetParameter(2);
+        
+        
         TF1 *fFit_correction = new TF1("fFit_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
         fFit_correction->SetParameters(100,cangle_sim,0.010);
         fFit_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
@@ -1503,6 +1569,7 @@ Double_t* FitHisto(TH1F *p_cherenkov_sim, TH1F * p_cherenkov_mc_same_path, TH1F 
         fFit_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
         fFit_correction->SetParLimits(2,0.005,0.016); // changed 0.014
         p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.06,cangle_sim+0.06);
+        if (i== 90 ) p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.02,cangle_sim+0.08);
         Double_t cangle_data_correction = fFit_correction->GetParameter(1);
         Double_t spr_data_correction = fFit_correction->GetParameter(2);
 
@@ -1729,6 +1796,10 @@ Double_t* FitHisto(TH1F *p_cherenkov_sim, TH1F * p_cherenkov_mc_same_path, TH1F 
         return_array[24]=cangle_sim_true;
         return_array[25]=cangle_data_correction;
         return_array[26]=spr_data_correction;
+        return_array[27]=cangle_data_org;
+        return_array[28]=spr_data_org;
+        
+        
         // std::cout<<"\n"<<std::endl;
         // std::cout<<"\n"<<std::endl;
         // std::cout<<"\n"<<std::endl;
