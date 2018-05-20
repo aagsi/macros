@@ -53,8 +53,14 @@ TH1F*  nHits_dac = new TH1F("nHits_dac",";number of photons solutions per proton
 TH1F*  nHits_dac_syscut_p = new TH1F("nHits_dac_syscut_p",";number of photons per proton track after sys cut [#];entries [#]",   100,0,200);
 TH1F*  fnHits_true_sim = new TH1F("fnHits_true_sim",";number of photons per track [#];entries [#]",   100,0,200);
 
-TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
-TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
+//TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
+//TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
+
+// in case of standared method choose smaller range for the liklhood histo
+TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-150, 150);
+TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-150, 150);
+
+
 
 //TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",1000,-1000,1000);
 //TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",1000,-1000,1000);
@@ -444,8 +450,9 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     /////////////////////
     
     Double_t theta(0),phi(0), trr(0),  nph(0),par1(0), par2(0), par3(0), par4(0), par5(0), par6(0), test1(0), test2(0), test3(0),separation(0),recoAngle(0), chAngleCut(0), timeRes(0);
-    Double_t recoP(0), recoPi(0), gPDF(0), openChCorr(0), method_type(-1);
+    Double_t recoP(0), recoPi(0), gPDF(0), method_type(-1);
     Int_t solution_number_approach_selection(0),solution_number(0);
+    Int_t openChCorr(0);
     
     chAngleCut = PrtManager::Instance()->GetchAngleCut();
     recoAngle = PrtManager::Instance()->GetrecoAngle();
@@ -473,8 +480,16 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
-        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        //data
+	cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
+	//sim
+        //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
+	//test  number of event sgenerate PDF
+        //cherenkov_data_p_path =  Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_%d_%g_sph_p_data_cherenkovPDF.root", openChCorr,prtangle_pdf);
+        //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_%d_%g_sph_pi_data_cherenkovPDF.root",openChCorr,prtangle_pdf);
+
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_pi_data_cherenkovPDF.root", 40);
         cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
@@ -561,6 +576,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     tree.Branch("chAngleCut",&chAngleCut,"chAngleCut/D");
     tree.Branch("recoAngle",&recoAngle,"recoAngle/D");
     tree.Branch("timeRes",&timeRes,"timeRes/D");
+    tree.Branch("openChCorr",&openChCorr,"openChCorr/I");
     tree.Branch("end",&end,"end/I");
     tree.Branch("solution_number_approach_selection",&end,"solution_number_approach_selection/I");
     tree.Branch("solution_number",&end,"solution_number/I");
@@ -576,10 +592,12 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     fMethod = PrtManager::Instance()->GetRunType();
     Int_t nEvents = fChain->GetEntries();
     if(end==0) end = nEvents;
-    if (gPDF==1 && fEvent->GetType()==0 )start = 500001;
-    if (gPDF==1 && fEvent->GetType()==1 )start = 5001;
+    if (gPDF==1 )start = 500001;
+   // if (gPDF==1 )start = 0;
     cout<<"@@@@@@@@@@@@ test1="<< test1 << endl;
     cout<<"@@@@@@@@@@@@ test2="<< test2 << endl;
+    cout<<"@@@@@@@@@@@@  sim ?="<< fEvent->GetType()<< endl;
+
     
     cout<<"@@@@@@@@@@@@ gPDF="<< gPDF << "    start= "<< start << endl;
     
@@ -613,26 +631,26 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             // if(studyId==151) beam_corr = 0.001; // 20 deg
             // if(studyId==151) beam_corr = -0.003; // 25 deg
             //beam_corr = 0.002; // 125 deg s160
-            if(fEvent->GetType()==0) {
+            if(fEvent->GetType()==0 && test1==99) {
                 
                 // 332 study ID beam correction
-                if (prtangle==20){test1=0.5/1000  ;test2= 6.4/1000 ;}
-                if (prtangle==30){test1=-0.5/1000 ;test2= 6.0/1000 ;}
-                if (prtangle==40){test1=1.5/1000  ;test2= -5.3/1000 ;}
-                if (prtangle==50){test1=2.5/1000  ;test2= 0.0/1000 ;}
-                if (prtangle==60){test1=1.5/1000  ;test2= 0.0/1000 ;}
-                if (prtangle==70){test1=0.5/1000  ;test2= -7.0/1000 ;}
-                if (prtangle==80){test1=2.5/1000   ;test2= 0.0/1000 ;}
-                if (prtangle==90){test1=-0.5/1000 ;test2= 0.0/1000 ;}
-                if (prtangle==100){test1=0.5/1000 ;test2= -7.2/1000 ;}
-                if (prtangle==110){test1=-0.5/1000 ;test2= 0.0/1000 ;}
-                if (prtangle==120){test1=-0.5/1000 ;test2=-4.0/1000 ;}
-                if (prtangle==130){test1=0.5/1000  ;test2=-2.0/1000 ;}
-                if (prtangle==140){test1=0.5/1000 ;test2=0.0/1000 ;}
-                if (prtangle==150){test1=0.5/1000 ;test2=-7.0/1000 ;}
+                if (prtangle==20){test1=0.0/1000  ;test2= 6.5/1000 ;}
+                if (prtangle==30){test1=-1.0/1000 ;test2= 6.0/1000 ;}
+                if (prtangle==40){test1=1.0/1000  ;test2= -5.5/1000 ;}
+                if (prtangle==50){test1=2.0/1000  ;test2= -5.5/1000 ;}
+                if (prtangle==60){test1=1.0/1000  ;test2= 0.0/1000 ;}
+                if (prtangle==70){test1=0/1000    ;test2= -8.0/1000 ;}
+                if (prtangle==80){test1=2.0/1000   ;test2= -5/1000 ;}
+                if (prtangle==90){test1=-1/1000 ;test2= 0.0/1000 ;}
+                if (prtangle==100){test1=0.0/1000 ;test2= -7.0/1000 ;}
+                if (prtangle==110){test1=-1.0/1000 ;test2= 0.0/1000 ;}
+                if (prtangle==120){test1=-1/1000 ;test2=-4.0/1000 ;}
+                if (prtangle==130){test1=0.0/1000  ;test2=-1.0/1000 ;}
+                if (prtangle==140){test1=0.0/1000 ;test2=1.0/1000 ;}
+                if (prtangle==150){test1=0.0/1000 ;test2=-7.0/1000 ;}
                 
-                momInBar.RotateY(TMath::Pi()-prtangle*rad-test1);// 0  test1
-                momInBar.RotateX(test2);//0 test2
+                momInBar.RotateY(TMath::Pi()-prtangle*rad-0);// 0  test1
+                momInBar.RotateX(0);//0 test2
                 
                 //momInBar.RotateY(TMath::Pi()-prtangle*rad+0.0);
                 //momInBar.RotateX(0.0);
@@ -655,6 +673,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         tofPid=fEvent->GetParticle();
         if(tofPid==212) tofPid=211;
         //std::cout<<"$$$$$$$$$$$$$$$$$$$ up $$$$$$ tofPid "<<tofPid <<std::endl;
+	//std::cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$  "<< fEvent->GetType() <<std::endl;
+
         
         Int_t pdg[]= {11,13,211,321,2212};
         Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
@@ -1573,7 +1593,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                     
                     if(tangle >minChangle && tangle < maxChangle && tangle < 1.85) {
                         fHist->Fill(tangle ,weight);
-                        if(openChCorr== 1){
+                        if(openChCorr== 1){//openChCorr== 1
                             if( prtangle==20 && fEvent->GetType()==0) {
                                 if(mcpid==0) tangle += -0.000249856;
                                 if(mcpid==2) tangle += -0.000427014;
@@ -1723,8 +1743,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         }
                         
                         // correction for sim
-                        if(openChCorr== 2){
-                            if( prtangle==20 && fEvent->GetType()==0) {
+                        if(openChCorr== 2){//openChCorr== 2
+                            if( prtangle==20 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += -0.00128565;
                                 if(mcpid==2) tangle += 0.000321068;
                                 if(mcpid==3) tangle += 0.000101477;
@@ -1734,7 +1754,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==7) tangle += -0.00677446;
                                 if(mcpid==8) tangle += -0.000473108;
                             }
-                            if( prtangle==30 && fEvent->GetType()==0) {
+                            if( prtangle==30 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += -0.000585209;
                                 if(mcpid==1) tangle += -0.000298516;
                                 if(mcpid==2) tangle += -0.000228988;
@@ -1743,7 +1763,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==5) tangle += 0.000409442;
                                 if(mcpid==10) tangle += 0.00243757;
                             }
-                            if( prtangle==40 && fEvent->GetType()==0) {
+                            if( prtangle==40 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += -0.00197596;
                                 if(mcpid==1) tangle += -0.00213216;
                                 if(mcpid==2) tangle += -0.000695968;
@@ -1754,7 +1774,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==8) tangle += 0.00269016;
                                 if(mcpid==10) tangle += 0.00351791;
                             }
-                            if( prtangle==50 && fEvent->GetType()==0) {
+                            if( prtangle==50 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += -0.000926266;
                                 if(mcpid==1) tangle += -0.000389023;
                                 if(mcpid==2) tangle += 0.000293581;
@@ -1766,7 +1786,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==8) tangle += 0.0021388;
                                 if(mcpid==10) tangle += 0.00484101;
                             }
-                            if( prtangle==60 && fEvent->GetType()==0) {
+                            if( prtangle==60 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += 0.00214193;
                                 if(mcpid==1) tangle += -0.000518659;
                                 if(mcpid==2) tangle += 0.00209713;
@@ -1780,7 +1800,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==10) tangle += 0.00231193;
                                 if(mcpid==11) tangle += 0.00303059;
                             }
-                            if( prtangle==70 && fEvent->GetType()==0) {
+                            if( prtangle==70 && fEvent->GetType()==1) {
                                 if(mcpid==3) tangle += 0.00166194;
                                 if(mcpid==4) tangle += 0.00319498;
                                 if(mcpid==5) tangle += 0.00289373;
@@ -1791,14 +1811,14 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==10) tangle += 0.000560788;
                                 if(mcpid==11) tangle += 0.00114054;
                             }
-                            if( prtangle==80 && fEvent->GetType()==0) {
+                            if( prtangle==80 && fEvent->GetType()==1) {
                                 if(mcpid==6) tangle += 0.00037491;
                                 if(mcpid==8) tangle += 1.93707e-05;
                                 if(mcpid==9) tangle += 0.00238014;
                                 if(mcpid==10) tangle += 0.00398277;
                                 if(mcpid==11) tangle += 0.00318657;
                             }
-                            if( prtangle==90 && fEvent->GetType()==0) {
+                            if( prtangle==90 && fEvent->GetType()==1) {
                                 if(mcpid==6) tangle += -0.00269974;
                                 if(mcpid==7) tangle += 0.000737201;
                                 if(mcpid==8) tangle += -0.00398974;
@@ -1806,7 +1826,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==10) tangle += 0.000418994;
                                 if(mcpid==11) tangle += 0.00619974;
                             }
-                            if( prtangle==100 && fEvent->GetType()==0) {
+                            if( prtangle==100 && fEvent->GetType()==1) {
                                 if(mcpid==6) tangle += -0.00101829;
                                 if(mcpid==7) tangle += 0.00814329;
                                 if(mcpid==8) tangle += 0.00010834;
@@ -1814,7 +1834,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==10) tangle += 0.00106718;
                                 if(mcpid==11) tangle += 0.00521473;
                             }
-                            if( prtangle==110 && fEvent->GetType()==0) {
+                            if( prtangle==110 && fEvent->GetType()==1) {
                                 if(mcpid==6) tangle += 0.00138531;
                                 if(mcpid==7) tangle += 0.00507243;
                                 if(mcpid==8) tangle += 0.00487492;
@@ -1822,7 +1842,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==10) tangle += 0.000136379;
                                 if(mcpid==11) tangle += 0.00362543;
                             }
-                            if( prtangle==120 && fEvent->GetType()==0) {
+                            if( prtangle==120 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += 0.00375808;
                                 if(mcpid==1) tangle += -0.000560249;
                                 if(mcpid==2) tangle += 0.00196725;
@@ -1836,7 +1856,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==10) tangle += 0.00262243;
                                 if(mcpid==11) tangle += 0.00178728;
                             }
-                            if( prtangle==130 && fEvent->GetType()==0) {
+                            if( prtangle==130 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += -0.00130451;
                                 if(mcpid==1) tangle += -0.00443381;
                                 if(mcpid==2) tangle += 0.00506885;
@@ -1847,7 +1867,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==7) tangle += 0.00228173;
                                 if(mcpid==8) tangle += 0.00219046;
                             }
-                            if( prtangle==140 && fEvent->GetType()==0) {
+                            if( prtangle==140 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += -0.00301737;
                                 if(mcpid==1) tangle += -0.00254585;
                                 if(mcpid==2) tangle += -0.00063854;
@@ -1858,7 +1878,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                                 if(mcpid==8) tangle += 0.00297606;
                                 if(mcpid==10) tangle += 0.00269502;
                             }
-                            if( prtangle==150 && fEvent->GetType()==0) {
+                            if( prtangle==150 && fEvent->GetType()==1) {
                                 if(mcpid==0) tangle += -0.000659255;
                                 if(mcpid==1) tangle += 0.000568309;
                                 if(mcpid==2) tangle += 0.000781704;
@@ -1899,18 +1919,18 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                             //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs
                             //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
                             // use histograms with normalization
-                            Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
-                            Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
+                            //Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
+                            //Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
                             // use PDF without normalization
                             //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
                             //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
                             // use PDF with normalization
-                            sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
-                            sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
+                            //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
+                            //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
                             //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
                             // use  function
-                            // sum1 += TMath::Log(gF1->Eval(tangle)+noise);
-                            // sum2 += TMath::Log(gF2->Eval(tangle)+noise);
+                            sum1 += TMath::Log(gF1->Eval(tangle)+noise);
+                            sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                         }
                         
                         if(fVerbose==3) {
