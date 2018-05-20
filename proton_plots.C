@@ -52,8 +52,7 @@ Double_t  prtangle;
 ////////////////////
 // proto types//////
 ////////////////////
-// fitting functions
-Double_t* FitHisto(TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i);
+
 // file existance
 bool exists_test (const std::string& name);
 // histo style
@@ -529,19 +528,82 @@ void proton_plots(
             
             // histogram style
             HistoStyle(p_cherenkov_sim, p_cherenkov_data, p_cherenkov_data_sub, p_cherenkov_mc_same_path, p_cherenkov_bg_sim, nph_sim, p_nph_sim, p_nph_good_sim, p_nph_true_sim, p_diff_time_sim, p_diff_time_data, p_diff_time_data_sub, p_diff_time_mctruth, p_diff_time_bg_sim, p_cherenkov_data_copy, p_photon_time_sim, p_photon_time_data, p_photon_time_sim_calc, p_photon_time_data_calc, nph_data, p_nph_data, p_nph_good_data, dac_hits_data, dac_hits_sys_cus_data);
-            // fitting histograms
-            Double_t  *out_array = FitHisto(p_diff_time_data, p_diff_time_mctruth, p_diff_time_sim, i);
-            //~ // cal photon yield fit function
-            //~ Double_t  *out_yield_array_nph_sim = YieldGausFit(nph_sim);
-            //~ std::cout<<"############  1 = "<< out_yield_array_nph_sim[0] <<std::endl;
-            //~ Double_t  *out_yield_array_p_nph_sim = YieldGausFit(p_nph_sim);
-            //~ std::cout<<"############  2 = "<< out_yield_array_p_nph_sim[0] <<std::endl;
-            //~ Double_t  *out_yield_array_p_nph_good_sim = YieldGausFit(p_nph_good_sim);
-            //~ std::cout<<"############  3 = "<< out_yield_array_p_nph_good_sim[0] <<std::endl;
-            //~ Double_t  *out_yield_array_nph_data = YieldGausFit(nph_data);
-            //~ Double_t  *out_yield_array_p_nph_data = YieldGausFit(p_nph_data);
-            //~ Double_t  *out_yield_array_p_nph_good_data = YieldGausFit(p_nph_good_data);
-            //~////////Double_t  *out_yield_array_dac_hits_sys_cus_data= YieldGausFit(dac_hits_sys_cus_data);
+
+            
+            
+            
+            
+            
+            ////////////////////////////
+            // fit true time diff path //
+            /////////////////////////////
+            Double_t diff_peak_mctruth =  p_diff_time_mctruth->GetXaxis()->GetBinCenter(p_diff_time_mctruth->GetMaximumBin());
+            TF1 *g4Fit = new TF1("g4Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.35,0.9);
+            g4Fit->SetParameters(100,diff_peak_mctruth,0.010);
+            g4Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            g4Fit->SetParLimits(0,0.1,1E6);
+            g4Fit->SetParLimits(1,-5,5);
+            g4Fit->SetParLimits(2,-5,5);
+            p_diff_time_mctruth->Fit("g4Fit","0","",-6,6);
+            Double_t mean_p_diff_time_mctruth= g4Fit->GetParameter(1);
+            Double_t sigma_p_diff_time_mctruth = g4Fit->GetParameter(2);
+            
+            
+            /////////////////////////////
+            // fit data time diff path //
+            /////////////////////////////
+            Double_t diff_peak_data =  p_diff_time_data->GetXaxis()->GetBinCenter(p_diff_time_data->GetMaximumBin());
+            TF1 *g3Fit = new TF1("g3Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.35,0.9);
+            g3Fit->SetParameters(100,diff_peak_data,0.010);
+            g3Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            g3Fit->SetParLimits(0,0.1,1E6);
+            g3Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
+            g3Fit->SetParLimits(2,0,6);
+            //p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.7*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
+            if (i == 120) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
+            }
+            else if (i == 110) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.7*sigma_p_diff_time_mctruth);
+            }
+            else if (i == 100) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-2.0*sigma_p_diff_time_mctruth,diff_peak_data+2.0*sigma_p_diff_time_mctruth);
+            }
+            else if (i == 90) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
+            }
+            else if (i == 50) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
+            }
+            else if (i == 150) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
+            }
+            else if (i == 130) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
+            }
+            else if (i == 60) {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
+            }
+            else {
+                p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.8*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
+                
+            }
+            Double_t mean_p_diff_time_data= g3Fit->GetParameter(1);
+            Double_t sigma_p_diff_time_data = g3Fit->GetParameter(2);
+            /////////////////////////////
+            // fit sim time diff path //
+            /////////////////////////////
+            Double_t diff_peak_sim =  p_diff_time_sim->GetXaxis()->GetBinCenter(p_diff_time_sim->GetMaximumBin());
+            TF1 *g5Fit = new TF1("g5Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.35,0.9);
+            g5Fit->SetParameters(100,diff_peak_sim,0.010);
+            g5Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            g5Fit->SetParLimits(0,0.1,1E6);
+            g5Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
+            g5Fit->SetParLimits(2,0,6);
+            p_diff_time_sim->Fit("g5Fit","0","",diff_peak_sim-1*sigma_p_diff_time_mctruth,diff_peak_data+1*sigma_p_diff_time_mctruth);
+            Double_t mean_p_diff_time_sim= g5Fit->GetParameter(1);
+            Double_t sigma_p_diff_time_sim = g5Fit->GetParameter(2);
+
             
             //////////////////
             //  Fill graph ///
@@ -565,13 +627,12 @@ void proton_plots(
             
         
             
-            y_diff_true[counter]=out_array[3]*5;//time diff sigma true
-            y_diff_data[counter]=out_array[1]*5;//time diff sigam data
-            y_diff_sim[counter]=out_array[5]*5;//time diff sigam sim
-            
-            y_mean_diff_data[counter]=out_array[0];//time diff mean data
-            y_mean_diff_sim[counter]=out_array[4];//time diff mean sim
-            y_mean_diff_true[counter]=out_array[2];//time diff mean true
+            y_diff_true[counter]=sigma_p_diff_time_mctruth*5;//time diff sigma true
+            y_diff_data[counter]=sigma_p_diff_time_data*5;//time diff sigam data
+            y_diff_sim[counter]=sigma_p_diff_time_sim*5;//time diff sigam sim
+            y_mean_diff_data[counter]=mean_p_diff_time_data;//time diff mean data
+            y_mean_diff_sim[counter]=mean_p_diff_time_sim;//time diff mean sim
+            y_mean_diff_true[counter]=mean_p_diff_time_mctruth;//time diff mean true
             
             // remove
             y_deviation_cangle_data_sub[counter]= fAngleP - spr_data_sub;
@@ -658,7 +719,7 @@ void proton_plots(
             counter++;
 
             recoAngle[counter]=cangle_sim_true; // cangle_sim_true
-            timeCut[counter]=out_array[16]*5; // true
+            timeCut[counter]=sigma_p_diff_time_mctruth*5; // true
             chAngleCut[counter]=spr_sim_true*5; // true
             prtangle_vector[counter]= i;
             
@@ -877,15 +938,15 @@ void proton_plots(
                 prt_canvasGet("r_time_diff"+nid)->Update();
                 //prt_canvasGet("r_time_diff"+nid)->Modified();
                 TLine *line_sigm_diff_r = new TLine(0,0,0,1000);
-                line_sigm_diff_r->SetX1(/*out_array[13]+*/out_array[3]*5);
-                line_sigm_diff_r->SetX2(/*out_array[13]+*/out_array[3]*5);
+                line_sigm_diff_r->SetX1(/*out_array[13]+*/spr_sim*5);
+                line_sigm_diff_r->SetX2(/*out_array[13]+*/spr_sim*5);
                 line_sigm_diff_r->SetY1(gPad->GetUymin());
                 line_sigm_diff_r->SetY2(gPad->GetUymax());
                 line_sigm_diff_r->SetLineColor(kBlue);
                 line_sigm_diff_r->Draw();
                 TLine *line_sigm_diff_l = new TLine(0,0,0,1000);
-                line_sigm_diff_l->SetX1(/*out_array[13]*/-out_array[3]*5);
-                line_sigm_diff_l->SetX2(/*out_array[13]*/-out_array[3]*5);
+                line_sigm_diff_l->SetX1(/*out_array[13]*/-spr_sim*5);
+                line_sigm_diff_l->SetX2(/*out_array[13]*/-spr_sim*5);
                 line_sigm_diff_l->SetY1(gPad->GetUymin());
                 line_sigm_diff_l->SetY2(gPad->GetUymax());
                 line_sigm_diff_l->SetLineColor(kBlue);
@@ -1601,100 +1662,7 @@ void proton_plots(
    
 }
 
-Double_t* FitHisto(TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i) {
-    //gROOT->SetBatch(1);
-    gStyle->SetOptFit(1);
-    const int var=6;
-    static Double_t return_array[var];
-    
-    ////////////////////////////
-    // fit true time diff path //
-    /////////////////////////////
-    Double_t diff_peak_mctruth =  p_diff_time_mctruth->GetXaxis()->GetBinCenter(p_diff_time_mctruth->GetMaximumBin());
-    TF1 *g4Fit = new TF1("g4Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /*  +x*[3]+[4] */",0.35,0.9);
-    g4Fit->SetParameters(100,diff_peak_mctruth,0.010);
-    g4Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-    g4Fit->SetParLimits(0,0.1,1E6);
-    g4Fit->SetParLimits(1,-5,5);
-    g4Fit->SetParLimits(2,-5,5);
-    p_diff_time_mctruth->Fit("g4Fit","0","",-6,6);
-    Double_t mean_p_diff_time_mctruth= g4Fit->GetParameter(1);
-    Double_t sigma_p_diff_time_mctruth = g4Fit->GetParameter(2);
-    
-    
-    /////////////////////////////
-    // fit data time diff path //
-    /////////////////////////////
-    Double_t diff_peak_data =  p_diff_time_data->GetXaxis()->GetBinCenter(p_diff_time_data->GetMaximumBin());
-    TF1 *g3Fit = new TF1("g3Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /* +x*[3]+[4] */",0.35,0.9);
-    g3Fit->SetParameters(100,diff_peak_data,0.010);
-    g3Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-    g3Fit->SetParLimits(0,0.1,1E6);
-    g3Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
-    g3Fit->SetParLimits(2,0,6);
-    //p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.7*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
-    if (i == 120) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
-    }
-    else if (i == 110) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.7*sigma_p_diff_time_mctruth);
-    }
-    else if (i == 100) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-2.0*sigma_p_diff_time_mctruth,diff_peak_data+2.0*sigma_p_diff_time_mctruth);
-    }
-    else if (i == 90) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
-    }
-    else if (i == 50) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
-    }
-    else if (i == 150) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
-    }
-    else if (i == 130) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
-    }
-    else if (i == 60) {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
-    }
-    else {
-        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.8*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
-        
-    }
-    Double_t mean_p_diff_time_data= g3Fit->GetParameter(1);
-    Double_t sigma_p_diff_time_data = g3Fit->GetParameter(2);
-    /////////////////////////////
-    // fit sim time diff path //
-    /////////////////////////////
-    Double_t diff_peak_sim =  p_diff_time_sim->GetXaxis()->GetBinCenter(p_diff_time_sim->GetMaximumBin());
-    TF1 *g5Fit = new TF1("g5Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /* +x*[3]+[4] */",0.35,0.9);
-    g5Fit->SetParameters(100,diff_peak_sim,0.010);
-    g5Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-    g5Fit->SetParLimits(0,0.1,1E6);
-    g5Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
-    g5Fit->SetParLimits(2,0,6);
-    p_diff_time_sim->Fit("g5Fit","0","",diff_peak_sim-1*sigma_p_diff_time_mctruth,diff_peak_data+1*sigma_p_diff_time_mctruth);
-    Double_t mean_p_diff_time_sim= g5Fit->GetParameter(1);
-    Double_t sigma_p_diff_time_sim = g5Fit->GetParameter(2);
-    //Double_t mean_p_diff_time_sim= 0;
-    //Double_t sigma_p_diff_time_sim = 0;
-    
-    
-    
-    return_array[0]= mean_p_diff_time_data;
-    return_array[1]= sigma_p_diff_time_data;
-    return_array[2]= mean_p_diff_time_mctruth;
-    return_array[3]= sigma_p_diff_time_mctruth;
-    return_array[4]= mean_p_diff_time_sim;
-    return_array[5]= sigma_p_diff_time_sim;
-    
-    
-    
-    gROOT->SetBatch(0);
-    gStyle->SetOptFit(0);
-    return return_array;
-    
-}
+
 
 //////////////////////////
 // check file existance //
