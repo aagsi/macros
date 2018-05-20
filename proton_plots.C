@@ -34,7 +34,7 @@
 #include "TVirtualFitter.h"
 #define PI 3.14159265
 
-
+TCanvas *c1 = new TCanvas("c1","c1",300,200);
 
 // Constants
 Double_t beam_momentum= 7000; // MeV
@@ -48,30 +48,14 @@ Double_t v_proton = c* sqrt(1- (m_proton*m_proton) /(beam_momentum * beam_moment
 Double_t v_pi = c* sqrt(1-( m_pi*m_pi) /(beam_momentum * beam_momentum+ m_pi*m_pi));
 
 Double_t  prtangle;
-// variables for tree
-Double_t sumunderCurve, sumunderLine;
-TTree *dirc;
-TBranch *newBranch_sumunderCurve, *newBranch_sumunderLine;
-Bool_t reject, reject_sd;
-
-TCanvas *c1 = new TCanvas("c1","A Simple Graph Example",200,10,700,500);
-// c1->SetFillColor(42);
-// c1->SetGrid();
-// //TCanvas::Update() draws the frame, after which one can change it
-// c1->Update();
-// //c1->GetFrame()->SetFillColor(21);
-// //c1->GetFrame()->SetBorderSize(12);
-// c1->Modified();
 
 ////////////////////
 // proto types//////
 ////////////////////
 // fitting functions
-Double_t* FitHisto(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_sim_correction, TH1F * p_cherenkov_mc_same_path, TH1F *p_cherenkov_data_sub, TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i, TH1F *p_cherenkov_data_copy,TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_correction);
+Double_t* FitHisto(TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i);
 // file existance
 bool exists_test (const std::string& name);
-// sideband method
-Double_t fline(Double_t *x, Double_t *par);
 // histo style
 void HistoStyle(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_sub, TH1F *p_cherenkov_mc_same_path, TH1F *p_cherenkov_bg_sim, TH1F *nph_sim, TH1F *p_nph_sim,TH1F *p_nph_good_sim, TH1F *p_nph_true_sim, TH1F *p_diff_time_sim, TH1F*p_diff_time_data, TH1F*p_diff_time_data_sub, TH1F*p_diff_time_mctruth, TH1F* p_diff_time_bg_sim, TH1F *p_cherenkov_data_copy, TH1F *p_photon_time_sim, TH1F *p_photon_time_data, TH1F *p_photon_time_sim_calc, TH1F *p_photon_time_data_calc, TH1F *nph_data, TH1F *p_nph_data, TH1F *p_nph_good_data, TH1F *dac_hits_data, TH1F *dac_hits_sys_cus_data);
 void HistoStyleMatch(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data);
@@ -149,22 +133,15 @@ void proton_plots(
     gStyle->SetOptFit(1);
     gStyle->SetOptStat(0);
     
-    
-    
-    
     TGraph * graph_spr_data,* graph_spr_sim,* graph_spr_data_sub,* graph_spr_sim_true,* graph_spr_data_correction,* graph_spr_sim_correction,* graph_spr_data_org,* graph_spr_data_cuts,* graph_spr_sim_cuts,* graph_spr_data_sub_cuts,* graph_spr_sim_true_cuts,* graph_diff_true,* graph_diff_data,* graph_diff_sim,* graph_diff_data_mean,* graph_diff_sim_mean,* graph_diff_true_mean,* graph_diff_true_sim,* graph_cangle_data_sub,* graph_cangle_data,* graph_cangle_sim,* graph_cangle_sim_true,* graph_cangle_data_correction,* graph_cangle_sim_correction,* graph_cangle_data_org,* graph_deviation_cangle_data_sub,* graph_yield_DIRC_wo_cuts_sim,* graph_yield_DIRC_wt_cuts_sim,* graph_yield_DIRC_wtc_cuts_sim,* graph_yield_DIRC_true_sim,* graph_yield_DIRC_wo_cuts_data,* graph_yield_DIRC_wt_cuts_data,* graph_yield_DIRC_wtc_cuts_data;
     
     
-    
     for (int i=20; i<=150; i+=10) {
-        
         prtangle= i;
         TString nid = Form("_%2.0d", i);
         cout<< "enter the if condition"<<endl;
-        
         // proton
         TString cherenkov_data_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wtb_%d_sph_p_data_spr.root", i);
-        //TString cherenkov_sim_path = Form("/u/aali/work/reco_proton_bar_3lsph_grease_theta_%d_sim_spr.root", i);
         TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
         // pi
         //TString cherenkov_data_path = Form("/u/aali/work/%d_sph_pi_data_spr.root", i);
@@ -391,12 +368,92 @@ void proton_plots(
         ///////////////////
         ///// part II /////
         ///////////////////
-        if(bool_part2) {
+        if(true) {
+            
+            gROOT->SetBatch(1);
+            TSpectrum *fSpect= new TSpectrum(10);
+            Double_t cangle_sim=0;
+            Double_t spr_sim=0;
+            Int_t nfound = fSpect->Search(p_cherenkov_sim,1,"",0.9); //0.6
+            if(nfound>0) cangle_sim = fSpect->GetPositionX()[0];
+            cangle_sim =  p_cherenkov_sim->GetXaxis()->GetBinCenter(p_cherenkov_sim->GetMaximumBin());
+            if(cangle_sim>0.85) cangle_sim=0.82;
+            TF1 *fFit_sim = new TF1("fFit_sim","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+            fFit_sim->SetParameters(100,cangle_sim,0.010);
+            fFit_sim->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            fFit_sim->SetParLimits(0,0.1,1E6);
+            fFit_sim->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+            fFit_sim->SetParLimits(2,0.005,0.010000); // changed 0.014
+            p_cherenkov_sim->Fit("fFit_sim","0","",cangle_sim-0.06,cangle_sim+0.06);
+            if (i== 90 ) p_cherenkov_sim->Fit("fFit_sim","0","",cangle_sim-0.03,cangle_sim+0.06);
+            if (i== 100 )p_cherenkov_sim->Fit("fFit_sim","0","",cangle_sim-0.05,cangle_sim+0.06);
+            //p_cherenkov_data_copy->Fit("fFit_sim","0","",cangle_sim-0.06,cangle_sim+0.06);
+            //p_cherenkov_sim->Fit("fFit_sim","R");
+            Double_t chi = fFit_sim->GetChisquare()/fFit_sim->GetNDF();
+            cangle_sim = fFit_sim->GetParameter(1);
+            spr_sim = fFit_sim->GetParameter(2);
+            Double_t cangle_minus_5_sgma = cangle_sim-5*spr_sim;
+            Double_t cangle_plus_5_sgma = cangle_sim+5*spr_sim;
+            Double_t cangle_minus_3_sgma = cangle_sim-3*spr_sim;
+            Double_t cangle_plus_3_sgma = cangle_sim+3*spr_sim;
+            Double_t r_min = cangle_sim-8*spr_sim;
+            Double_t r_max = cangle_sim+8*spr_sim;
+            
+            TF1 *fFit_sim_correction = new TF1("fFit_sim_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+            fFit_sim_correction->SetParameters(100,cangle_sim,0.010);
+            fFit_sim_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            fFit_sim_correction->SetParLimits(0,0.1,1E6);
+            fFit_sim_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+            fFit_sim_correction->SetParLimits(2,0.005,0.010000); // changed 0.014
+            p_cherenkov_sim_correction->Fit("fFit_sim_correction","M","",cangle_sim-0.06,cangle_sim+0.06);
+            if (i== 90 ) p_cherenkov_sim_correction->Fit("fFit_sim_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
+            if (i== 100 ) p_cherenkov_sim_correction->Fit("fFit_sim_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
+            Double_t cangle_sim_correction = fFit_sim_correction->GetParameter(1);
+            Double_t spr_sim_correction = fFit_sim_correction->GetParameter(2);
+            
+            TF1 *fFit_org = new TF1("fFit_org","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+            fFit_org->SetParameters(100,cangle_sim,0.010);
+            fFit_org->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            fFit_org->SetParLimits(0,0.1,1E6);
+            fFit_org->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+            fFit_org->SetParLimits(2,0.005,0.010000); // changed 0.014
+            p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.06,cangle_sim+0.06);
+            if (i== 90 ) p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.03,cangle_sim+0.06);
+            if (i== 100 ) p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.05,cangle_sim+0.06);
+            Double_t cangle_data_org = fFit_org->GetParameter(1);
+            Double_t spr_data_org = fFit_org->GetParameter(2);
+            
+            TF1 *fFit_correction = new TF1("fFit_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+            fFit_correction->SetParameters(100,cangle_sim,0.010);
+            fFit_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            fFit_correction->SetParLimits(0,0.1,1E6);
+            fFit_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+            fFit_correction->SetParLimits(2,0.005,0.010000); // changed 0.014
+            p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.06,cangle_sim+0.06);
+            if (i== 90 ) p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.03,cangle_sim+0.06);
+            if (i== 100 ) p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.05,cangle_sim+0.06);
+            Double_t cangle_data_correction = fFit_correction->GetParameter(1);
+            Double_t spr_data_correction = fFit_correction->GetParameter(2);
+            
+            ///////////////////
+            // fit true MC  ///
+            ///////////////////
+            TF1 *gFit = new TF1("gFit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+            gFit->SetParameters(100,cangle_sim,0.010);
+            gFit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            gFit->SetParLimits(0,0.1,1E6);
+            gFit->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+            gFit->SetParLimits(2,0.005,0.010000); // changed 0.014
+            p_cherenkov_mc_same_path->Fit("gFit","0","",cangle_minus_5_sgma,cangle_plus_5_sgma);
+            Double_t spr_sim_true = gFit->GetParameter(2);
+            Double_t cangle_sim_true = gFit->GetParameter(1);
+            Double_t sumunder_true_signal = gFit->Integral(cangle_minus_5_sgma,cangle_plus_5_sgma);
+
+            
             /////////////////////////////
             // cherenkov normalization /
             /////////////////////////////
-            //p_cherenkov_data->Scale(p_cherenkov_sim->GetMaximum() /p_cherenkov_data->GetMaximum());
-            //p_cherenkov_data_sub->Scale(p_cherenkov_sim->GetMaximum() /p_cherenkov_data_sub->GetMaximum());
+            
             TAxis *axis = p_cherenkov_sim_correction->GetXaxis();
             double xmin = 0.6;
             double xmax = 0.74;
@@ -405,10 +462,7 @@ void proton_plots(
             int bmin = axis->FindBin(xmin);
             int bmax = axis->FindBin(xmax);
             double integral = p_cherenkov_sim_correction->Integral(bmin,bmax);
-            // std::cout<<"############  integral= "<< integral <<std::endl;
-            // integral -= p_cherenkov_bg_sim->GetBinContent(bmin)*(xmin-axis->GetBinLowEdge(bmin))/axis->GetBinWidth(bmin);
-            // integral -= p_cherenkov_bg_sim->GetBinContent(bmax)*(axis->GetBinUpEdge(bmax)-xmax)/axis->GetBinWidth(bmax);
-            // std::cout<<"############  integral= "<< integral <<std::endl;
+            
             TAxis *axis_data = p_cherenkov_data_correction->GetXaxis();
             double xmin_data = 0.6;
             double xmax_data = 0.74;
@@ -417,21 +471,51 @@ void proton_plots(
             int bmin_data = axis_data->FindBin(xmin_data);
             int bmax_data = axis_data->FindBin(xmax_data);
             double integral_data = p_cherenkov_data_correction->Integral(bmin_data,bmax_data);
-            // std::cout<<"############  integral_data= "<< integral_data <<std::endl;
-            // integral_data -= p_cherenkov_data->GetBinContent(bmin_data)*(xmin_data-axis->GetBinLowEdge(bmin_data))/axis_data->GetBinWidth(bmin_data);
-            // integral_data -= p_cherenkov_data->GetBinContent(bmax_data)*(axis_data->GetBinUpEdge(bmax_data)-xmax_data)/axis_data->GetBinWidth(bmax_data);
-            // std::cout<<"############  integral_data= "<< integral_data <<std::endl;
-            // std::cout<<"############  norm= "<< (integral_data - integral)*100/integral_data <<std::endl;
-            // std::cout<<"############  norm= "<< (integral_data - integral)*100/integral <<std::endl;
-            // std::cout<<"############  norm= "<< integral_data/integral <<std::endl;
-            // std::cout<<"############  norm= "<< integral/integral_data <<std::endl;
+            
             Double_t norm= integral/integral_data ;
-            std::cout<<"############  norm= "<< norm <<std::endl;
-            p_cherenkov_data_correction->Scale(norm);
+            //std::cout<<"############  norm= "<< norm <<std::endl;
+            //p_cherenkov_data_correction->Scale(norm);
             p_cherenkov_data_copy->Scale(norm);
             p_cherenkov_data_sub = (TH1F *)p_cherenkov_data_copy->Clone();
             p_cherenkov_data_sub->Add(p_cherenkov_bg_sim,-1);
             std::cout<<"############"<< " no problem 3 " <<std::endl;
+            
+            TF1 *fFit_copy = new TF1("fFit_copy","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+            fFit_copy->SetParameters(100,cangle_sim,0.010);
+            fFit_copy->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            fFit_copy->SetParLimits(0,0.1,1E6);
+            fFit_copy->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+            fFit_copy->SetParLimits(2,0.005,0.010000); // changed 0.014
+            p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.06,cangle_sim+0.06);
+            if (i== 90 ) p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.03,cangle_sim+0.06);
+            if (i== 100 )p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.05,cangle_sim+0.06);
+            
+            Double_t cangle_data = fFit_copy->GetParameter(1);
+            Double_t spr_data = fFit_copy->GetParameter(2);
+            
+            ////////////////////
+            // fit ch data sub//
+            ////////////////////
+            TF1 *g2Fit = new TF1("g2Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+            g2Fit->SetParameters(100,cangle_sim,0.010);
+            g2Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+            g2Fit->SetParLimits(0,0.1,1E6);
+            g2Fit->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
+            g2Fit->SetParLimits(2,0.005,0.010000); // changed 0.014
+            //p_cherenkov_data_sub->Fit("g2Fit","0","",cangle_minus_5_sgma,cangle_plus_5_sgma);
+            p_cherenkov_data_sub->Fit("g2Fit","M","",cangle_sim-0.06,cangle_sim+0.06);
+            if (i== 90 ) p_cherenkov_data_sub->Fit("g2Fit","M","",cangle_sim-0.03,cangle_sim+0.06);
+            if (i== 100 ) p_cherenkov_data_sub->Fit("g2Fit","M","",cangle_sim-0.05,cangle_sim+0.06);
+            //p_cherenkov_data_sub->Fit("g2Fit","0","",cangle_sim-0.15,cangle_sim+0.15);
+            Double_t cangle_data_sub = fFit_copy->GetParameter(1);
+            Double_t spr_data_sub = fFit_copy->GetParameter(2);
+            
+            Double_t cangle_data_sub_minus_5_sgma = cangle_data_sub-5*spr_data_sub;
+            Double_t cangle_data_sub_plus_5_sgma = cangle_data_sub+5*spr_data_sub;
+            Double_t cangle_data_sub_minus_3_sgma = cangle_data_sub-3*spr_data_sub;
+            Double_t cangle_data_sub_plus_3_sgma = cangle_data_sub+3*spr_data_sub;
+            Double_t r_min_data_sub = cangle_data_sub-8*spr_data_sub;
+            Double_t r_max_data_sub = cangle_data_sub+8*spr_data_sub;
             
             //////////////////////
             // function call   ///
@@ -442,11 +526,11 @@ void proton_plots(
             DiffNorm(p_diff_time_sim, p_diff_time_data);
             p_diff_time_data_sub = (TH1F *)p_diff_time_data->Clone();
             p_diff_time_data_sub->Add(p_diff_time_bg_sim,-1);
-            c1-> cd();
+            
             // histogram style
             HistoStyle(p_cherenkov_sim, p_cherenkov_data, p_cherenkov_data_sub, p_cherenkov_mc_same_path, p_cherenkov_bg_sim, nph_sim, p_nph_sim, p_nph_good_sim, p_nph_true_sim, p_diff_time_sim, p_diff_time_data, p_diff_time_data_sub, p_diff_time_mctruth, p_diff_time_bg_sim, p_cherenkov_data_copy, p_photon_time_sim, p_photon_time_data, p_photon_time_sim_calc, p_photon_time_data_calc, nph_data, p_nph_data, p_nph_good_data, dac_hits_data, dac_hits_sys_cus_data);
             // fitting histograms
-            Double_t  *out_array = FitHisto(p_cherenkov_sim,p_cherenkov_sim_correction, p_cherenkov_mc_same_path, p_cherenkov_data_sub, p_diff_time_data, p_diff_time_mctruth, p_diff_time_sim, i, p_cherenkov_data_copy,p_cherenkov_data,p_cherenkov_data_correction);
+            Double_t  *out_array = FitHisto(p_diff_time_data, p_diff_time_mctruth, p_diff_time_sim, i);
             //~ // cal photon yield fit function
             //~ Double_t  *out_yield_array_nph_sim = YieldGausFit(nph_sim);
             //~ std::cout<<"############  1 = "<< out_yield_array_nph_sim[0] <<std::endl;
@@ -463,35 +547,43 @@ void proton_plots(
             //  Fill graph ///
             /////////////////
             x[counter]=i;
-            y_spr_data[counter]=out_array[22]; // spr data
-            y_spr_data_sub[counter]=out_array[11]; // spr data sub used in ch cut
-            y_spr_sim[counter]=out_array[12]; // spr MC
-            y_spr_sim_true[counter]=out_array[10]; // spr true MC
-            y_diff_true[counter]=out_array[16]*5;//time diff sigma true
-            y_diff_data[counter]=out_array[14]*5;//time diff sigam data
-            y_diff_sim[counter]=out_array[18]*5;//time diff sigam data
-            y_mean_diff_data[counter]=out_array[13];//time diff mean data
-            y_mean_diff_sim[counter]=out_array[17];//time diff mean sim
-            y_mean_diff_true[counter]=out_array[15];//time diff mean true
-            y_cangle_data_sub[counter]=out_array[19]; // =cangle_data_sub
-            y_cangle_data[counter]=out_array[21]; // =cangle_data
-            y_cangle_sim[counter]=out_array[23]; //cangle sim
-            y_cangle_sim_true[counter]=out_array[24]; //cangle sim true
-            y_deviation_cangle_data_sub[counter]= fAngleP - out_array[20];
-            y_spr_data_cuts[counter]=fAngleP-out_array[22];// warning switch between p and pi
-            y_spr_sim_cuts[counter]=fAngleP-out_array[12];// warning
-            y_spr_data_sub_cuts[counter]=fAngleP- out_array[11]; // warning
-            y_spr_sim_true_cuts[counter]= fAngleP- out_array[10];// warning
-            y_cangle_data_correction[counter]=out_array[25]; //cangle data correction
-            y_spr_data_correction[counter]=out_array[26]; //spr data correction
-            y_cangle_data_org[counter]=out_array[27];
-            y_spr_data_org[counter]=out_array[28];
-            y_cangle_sim_correction[counter]=out_array[29];
-            y_spr_sim_correction[counter]=out_array[30];
+            y_spr_data[counter]=spr_data; // spr data
+            y_spr_data_sub[counter]=spr_data_sub; // spr data sub used in ch cut
+            y_spr_sim[counter]=spr_sim; // spr MC
+            y_spr_sim_true[counter]=spr_sim_true; // spr true MC
+            y_cangle_data_sub[counter]=cangle_data_sub; // =cangle_data_sub
+            y_cangle_data[counter]=cangle_data; // =cangle_data
+            y_cangle_sim[counter]=cangle_sim; //cangle sim
+            y_cangle_sim_true[counter]=cangle_sim_true; //cangle sim true
+            
+            y_cangle_data_correction[counter]=cangle_data_correction; //cangle data correction
+            y_spr_data_correction[counter]=spr_data_correction; //spr data correction
+            y_cangle_data_org[counter]=cangle_data_org;
+            y_spr_data_org[counter]=spr_data_org;
+            y_cangle_sim_correction[counter]=cangle_sim_correction;
+            y_spr_sim_correction[counter]=spr_sim_correction;
+            
+        
+            
+            y_diff_true[counter]=out_array[3]*5;//time diff sigma true
+            y_diff_data[counter]=out_array[1]*5;//time diff sigam data
+            y_diff_sim[counter]=out_array[5]*5;//time diff sigam sim
+            
+            y_mean_diff_data[counter]=out_array[0];//time diff mean data
+            y_mean_diff_sim[counter]=out_array[4];//time diff mean sim
+            y_mean_diff_true[counter]=out_array[2];//time diff mean true
+            
+            // remove
+            y_deviation_cangle_data_sub[counter]= fAngleP - spr_data_sub;
+            y_spr_data_cuts[counter]=fAngleP-spr_data;// warning switch between p and pi
+            y_spr_sim_cuts[counter]=fAngleP-spr_sim;// warning
+            y_spr_data_sub_cuts[counter]=fAngleP- spr_data_sub; // warning
+            y_spr_sim_true_cuts[counter]= fAngleP- spr_sim_true;// warning
             
             ////////////////////////////////
             //  Fill mom distance graphs ///
             ////////////////////////////////
+            
             Double_t calc_p_tof2tof1_plot1_co(0), distance_tof2tof1_plot1_co(0);
             TSpectrum *s_tof2tof1_plot1 = new TSpectrum(5);
             Int_t nfound_tof2tof1_plot1 = s_tof2tof1_plot1->Search(tof_pid,2,"",0.10);
@@ -506,6 +598,8 @@ void proton_plots(
                 Float_t yp_tof2tof1_plot1 = tof_pid->GetBinContent(bin_tof2tof1_plot1);
             }
             Double_t par_tof2tof1_plot1[6];
+            
+            
             TF1 *g1_tof2tof1_plot1    = new TF1("g1_tof2tof1_plot1","gaus",32.4 , 32.9); // ,72.56,73);
             TF1 *g2_tof2tof1_plot1    = new TF1("g2_tof2tof1_plot1","gaus",31.5 , 32.0); // ,71.75,72.15);
             tof_pid->Fit(g1_tof2tof1_plot1,"R");
@@ -528,17 +622,6 @@ void proton_plots(
             std::cout<<"############  counter = "<< counter <<std::endl;
             std::cout<<"############  x[counter] = "<< x[counter] <<std::endl;
             std::cout<<"############  y_spr_data[counter] = "<< y_spr_data[counter] <<std::endl;
-            
-            // photon yield
-            // need to solve the array output
-            //~ y_yield_nph_sim[counter]=out_yield_array_nph_sim[0];
-            //~ y_yield_p_nph_sim[counter]=out_yield_array_p_nph_sim[0];
-            //~ y_yield_p_nph_good_sim[counter]=out_yield_array_p_nph_good_sim[0];
-            //~ y_yield_nph_data[counter]=out_yield_array_nph_data[0];
-            //~ y_yield_p_nph_data[counter]=out_yield_array_p_nph_data[0];
-            //~ y_yield_p_nph_good_data[counter]=out_yield_array_p_nph_good_data[0];
-            //~ y_yield_dac_hits_sys_cus_data[counter]=out_yield_array_dac_hits_sys_cus_data[0];
-            // instead i used return double function
             
             //method 1 return mean of the fit
             if(false) {
@@ -573,17 +656,10 @@ void proton_plots(
                 y_spr_data_correction_error[counter]=p_cherenkov_data_correction->GetRMSError();
             }
             counter++;
-            
-            //std::cout<<"#################################################################"<<std::endl;
-            //Printf("if(prtangle==%d) hitTime=hitTime+%f;", i, out_array[13]);
-            //Printf("recoAngle%d=%f;", i, out_array[19]);
-            //Printf("timeCut%d=%f;", i, out_array[14]);
-            //Printf("chAngleCut%d=%f;", i, out_array[11]);
-            //std::cout<<"#################################################################"<<std::endl;
-            
-            recoAngle[counter]=out_array[24]; // cangle_sim_true
+
+            recoAngle[counter]=cangle_sim_true; // cangle_sim_true
             timeCut[counter]=out_array[16]*5; // true
-            chAngleCut[counter]=out_array[10]*5; // true
+            chAngleCut[counter]=spr_sim_true*5; // true
             prtangle_vector[counter]= i;
             
             ////////////
@@ -625,103 +701,16 @@ void proton_plots(
             hs5->Add(p_photon_time_sim);
             hs5->Add(p_photon_time_data);
             
-            
             hs7->Add(p_cherenkov_bg_sim);
             hs7->Add(p_cherenkov_sim);
             hs7->Add(p_cherenkov_mc_same_path);
             
-            
-            ////////////////
-            // side band ///
-            ////////////////
-            if (false) {
-                prt_canvasAdd("r_sideband"+nid,800,400);
-                
-                legend->AddEntry(p_cherenkov_sim,"data","f");
-                p_cherenkov_sim->SetTitle(Form("Polar angle %3.1f", prtangle));
-                p_cherenkov_sim->Draw();
-                
-                prt_canvasGet("r_sideband"+nid)->Update();
-                TLine *line = new TLine(0,0,0,1000);
-                
-                line->SetX1(fAngleP);
-                line->SetX2(fAngleP);
-                line->SetY1(gPad->GetUymin());
-                line->SetY2(gPad->GetUymax());
-                line->SetLineColor(kRed);
-                line->Draw();
-                
-                //legend->Draw();
-                //prt_waitPrimitive("r_sideband"+nid);// wait
-                
-                TLine *line_sigm_r = new TLine(0,0,0,1000);
-                line_sigm_r->SetX1(out_array[6]);
-                line_sigm_r->SetX2(out_array[6]);
-                line_sigm_r->SetY1(gPad->GetUymin());
-                line_sigm_r->SetY2(gPad->GetUymax());
-                line_sigm_r->SetLineColor(46);
-                line_sigm_r->Draw();
-                
-                TLine *line_sigm_r2 = new TLine(0,0,0,1000);
-                line_sigm_r2->SetX1(out_array[7]);
-                line_sigm_r2->SetX2(out_array[7]);
-                line_sigm_r2->SetY1(gPad->GetUymin());
-                line_sigm_r2->SetY2(gPad->GetUymax());
-                line_sigm_r2->SetLineColor(46);
-                line_sigm_r2->Draw();
-                
-                // TLine *line_sigm_r3 = new TLine(0,0,0,1000);
-                // line_sigm_r3->SetX1(out_array[9]);
-                // line_sigm_r3->SetX2(out_array[9]);
-                // line_sigm_r3->SetY1(gPad->GetUymin());
-                // line_sigm_r3->SetY2(gPad->GetUymax());
-                // line_sigm_r3->SetLineColor(kBlue);
-                // line_sigm_r3->Draw();
-                
-                TLine *line_sigm_l = new TLine(0,0,0,1000);
-                line_sigm_l->SetX1(out_array[4]);
-                line_sigm_l->SetX2(out_array[4]);
-                line_sigm_l->SetY1(gPad->GetUymin());
-                line_sigm_l->SetY2(gPad->GetUymax());
-                line_sigm_l->SetLineColor(46);
-                line_sigm_l->Draw();
-                
-                TLine *line_sigm_l2 = new TLine(0,0,0,1000);
-                line_sigm_l2->SetX1(out_array[5]);
-                line_sigm_l2->SetX2(out_array[5]);
-                line_sigm_l2->SetY1(gPad->GetUymin());
-                line_sigm_l2->SetY2(gPad->GetUymax());
-                line_sigm_l2->SetLineColor(46);
-                line_sigm_l2->Draw();
-                
-                // TLine *line_sigm_l3 = new TLine(0,0,0,1000);
-                // line_sigm_l3->SetX1(out_array[8]);
-                // line_sigm_l3->SetX2(out_array[8]);
-                // line_sigm_l3->SetY1(gPad->GetUymin());
-                // line_sigm_l3->SetY2(gPad->GetUymax());
-                // line_sigm_l3->SetLineColor(kBlue);
-                // line_sigm_l3->Draw();
-                
-                TBox *cutObj1 = new TBox(out_array[4], gPad->GetUymin(), out_array[5], gPad->GetUymax());
-                cutObj1->SetFillColor(46-4);
-                cutObj1->SetFillStyle(3004);
-                cutObj1->SetLineWidth(0);
-                cutObj1->Draw("lsames");
-                
-                TBox *cutObj2 = new TBox(out_array[6], gPad->GetUymin(), out_array[7], gPad->GetUymax());
-                cutObj2->SetFillColor(46-4);
-                cutObj2->SetFillStyle(3004);
-                cutObj2->SetLineWidth(0);
-                cutObj2->Draw("lsames");
-                
-                prt_canvasGet("r_sideband"+nid)->Update();
-            }
-            
-            
+           
+            gROOT->SetBatch(0);
             ///////////////
             // TOF PID  ///
             ///////////////
-            if (false) { // done
+            if (true) { // done
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 prt_canvasAdd("r_tof_pid"+nid,800,400);
@@ -779,13 +768,12 @@ void proton_plots(
                 
             }
             
-            
-            
-            
+            gROOT->SetBatch(0);
+            c1->cd();
             /////////////////////////////////
             //  ch MC truth B and Signal  ///
             /////////////////////////////////
-            if(bool_part2_1) { // done
+            if(true) { // done
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 gPad->UseCurrentStyle();
@@ -829,12 +817,12 @@ void proton_plots(
                 // line_sigm_l2_true->SetLineColor(kRed);
                 // line_sigm_l2_true->Draw();
             }
-            
+    
             //////////////////////////////
             //  MC BG, Data, Data -BG  ///
             //////////////////////////////
             
-            if(bool_part2_2) { // done
+            if(true) { // done
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 gPad->UseCurrentStyle();
@@ -852,16 +840,16 @@ void proton_plots(
                 legend_bg_sub->Draw();
                 prt_canvasGet("r_bg_sub"+nid)->Update();
                 TLine *line_chcut_r = new TLine(0,0,0,1000);
-                line_chcut_r->SetX1(out_array[24]+5*out_array[10]);
-                line_chcut_r->SetX2(out_array[24]+5*out_array[10]);
+                line_chcut_r->SetX1(cangle_sim_true+5*spr_sim_true);
+                line_chcut_r->SetX2(cangle_sim_true+5*spr_sim_true);
                 line_chcut_r->SetY1(gPad->GetUymin());
                 line_chcut_r->SetY2(gPad->GetUymax());
                 line_chcut_r->SetLineColor(kRed);
                 line_chcut_r->Draw();
                 
                 TLine *line_chcut_l = new TLine(0,0,0,1000);
-                line_chcut_l->SetX1(out_array[24]-5*out_array[10]);
-                line_chcut_l->SetX2(out_array[24]-5*out_array[10]);
+                line_chcut_l->SetX1(cangle_sim_true-5*spr_sim_true);
+                line_chcut_l->SetX2(cangle_sim_true-5*spr_sim_true);
                 line_chcut_l->SetY1(gPad->GetUymin());
                 line_chcut_l->SetY2(gPad->GetUymax());
                 line_chcut_l->SetLineColor(kRed);
@@ -870,7 +858,7 @@ void proton_plots(
             ///////////////////////////////////////////
             //  diff MC BG, diff Data, diffData -BG  //
             ///////////////////////////////////////////
-            if (bool_part2_3) { // done
+            if (true) { // done
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 TLegend *legend_diff_bg_sub= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
@@ -880,28 +868,24 @@ void proton_plots(
                 legend_diff_bg_sub->AddEntry(p_diff_time_bg_sim," sim BG ","f");
                 legend_diff_bg_sub->AddEntry(p_diff_time_sim," sim ","f");
                 legend_diff_bg_sub->AddEntry(p_diff_time_mctruth," sim true path inside prism ","f");
-                
                 prt_canvasAdd("r_time_diff"+nid,800,400);
                 hs3->SetTitle(Form("Polar angle %3.1f", prtangle));
-                
                 hs3->Draw("nostack");
                 hs3->GetXaxis()->SetTitle("t_{calc}-t_{measured} [ns]");
                 hs3->GetYaxis()->SetTitle("entries [#]");
                 legend_diff_bg_sub->Draw();
                 prt_canvasGet("r_time_diff"+nid)->Update();
                 //prt_canvasGet("r_time_diff"+nid)->Modified();
-                
                 TLine *line_sigm_diff_r = new TLine(0,0,0,1000);
-                line_sigm_diff_r->SetX1(/*out_array[13]+*/out_array[16]*5);
-                line_sigm_diff_r->SetX2(/*out_array[13]+*/out_array[16]*5);
+                line_sigm_diff_r->SetX1(/*out_array[13]+*/out_array[3]*5);
+                line_sigm_diff_r->SetX2(/*out_array[13]+*/out_array[3]*5);
                 line_sigm_diff_r->SetY1(gPad->GetUymin());
                 line_sigm_diff_r->SetY2(gPad->GetUymax());
                 line_sigm_diff_r->SetLineColor(kBlue);
                 line_sigm_diff_r->Draw();
-                
                 TLine *line_sigm_diff_l = new TLine(0,0,0,1000);
-                line_sigm_diff_l->SetX1(/*out_array[13]*/-out_array[16]*5);
-                line_sigm_diff_l->SetX2(/*out_array[13]*/-out_array[16]*5);
+                line_sigm_diff_l->SetX1(/*out_array[13]*/-out_array[3]*5);
+                line_sigm_diff_l->SetX2(/*out_array[13]*/-out_array[3]*5);
                 line_sigm_diff_l->SetY1(gPad->GetUymin());
                 line_sigm_diff_l->SetY2(gPad->GetUymax());
                 line_sigm_diff_l->SetLineColor(kBlue);
@@ -910,27 +894,24 @@ void proton_plots(
                 
             }
             
-            if (bool_part2_4) { // done
+            if (true) { // done
                 TLegend *legend_photon_time_calc= new TLegend(0.556391, 0.712, 0.890977, 0.874667);
                 legend_photon_time_calc->SetHeader("calculated time match (proton)", "C");
                 legend_photon_time_calc->AddEntry(p_photon_time_sim_calc,"calculated time (sim)","f");
                 legend_photon_time_calc->AddEntry(p_photon_time_data_calc,"calculated time (data) ","p");
-                
                 prt_canvasAdd("r_photon_calc_time"+nid,800,400);
                 hs4->SetTitle(Form("Polar angle %3.1f", prtangle));
-                
                 hs4->Draw("nostack");
                 hs4->GetXaxis()->SetTitle("t_{calc} [ns]");
                 hs4->GetYaxis()->SetTitle("entries [#]");
                 legend_photon_time_calc->Draw();
             }
             
-            if (bool_part2_5) { // done
+            if (true) { // done
                 TLegend *legend_photon_time=  new TLegend(0.556391, 0.712, 0.890977, 0.874667);
                 legend_photon_time->SetHeader("measured time match (proton)","C");
                 legend_photon_time->AddEntry(p_photon_time_sim,"measured time (sim)","f");
                 legend_photon_time->AddEntry(p_photon_time_data,"measured time (data) ","p");
-                
                 prt_canvasAdd("r_photon_measured_time"+nid,800,400);
                 hs5->SetTitle(Form("Polar angle %3.1f", prtangle));
                 hs5->Draw("nostack");
@@ -942,7 +923,7 @@ void proton_plots(
             /////////////////////////
             // Draw photon yield  ///
             /////////////////////////
-            if (bool_part2_6) { // done
+            if (true) { // done
                 TLegend * legend_nph_sim= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_nph_sim->SetHeader("photon yield (proton sim)","C");
                 prt_canvasAdd("r_fnHits_sim"+nid,800,400);
@@ -960,7 +941,7 @@ void proton_plots(
                 legend_nph_sim->Draw();
             }
             
-            if (bool_part2_7) { // done
+            if (true) { // done
                 TLegend * legend_nph_data= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_nph_data->SetHeader("photon yield (proton data)","C");
                 prt_canvasAdd("r_fnHits_data"+nid,800,400);
@@ -970,7 +951,6 @@ void proton_plots(
                 legend_nph_data->AddEntry(p_nph_good_data,"DIRC hits with #theta_{C} and time cuts ","l");
                 //legend_nph_data->AddEntry(dac_hits_data,"DAC hits without cuts","f");
                 //legend_nph_data->AddEntry(dac_hits_sys_cus_data,"DAC hits with auxiliary detectors cuts and PID cut(proton data)","f");
-                
                 hs6->SetTitle(Form("Polar angle %3.1f", prtangle));
                 hs6->Draw("nostack");
                 hs6->GetYaxis()->SetTitle("entries [#]");
@@ -978,31 +958,8 @@ void proton_plots(
                 legend_nph_data->Draw();
             }
             
-            
-            
-            
-            /////////////////////
-            // fill the tree  ///
-            /////////////////////
-            // if (false) {
-            // dirc = (TTree*)ffile_sim->Get("dirc");
-            // newBranch_sumunderCurve = dirc-> Branch("sumunderCurve",&sumunderCurve,"sumunderCurve/D");
-            // newBranch_sumunderLine = dirc-> Branch("sumunderLine",&sumunderLine,"sumunderLine/D");
-            // sumunderCurve= out_array[0];
-            // sumunderLine= out_array[1];
-            // newBranch_sumunderCurve->Fill();
-            // newBranch_sumunderLine->Fill();
-            // dirc->Write("",TObject::kOverwrite);
-            // }
+            c1->cd();
         }
-        
-        
-        //                ffile_sim->Close();
-        //                ffile_data->Close();
-        //                delete ffile_sim;
-        //                delete ffile_data;
-        
-        
     }
     
     
@@ -1640,373 +1597,99 @@ void proton_plots(
     std::cout<<"############ P cherenkov angle= "<< fAngleP <<std::endl;
     std::cout<<"############ Pi cherenkov angle= "<< fAnglePi <<std::endl;
     std::cout<<"############"<< " Macro End Succsessfully " <<std::endl;
+    
+   
 }
 
-Double_t* FitHisto(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_sim_correction, TH1F * p_cherenkov_mc_same_path, TH1F * p_cherenkov_data_sub, TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i, TH1F *p_cherenkov_data_copy, TH1F *p_cherenkov_data, TH1F * p_cherenkov_data_correction) {
+Double_t* FitHisto(TH1F * p_diff_time_data, TH1F * p_diff_time_mctruth, TH1F * p_diff_time_sim, Int_t &i) {
+    //gROOT->SetBatch(1);
     gStyle->SetOptFit(1);
-    TF1 *fFit = new TF1("fFit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-    TSpectrum *fSpect= new TSpectrum(10);
-    Double_t cangle_sim=0;
-    Double_t spr_sim=0;
-    const int var=31;
+    const int var=6;
     static Double_t return_array[var];
-    if(p_cherenkov_sim->GetEntries()>20) {
-        //gROOT->SetBatch(1);
-        Int_t nfound = fSpect->Search(p_cherenkov_sim,1,"",0.9); //0.6
-        if(nfound>0) cangle_sim = fSpect->GetPositionX()[0];
-        cangle_sim =  p_cherenkov_sim->GetXaxis()->GetBinCenter(p_cherenkov_sim->GetMaximumBin());
-        if(cangle_sim>0.85) cangle_sim=0.82;
-        fFit->SetParameters(100,cangle_sim,0.010);
-        fFit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        fFit->SetParLimits(0,0.1,1E6);
-        fFit->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        fFit->SetParLimits(2,0.005,0.010000); // changed 0.014
-        p_cherenkov_sim->Fit("fFit","M0","",cangle_sim-0.06,cangle_sim+0.06);
-        if (i== 90 ) p_cherenkov_sim->Fit("fFit","M0","",cangle_sim-0.03,cangle_sim+0.06);
-        if (i== 100 )p_cherenkov_sim->Fit("fFit","M0","",cangle_sim-0.05,cangle_sim+0.06);
-        //p_cherenkov_data_copy->Fit("fFit","0","",cangle_sim-0.06,cangle_sim+0.06);
-        //p_cherenkov_sim->Fit("fFit","R");
-        Double_t chi = fFit->GetChisquare()/fFit->GetNDF();
-        cangle_sim = fFit->GetParameter(1);
-        spr_sim = fFit->GetParameter(2);
-        Double_t cangle_minus_5_sgma = cangle_sim-5*spr_sim;
-        Double_t cangle_plus_5_sgma = cangle_sim+5*spr_sim;
-        Double_t cangle_minus_3_sgma = cangle_sim-3*spr_sim;
-        Double_t cangle_plus_3_sgma = cangle_sim+3*spr_sim;
-        Double_t r_min = cangle_sim-8*spr_sim;
-        Double_t r_max = cangle_sim+8*spr_sim;
-        Double_t sumundercurve = fFit->Integral(cangle_minus_3_sgma,cangle_plus_3_sgma);
-        
-        TF1 *fFit_copy = new TF1("fFit_copy","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        fFit_copy->SetParameters(100,cangle_sim,0.010);
-        fFit_copy->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        fFit_copy->SetParLimits(0,0.1,1E6);
-        fFit_copy->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        fFit_copy->SetParLimits(2,0.005,0.010000); // changed 0.014
-        p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.06,cangle_sim+0.06);
-        if (i== 90 ) p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.03,cangle_sim+0.06);
-        if (i== 100 )p_cherenkov_data_copy->Fit("fFit_copy","M","",cangle_sim-0.05,cangle_sim+0.06);
-        
-        Double_t cangle_data = fFit_copy->GetParameter(1);
-        Double_t spr_data = fFit_copy->GetParameter(2);
-        
-        
-        TF1 *fFit_sim_correction = new TF1("fFit_sim_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        fFit_sim_correction->SetParameters(100,cangle_sim,0.010);
-        fFit_sim_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        fFit_sim_correction->SetParLimits(0,0.1,1E6);
-        fFit_sim_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        fFit_sim_correction->SetParLimits(2,0.005,0.010000); // changed 0.014
-        p_cherenkov_sim_correction->Fit("fFit_sim_correction","M","",cangle_sim-0.06,cangle_sim+0.06);
-        if (i== 90 ) p_cherenkov_sim_correction->Fit("fFit_sim_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
-        if (i== 100 ) p_cherenkov_sim_correction->Fit("fFit_sim_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
-        Double_t cangle_sim_correction = fFit_sim_correction->GetParameter(1);
-        Double_t spr_sim_correction = fFit_sim_correction->GetParameter(2);
-        
-        
-        //        TF1 *fFit_org = new TF1("fFit_org","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        //        fFit_org->SetParameters(100,cangle_sim,0.010);
-        //        fFit_org->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        //        fFit_org->SetParLimits(0,0.1,1E6);
-        //        fFit_org->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        //        fFit_org->SetParLimits(2,0.005,0.014); // changed 0.014
-        //        p_cherenkov_data->Fit("fFit_org","M","",cangle_sim-0.06,cangle_sim+0.06);
-        //        Double_t cangle_data_org = fFit_org->GetParameter(1);
-        //        Double_t spr_data_org = fFit_org->GetParameter(2);
-        
-        
-        //        TF1 *fFit_correction = new TF1("fFit_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        //        fFit_correction->SetParameters(100,cangle_sim,0.010);
-        //        fFit_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        //        fFit_correction->SetParLimits(0,0.1,1E6);
-        //        fFit_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        //        fFit_correction->SetParLimits(2,0.005,0.014); // changed 0.014
-        //        p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.06,cangle_sim+0.06);
-        //        Double_t cangle_data_correction = fFit_correction->GetParameter(1);
-        //        Double_t spr_data_correction = fFit_correction->GetParameter(2);
-        
-        TF1 *fFit_org = new TF1("fFit_org","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        fFit_org->SetParameters(100,cangle_sim,0.010);
-        fFit_org->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        fFit_org->SetParLimits(0,0.1,1E6);
-        fFit_org->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        fFit_org->SetParLimits(2,0.005,0.010000); // changed 0.014
-        p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.06,cangle_sim+0.06);
-        if (i== 90 ) p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.03,cangle_sim+0.06);
-        if (i== 100 ) p_cherenkov_data->Fit("fFit_org","0","",cangle_sim-0.05,cangle_sim+0.06);
-        Double_t cangle_data_org = fFit_org->GetParameter(1);
-        Double_t spr_data_org = fFit_org->GetParameter(2);
-        
-        
-        TF1 *fFit_correction = new TF1("fFit_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        fFit_correction->SetParameters(100,cangle_sim,0.010);
-        fFit_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        fFit_correction->SetParLimits(0,0.1,1E6);
-        fFit_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        fFit_correction->SetParLimits(2,0.005,0.010000); // changed 0.014
-        p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.06,cangle_sim+0.06);
-        if (i== 90 ) p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.03,cangle_sim+0.06);
-        if (i== 100 ) p_cherenkov_data_correction->Fit("fFit_correction","0","",cangle_sim-0.05,cangle_sim+0.06);
-        Double_t cangle_data_correction = fFit_correction->GetParameter(1);
-        Double_t spr_data_correction = fFit_correction->GetParameter(2);
-        
-        ////////////////
-        // Linear Fit///
-        ////////////////
-        TF1 *fFit_linear = new TF1("fFit_linear","x*[0]+[1]",cangle_sim-0.06,cangle_sim+0.06);
-        fFit_linear->SetLineColor(1);
-        Double_t p3(0), p4(0);
-        p3 = fFit->GetParameter(3);
-        p4 = fFit->GetParameter(4);
-        // std::cout<<"############  p3 = "<< p3<<std::endl;
-        // std::cout<<"############  p4 = "<< p4<<std::endl;
-        fFit_linear->SetParameters(p3,p4);
-        fFit_linear->SetParNames("plinear0","plinear1");
-        fFit_linear->SetParLimits(0,p3-5,p3+5);
-        fFit_linear->SetParLimits(1,p4-5,p4+5);
-        p_cherenkov_sim->Fit("fFit_linear","0");
-        //p_cherenkov_sim->Fit("fFit_linear","M0","R+");
-        //->SetOptFit(1);
-        Double_t sumundercurve_linear = fFit_linear->Integral(cangle_minus_3_sgma,cangle_plus_3_sgma);
-        
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Fitting @@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"############  Signal+BG integration= "<< sumundercurve <<std::endl;
-        // std::cout<<"############  BG line integration= "<< sumundercurve_linear <<std::endl;
-        // std::cout<<"############  signal (estimation)= "<< sumundercurve - sumundercurve_linear<<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        
-        //std::cout<<"############  sigma = "<< spr_sim <<std::endl;
-        //std::cout<<"############  mean = "<< cangle_sim <<std::endl;
-        
-        ////////////////
-        // SideBand  ///
-        ////////////////
-        TF1 *fl = new TF1("fl",fline,0.6,1,6);
-        fl->FixParameter (2,cangle_minus_5_sgma);  // del peak mine
-        fl->FixParameter (3,cangle_plus_5_sgma); // del peak max
-        fl->FixParameter (4,r_min); // del smaller than 0.73
-        fl->FixParameter (5,r_max); // del  biger than 0.9
-        //fl->SetParameters(0,p3);
-        //fl->SetParameters(1,p4);
-        //fl->SetParNames("plinear0","plinear1");
-        //fl->SetParLimits(1,p3-5,p3+5);
-        //fl->SetParLimits(1,p4-0,p4+0);
-        ////////////////////////////////
-        //fit only the linear background excluding the signal area and boarders
-        reject = kTRUE;
-        //p_cherenkov_sim->Fit(fl,"+0");
-        //p_cherenkov_sim->Fit(fl,"0");
-        //std::cout<<"############  p0 = "<< fl->GetParameter(0) <<std::endl;
-        //std::cout<<"############  p1 = "<< fl->GetParameter(1) <<std::endl;
-        reject = kFALSE;
-        //store 2 separate functions for visualization
-        TF1 *fleft = new TF1("fleft",fline, r_min , cangle_minus_5_sgma ,6);
-        fleft->SetParameters(fl->GetParameters());
-        p_cherenkov_sim->GetListOfFunctions()->Add(fleft);
-        gROOT->GetListOfFunctions()->Remove(fleft);
-        TF1 *fright = new TF1("fright",fline, cangle_plus_5_sgma ,r_max,6);
-        fright->SetParameters(fl->GetParameters());
-        p_cherenkov_sim->GetListOfFunctions()->Add(fright);
-        gROOT->GetListOfFunctions()->Remove(fright);
-        
-        TF1 *fcenter = new TF1("fcenter",fline, cangle_minus_3_sgma ,cangle_plus_3_sgma,6);
-        fcenter->SetParameters(fl->GetParameters());
-        p_cherenkov_sim->GetListOfFunctions()->Add(fcenter);
-        gROOT->GetListOfFunctions()->Remove(fcenter);
-        
-        fleft->SetLineColor(kBlue);
-        fright->SetLineColor(kBlue);
-        fcenter->SetLineColor(kMagenta);
-        
-        Double_t B_center = fl->Integral(cangle_minus_3_sgma,cangle_plus_3_sgma);
-        Double_t B_lift = fl->Integral(r_min,cangle_minus_5_sgma);
-        Double_t B_right = fl->Integral(cangle_plus_5_sgma,r_max);
-        
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SIDBAND @@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"############  BG center integration = "<< B_center <<std::endl;
-        // std::cout<<"############  BG lift integration = "<< B_lift <<std::endl;
-        // std::cout<<"############  BG right integration= "<< B_right <<std::endl;
-        // std::cout<<"############  BG right + BG lift = "<< B_right + B_lift <<std::endl;
-        // std::cout<<"############  signal (estimation)= "<< sumundercurve - B_center<<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        
-        ///////////////////
-        // fit true MC  ///
-        ///////////////////
-        TF1 *gFit = new TF1("gFit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        gFit->SetParameters(100,cangle_sim,0.010);
-        gFit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        gFit->SetParLimits(0,0.1,1E6);
-        gFit->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        gFit->SetParLimits(2,0.005,0.010000); // changed 0.014
-        p_cherenkov_mc_same_path->Fit("gFit","0","",cangle_minus_5_sgma,cangle_plus_5_sgma);
-        Double_t spr_sim_true = gFit->GetParameter(2);
-        Double_t cangle_sim_true = gFit->GetParameter(1);
-        Double_t sumunder_true_signal = gFit->Integral(cangle_minus_5_sgma,cangle_plus_5_sgma);
-        
-        ////////////////////
-        // fit ch data sub//
-        ////////////////////
-        TF1 *g2Fit = new TF1("g2Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-        g2Fit->SetParameters(100,cangle_sim,0.010);
-        g2Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        g2Fit->SetParLimits(0,0.1,1E6);
-        g2Fit->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-        g2Fit->SetParLimits(2,0.005,0.010000); // changed 0.014
-        //p_cherenkov_data_sub->Fit("g2Fit","0","",cangle_minus_5_sgma,cangle_plus_5_sgma);
-        p_cherenkov_data_sub->Fit("g2Fit","M","",cangle_sim-0.06,cangle_sim+0.06);
-        if (i== 90 ) p_cherenkov_data_sub->Fit("g2Fit","M","",cangle_sim-0.03,cangle_sim+0.06);
-        if (i== 100 ) p_cherenkov_data_sub->Fit("g2Fit","M","",cangle_sim-0.05,cangle_sim+0.06);
-        
-        //p_cherenkov_data_sub->Fit("g2Fit","0","",cangle_sim-0.15,cangle_sim+0.15);
-        Double_t cangle_data_sub = fFit_copy->GetParameter(1);
-        Double_t spr_data_sub = fFit_copy->GetParameter(2);
-        
-        Double_t cangle_data_sub_minus_5_sgma = cangle_data_sub-5*spr_data_sub;
-        Double_t cangle_data_sub_plus_5_sgma = cangle_data_sub+5*spr_data_sub;
-        Double_t cangle_data_sub_minus_3_sgma = cangle_data_sub-3*spr_data_sub;
-        Double_t cangle_data_sub_plus_3_sgma = cangle_data_sub+3*spr_data_sub;
-        Double_t r_min_data_sub = cangle_data_sub-8*spr_data_sub;
-        Double_t r_max_data_sub = cangle_data_sub+8*spr_data_sub;
-        // Double_t mean_p_diff_time_data= 0;
-        // Double_t sigma_p_diff_time_data = 0;
-        // Double_t mean_diff_time_mctruth= 0;
-        // Double_t sigma_diff_time_mctruth= 0;
-        
-        ////////////////////////////
-        // fit true time diff path //
-        /////////////////////////////
-        Double_t diff_peak_mctruth =  p_diff_time_mctruth->GetXaxis()->GetBinCenter(p_diff_time_mctruth->GetMaximumBin());
-        TF1 *g4Fit = new TF1("g4Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /*  +x*[3]+[4] */",0.35,0.9);
-        g4Fit->SetParameters(100,diff_peak_mctruth,0.010);
-        g4Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        g4Fit->SetParLimits(0,0.1,1E6);
-        g4Fit->SetParLimits(1,-5,5);
-        g4Fit->SetParLimits(2,-5,5);
-        p_diff_time_mctruth->Fit("g4Fit","0","",-6,6);
-        Double_t mean_p_diff_time_mctruth= g4Fit->GetParameter(1);
-        Double_t sigma_p_diff_time_mctruth = g4Fit->GetParameter(2);
-        
-        
-        /////////////////////////////
-        // fit data time diff path //
-        /////////////////////////////
-        Double_t diff_peak_data =  p_diff_time_data->GetXaxis()->GetBinCenter(p_diff_time_data->GetMaximumBin());
-        TF1 *g3Fit = new TF1("g3Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /* +x*[3]+[4] */",0.35,0.9);
-        g3Fit->SetParameters(100,diff_peak_data,0.010);
-        g3Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        g3Fit->SetParLimits(0,0.1,1E6);
-        g3Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
-        g3Fit->SetParLimits(2,0,6);
-        //p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.7*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
-        if (i == 120) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
-        }
-        else if (i == 110) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.7*sigma_p_diff_time_mctruth);
-        }
-        else if (i == 100) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-2.0*sigma_p_diff_time_mctruth,diff_peak_data+2.0*sigma_p_diff_time_mctruth);
-        }
-        else if (i == 90) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
-        }
-        else if (i == 50) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
-        }
-        else if (i == 150) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
-        }
-        else if (i == 130) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
-        }
-        else if (i == 60) {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
-        }
-        else {
-            p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.8*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
-            
-        }
-        Double_t mean_p_diff_time_data= g3Fit->GetParameter(1);
-        Double_t sigma_p_diff_time_data = g3Fit->GetParameter(2);
-        /////////////////////////////
-        // fit sim time diff path //
-        /////////////////////////////
-        Double_t diff_peak_sim =  p_diff_time_sim->GetXaxis()->GetBinCenter(p_diff_time_sim->GetMaximumBin());
-        TF1 *g5Fit = new TF1("g5Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /* +x*[3]+[4] */",0.35,0.9);
-        g5Fit->SetParameters(100,diff_peak_sim,0.010);
-        g5Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-        g5Fit->SetParLimits(0,0.1,1E6);
-        g5Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
-        g5Fit->SetParLimits(2,0,6);
-        p_diff_time_sim->Fit("g5Fit","0","",diff_peak_sim-1*sigma_p_diff_time_mctruth,diff_peak_data+1*sigma_p_diff_time_mctruth);
-        Double_t mean_p_diff_time_sim= g5Fit->GetParameter(1);
-        Double_t sigma_p_diff_time_sim = g5Fit->GetParameter(2);
-        //Double_t mean_p_diff_time_sim= 0;
-        //Double_t sigma_p_diff_time_sim = 0;
-        
-        
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TRUE PATH @@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"############  True signal integration = "<< sumunder_true_signal <<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        return_array[0]=sumundercurve;
-        return_array[1]=sumundercurve_linear;
-        return_array[2]=fFit->GetParameter(1);
-        return_array[3]=fFit->GetParameter(2);
-        return_array[4]= cangle_minus_5_sgma;
-        return_array[5]= cangle_minus_3_sgma;
-        return_array[6]= cangle_plus_3_sgma;
-        return_array[7]= cangle_plus_5_sgma;
-        return_array[8]= r_min;
-        return_array[9]= r_max;
-        return_array[10]= spr_sim_true;
-        return_array[11]= spr_data_sub;
-        return_array[12]= spr_sim;
-        return_array[13]= mean_p_diff_time_data;
-        return_array[14]= sigma_p_diff_time_data;
-        return_array[15]= mean_p_diff_time_mctruth;
-        return_array[16]= sigma_p_diff_time_mctruth;
-        return_array[17]= mean_p_diff_time_sim;
-        return_array[18]= sigma_p_diff_time_sim;
-        return_array[19]=cangle_data_sub;
-        return_array[20]=spr_data_sub;
-        return_array[21]=cangle_data;
-        return_array[22]=spr_data;
-        return_array[23]=cangle_sim;
-        return_array[24]=cangle_sim_true;
-        return_array[25]=cangle_data_correction;
-        return_array[26]=spr_data_correction;
-        return_array[27]=cangle_data_org;
-        return_array[28]=spr_data_org;
-        return_array[29]=cangle_sim_correction;
-        return_array[30]=spr_sim_correction;
-        
-        // std::cout<<"\n"<<std::endl;
-        // std::cout<<"\n"<<std::endl;
-        // std::cout<<"\n"<<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Summary @@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"<<std::endl;
-        //
-        //
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TRUE PATH @@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"############  True signal integration = "<< sumunder_true_signal <<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        //
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Fitting @@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"############  Signal+BG integration= "<< sumundercurve <<std::endl;
-        // std::cout<<"############  BG line integration= "<< sumundercurve_linear <<std::endl;
-        // std::cout<<"############  signal (estimation)= "<< sumundercurve - sumundercurve_linear<< "     over estimation="<<(sumundercurve - sumundercurve_linear-sumunder_true_signal)/sumunder_true_signal*100 <<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        //
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SIDBAND @@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
-        // std::cout<<"############  BG center integration = "<< B_center <<std::endl;
-        // std::cout<<"############  BG lift integration = "<< B_lift <<std::endl;
-        // std::cout<<"############  BG right integration= "<< B_right <<std::endl;
-        // std::cout<<"############  BG right + BG lift = "<< B_right + B_lift <<std::endl;
-        // std::cout<<"############  signal (estimation)= "<< sumundercurve - B_center<<"     over estimation="<<(sumundercurve - B_center-sumunder_true_signal)/sumunder_true_signal*100 <<std::endl;
-        // std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<std::endl;
+    
+    ////////////////////////////
+    // fit true time diff path //
+    /////////////////////////////
+    Double_t diff_peak_mctruth =  p_diff_time_mctruth->GetXaxis()->GetBinCenter(p_diff_time_mctruth->GetMaximumBin());
+    TF1 *g4Fit = new TF1("g4Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /*  +x*[3]+[4] */",0.35,0.9);
+    g4Fit->SetParameters(100,diff_peak_mctruth,0.010);
+    g4Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+    g4Fit->SetParLimits(0,0.1,1E6);
+    g4Fit->SetParLimits(1,-5,5);
+    g4Fit->SetParLimits(2,-5,5);
+    p_diff_time_mctruth->Fit("g4Fit","0","",-6,6);
+    Double_t mean_p_diff_time_mctruth= g4Fit->GetParameter(1);
+    Double_t sigma_p_diff_time_mctruth = g4Fit->GetParameter(2);
+    
+    
+    /////////////////////////////
+    // fit data time diff path //
+    /////////////////////////////
+    Double_t diff_peak_data =  p_diff_time_data->GetXaxis()->GetBinCenter(p_diff_time_data->GetMaximumBin());
+    TF1 *g3Fit = new TF1("g3Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /* +x*[3]+[4] */",0.35,0.9);
+    g3Fit->SetParameters(100,diff_peak_data,0.010);
+    g3Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+    g3Fit->SetParLimits(0,0.1,1E6);
+    g3Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
+    g3Fit->SetParLimits(2,0,6);
+    //p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.7*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
+    if (i == 120) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
     }
+    else if (i == 110) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.7*sigma_p_diff_time_mctruth);
+    }
+    else if (i == 100) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-2.0*sigma_p_diff_time_mctruth,diff_peak_data+2.0*sigma_p_diff_time_mctruth);
+    }
+    else if (i == 90) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
+    }
+    else if (i == 50) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.5*sigma_p_diff_time_mctruth);
+    }
+    else if (i == 150) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
+    }
+    else if (i == 130) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.0*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
+    }
+    else if (i == 60) {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
+    }
+    else {
+        p_diff_time_data->Fit("g3Fit","0","",diff_peak_data-0.8*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
+        
+    }
+    Double_t mean_p_diff_time_data= g3Fit->GetParameter(1);
+    Double_t sigma_p_diff_time_data = g3Fit->GetParameter(2);
+    /////////////////////////////
+    // fit sim time diff path //
+    /////////////////////////////
+    Double_t diff_peak_sim =  p_diff_time_sim->GetXaxis()->GetBinCenter(p_diff_time_sim->GetMaximumBin());
+    TF1 *g5Fit = new TF1("g5Fit","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) /* +x*[3]+[4] */",0.35,0.9);
+    g5Fit->SetParameters(100,diff_peak_sim,0.010);
+    g5Fit->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+    g5Fit->SetParLimits(0,0.1,1E6);
+    g5Fit->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
+    g5Fit->SetParLimits(2,0,6);
+    p_diff_time_sim->Fit("g5Fit","0","",diff_peak_sim-1*sigma_p_diff_time_mctruth,diff_peak_data+1*sigma_p_diff_time_mctruth);
+    Double_t mean_p_diff_time_sim= g5Fit->GetParameter(1);
+    Double_t sigma_p_diff_time_sim = g5Fit->GetParameter(2);
+    //Double_t mean_p_diff_time_sim= 0;
+    //Double_t sigma_p_diff_time_sim = 0;
+    
+    
+    
+    return_array[0]= mean_p_diff_time_data;
+    return_array[1]= sigma_p_diff_time_data;
+    return_array[2]= mean_p_diff_time_mctruth;
+    return_array[3]= sigma_p_diff_time_mctruth;
+    return_array[4]= mean_p_diff_time_sim;
+    return_array[5]= sigma_p_diff_time_sim;
+    
+    
+    
     gROOT->SetBatch(0);
     gStyle->SetOptFit(0);
     return return_array;
@@ -2021,17 +1704,6 @@ bool exists_test (const std::string& name) {
     return ( access( name.c_str(), F_OK ) != -1 );
 }
 
-////////////////////////
-// side calculation ////
-////////////////////////
-Double_t fline(Double_t *x, Double_t *par)
-{
-    if ((reject && (x[0] > par[2] && x[0] < par[3])) || (x[0]< par[4] || x[0]> par[5])) {
-        TF1::RejectPoint();
-        return 0;
-    }
-    return par[0] + par[1]*x[0];
-}
 
 ///////////////////////////////
 // histo style calculation ////
