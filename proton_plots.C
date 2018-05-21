@@ -56,6 +56,7 @@ bool exists_test (const std::string& name);
 // histo style
 void HistoStyle(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_sub, TH1F *p_cherenkov_mc_same_path, TH1F *p_cherenkov_bg_sim, TH1F *nph_sim, TH1F *p_nph_sim,TH1F *p_nph_good_sim, TH1F *p_nph_true_sim, TH1F *p_diff_time_sim, TH1F*p_diff_time_data, TH1F*p_diff_time_data_sub, TH1F*p_diff_time_mctruth, TH1F* p_diff_time_bg_sim, TH1F *p_cherenkov_data_copy, TH1F *p_photon_time_sim, TH1F *p_photon_time_data, TH1F *p_photon_time_sim_calc, TH1F *p_photon_time_data_calc, TH1F *nph_data, TH1F *p_nph_data, TH1F *p_nph_good_data, TH1F *dac_hits_data, TH1F *dac_hits_sys_cus_data);
 void HistoStyleMatch(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data);
+void HistoStyle_3colors(TH1F *histo1, TH1F *histo2, TH1F *histo3);
 
 Double_t*  YieldGausFit(TH1F *photonYieldHistogram);
 Double_t  YieldGausFit_double(TH1F *photonYieldHistogram) ;
@@ -224,71 +225,8 @@ void proton_plots(
         histo_photon_ambiguity_wt_data=(TH1F*)ffile_data->Get("histo_photon_ambiguity_wt");
         histo_photon_ambiguity_wtc_data=(TH1F*)ffile_data->Get("histo_photon_ambiguity_wtc");
         
-        histo_photon_ambiguity_wo_sim->SetLineColor(kRed);
-        histo_photon_ambiguity_wo_sim->SetLineStyle(1);
-        histo_photon_ambiguity_wo_sim->GetXaxis()->SetTitle("number of photon per track [#]");
-        histo_photon_ambiguity_wo_sim->GetYaxis()->SetTitle("entries [#]");
-        histo_photon_ambiguity_wo_sim->GetXaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wo_sim->GetYaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wo_sim->GetXaxis()->SetTitleOffset(0.9);
-        histo_photon_ambiguity_wo_sim->GetYaxis()->SetTitleOffset(1.0);
-        //histo_photon_ambiguity_wo_sim->SetFillColor(kRed);
-        //histo_photon_ambiguity_wo_sim->SetFillStyle(3001);
-        
-        histo_photon_ambiguity_wt_sim->SetLineColor(kBlue);
-        histo_photon_ambiguity_wt_sim->SetLineStyle(1);
-        histo_photon_ambiguity_wt_sim->GetXaxis()->SetTitle("number of photon per track [#]");
-        histo_photon_ambiguity_wt_sim->GetYaxis()->SetTitle("entries [#]");
-        histo_photon_ambiguity_wt_sim->GetXaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wt_sim->GetYaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wt_sim->GetXaxis()->SetTitleOffset(0.9);
-        histo_photon_ambiguity_wt_sim->GetYaxis()->SetTitleOffset(1.0);
-        //histo_photon_ambiguity_wt_sim->SetFillColor(kBlue);
-        //histo_photon_ambiguity_wt_sim->SetFillStyle(3003);
-        
-        histo_photon_ambiguity_wtc_sim->SetLineColor(kBlack);
-        histo_photon_ambiguity_wtc_sim->SetLineStyle(1);
-        histo_photon_ambiguity_wtc_sim->GetXaxis()->SetTitle("number of photon per track [#]");
-        histo_photon_ambiguity_wtc_sim->GetYaxis()->SetTitle("entries [#]");
-        histo_photon_ambiguity_wtc_sim->GetXaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wtc_sim->GetYaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wtc_sim->GetXaxis()->SetTitleOffset(0.9);
-        histo_photon_ambiguity_wtc_sim->GetYaxis()->SetTitleOffset(1.0);
-        //histo_photon_ambiguity_wtc_sim->SetFillColor(kBlack);
-        //histo_photon_ambiguity_wtc_sim->SetFillStyle(3002);
-        
-        histo_photon_ambiguity_wo_data->SetLineColor(kRed);
-        histo_photon_ambiguity_wo_data->SetLineStyle(1);
-        histo_photon_ambiguity_wo_data->GetXaxis()->SetTitle("number of photon per track [#]");
-        histo_photon_ambiguity_wo_data->GetYaxis()->SetTitle("entries [#]");
-        histo_photon_ambiguity_wo_data->GetXaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wo_data->GetYaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wo_data->GetXaxis()->SetTitleOffset(0.9);
-        histo_photon_ambiguity_wo_data->GetYaxis()->SetTitleOffset(1.0);
-        //histo_photon_ambiguity_wo_data->SetFillColor(kRed);
-        //histo_photon_ambiguity_wo_data->SetFillStyle(3001);
-        
-        histo_photon_ambiguity_wt_data->SetLineColor(kBlue);
-        histo_photon_ambiguity_wt_data->SetLineStyle(1);
-        histo_photon_ambiguity_wt_data->GetXaxis()->SetTitle("number of photon per track [#]");
-        histo_photon_ambiguity_wt_data->GetYaxis()->SetTitle("entries [#]");
-        histo_photon_ambiguity_wt_data->GetXaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wt_data->GetYaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wt_data->GetXaxis()->SetTitleOffset(0.9);
-        histo_photon_ambiguity_wt_data->GetYaxis()->SetTitleOffset(1.0);
-        //histo_photon_ambiguity_wt_data->SetFillColor(kBlue);
-        //histo_photon_ambiguity_wt_data->SetFillStyle(3003);
-        
-        histo_photon_ambiguity_wtc_data->SetLineColor(kBlack);
-        histo_photon_ambiguity_wtc_data->SetLineStyle(1);
-        histo_photon_ambiguity_wtc_data->GetXaxis()->SetTitle("number of photon per track [#]");
-        histo_photon_ambiguity_wtc_data->GetYaxis()->SetTitle("entries [#]");
-        histo_photon_ambiguity_wtc_data->GetXaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wtc_data->GetYaxis()->SetTitleSize(0.05);
-        histo_photon_ambiguity_wtc_data->GetXaxis()->SetTitleOffset(0.9);
-        histo_photon_ambiguity_wtc_data->GetYaxis()->SetTitleOffset(1.0);
-        //histo_photon_ambiguity_wtc_data->SetFillColor(kBlack);
-        //histo_photon_ambiguity_wtc_data->SetFillStyle(3002);
+        HistoStyle_3colors(histo_photon_ambiguity_wo_sim, histo_photon_ambiguity_wt_sim, histo_photon_ambiguity_wtc_sim);
+        HistoStyle_3colors(histo_photon_ambiguity_wo_data, histo_photon_ambiguity_wt_data, histo_photon_ambiguity_wtc_data);
         
         /////////////
         // TOF PID //
@@ -299,7 +237,7 @@ void proton_plots(
         ///// part I //////
         ///////////////////
         if(bool_part1) {
-            if (bool_part1_1) { // done 1
+            if (bool_part1_1) {
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 DiffNorm(p_cherenkov_sim, p_cherenkov_data);
@@ -332,7 +270,6 @@ void proton_plots(
             }
             
             if(bool_part1_2) {
-                //DiffNorm(p_cherenkov_data, p_cherenkov_data_correction);
                 prt_canvasAdd("r_correction"+nid,800,400);
                 p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f (proton data)", prtangle));
                 HistoStyleMatch(p_cherenkov_data,p_cherenkov_data_correction);
@@ -350,8 +287,6 @@ void proton_plots(
                 fFit_p_cherenkov_data_correction->SetParLimits(1,cangle_cor-0.04,cangle_cor+0.04);
                 fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.014000);
                 p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.06,cangle_cor+0.06);
-                //if (prtangle== 90 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.03,cangle_cor+0.06);
-                //if (prtangle== 100 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.05,cangle_cor+0.06);
                 
                 legend_correction->SetHeader("Ambiguity distribution (proton data)","C");
                 legend_correction->AddEntry(p_cherenkov_data,"Ambiguity distribution","f");
@@ -419,9 +354,8 @@ void proton_plots(
             Double_t cangle_sim=0;
             Double_t spr_sim=0;
             Int_t nfound = fSpect->Search(p_cherenkov_mc_same_path,1,"",0.9); //0.6
-            if(nfound>0) cangle_sim = fSpect->GetPositionX()[0];
+            cangle_sim = fSpect->GetPositionX()[0];
             cangle_sim =  p_cherenkov_sim->GetXaxis()->GetBinCenter(p_cherenkov_sim->GetMaximumBin());
-            if(cangle_sim>0.85) cangle_sim=0.82;
             TF1 *fFit_p_cherenkov_sim = new TF1("fFit_p_cherenkov_sim","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
             fFit_p_cherenkov_sim->SetParameters(100,cangle_sim,0.010);
             fFit_p_cherenkov_sim->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
@@ -429,13 +363,11 @@ void proton_plots(
             fFit_p_cherenkov_sim->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
             fFit_p_cherenkov_sim->SetParLimits(2,0.005,0.014000); // changed 0.014
             p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.06,cangle_sim+0.06);
-            //if (i== 90 ) p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.03,cangle_sim+0.06);
-            //if (i== 100 )p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.05,cangle_sim+0.06);
-            //p_cherenkov_data_copy->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.06,cangle_sim+0.06);
-            //p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","R");
+
             Double_t chi = fFit_p_cherenkov_sim->GetChisquare()/fFit_p_cherenkov_sim->GetNDF();
             cangle_sim = fFit_p_cherenkov_sim->GetParameter(1);
             spr_sim = fFit_p_cherenkov_sim->GetParameter(2);
+            
             Double_t cangle_minus_5_sgma = cangle_sim-5*spr_sim;
             Double_t cangle_plus_5_sgma = cangle_sim+5*spr_sim;
             Double_t cangle_minus_3_sgma = cangle_sim-3*spr_sim;
@@ -450,8 +382,6 @@ void proton_plots(
             fFit_p_cherenkov_data->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
             fFit_p_cherenkov_data->SetParLimits(2,0.005,0.014000); // changed 0.014
             p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.06,cangle_sim+0.06);
-            //if (i== 90 ) p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.03,cangle_sim+0.06);
-            //if (i== 100 ) p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.05,cangle_sim+0.06);
             Double_t cangle_data_org = fFit_p_cherenkov_data->GetParameter(1);
             Double_t spr_data_org = fFit_p_cherenkov_data->GetParameter(2);
             
@@ -505,11 +435,8 @@ void proton_plots(
             fFit_p_cherenkov_data_sub->SetParLimits(0,0.1,1E6);
             fFit_p_cherenkov_data_sub->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
             fFit_p_cherenkov_data_sub->SetParLimits(2,0.005,0.014000); // changed 0.014
-            //p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","0","",cangle_minus_5_sgma,cangle_plus_5_sgma);
             p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.06,cangle_sim+0.06);
-            //if (i== 90 ) p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.03,cangle_sim+0.06);
-            //if (i== 100 ) p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.05,cangle_sim+0.06);
-            //p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","0","",cangle_sim-0.15,cangle_sim+0.15);
+
             Double_t cangle_data_sub = fFit_p_cherenkov_data_sub->GetParameter(1);
             Double_t spr_data_sub = fFit_p_cherenkov_data_sub->GetParameter(2);
             
@@ -523,8 +450,7 @@ void proton_plots(
             //////////////////////
             // function call   ///
             //////////////////////
-            //gROOT->SetBatch(0);
-            //FitStyle();
+
             // time diff normalization
             DiffNorm(p_diff_time_sim, p_diff_time_data);
             p_diff_time_data_sub = (TH1F *)p_diff_time_data->Clone();
@@ -557,7 +483,7 @@ void proton_plots(
             fFit_p_diff_time_data->SetParLimits(0,0.1,1E6);
             fFit_p_diff_time_data->SetParLimits(1,diff_peak_data-3*sigma_p_diff_time_mctruth,diff_peak_data+3*sigma_p_diff_time_mctruth);
             fFit_p_diff_time_data->SetParLimits(2,0,6);
-            //p_diff_time_data->Fit("fFit_p_diff_time_data","0","",diff_peak_data-0.7*sigma_p_diff_time_mctruth,diff_peak_data+0.8*sigma_p_diff_time_mctruth);
+
             if (i == 120) {
                 p_diff_time_data->Fit("fFit_p_diff_time_data","0","",diff_peak_data-1.5*sigma_p_diff_time_mctruth,diff_peak_data+1.0*sigma_p_diff_time_mctruth);
             }
@@ -612,8 +538,6 @@ void proton_plots(
             fFit_p_cherenkov_data_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
             fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.014000);
             p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.06,cangle_sim+0.06);
-            //if (prtangle== 90 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
-            //if (prtangle== 100 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
             p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
             p_cherenkov_data_correction->Draw();
             Double_t cangle_data_correction = fFit_p_cherenkov_data_correction->GetParameter(1);
@@ -627,14 +551,13 @@ void proton_plots(
             fFit_p_cherenkov_sim_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
             fFit_p_cherenkov_sim_correction->SetParLimits(2,0.005,0.014000); // changed 0.014
             p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.06,cangle_sim+0.06);
-            //if (prtangle== 90 ) p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
-            //if (prtangle== 100 ) p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
             p_cherenkov_sim_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
             p_cherenkov_sim_correction->Draw();
             Double_t cangle_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(1);
             Double_t spr_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(2);
             gROOT->SetBatch(1);
             c1->cd();
+            
             //////////////////
             //  Fill graph ///
             /////////////////
@@ -643,19 +566,15 @@ void proton_plots(
             y_spr_sim[counter]=spr_sim*1000;
             y_spr_sim_true[counter]=spr_sim_true*1000;
             y_spr_sim_correction[counter]=spr_sim_correction*1000;
-            
             y_spr_data_org[counter]=spr_data_org*1000;
             y_spr_data_sub[counter]=spr_data_sub*1000;
             y_spr_data_correction[counter]=spr_data_correction*1000;
-            
             y_cangle_sim[counter]=cangle_sim;
             y_cangle_sim_true[counter]=cangle_sim_true;
             y_cangle_sim_correction[counter]=cangle_sim_correction;
-            
             y_cangle_data_org[counter]=cangle_data_org;
             y_cangle_data_sub[counter]=cangle_data_sub;
             y_cangle_data_correction[counter]=cangle_data_correction;
-            
             y_diff_true[counter]=sigma_p_diff_time_mctruth*5;
             y_diff_data[counter]=sigma_p_diff_time_data*5;
             y_diff_sim[counter]=sigma_p_diff_time_sim*5;
@@ -664,7 +583,6 @@ void proton_plots(
             y_mean_diff_true[counter]=mean_p_diff_time_mctruth;
             
             // remove
-
             y_spr_data_cuts[counter]=fAngleP-spr_data_org;// warning switch between p and pi
             y_spr_sim_cuts[counter]=fAngleP-spr_sim;// warning
             y_spr_data_sub_cuts[counter]=fAngleP- spr_data_sub; // warning
@@ -689,8 +607,8 @@ void proton_plots(
             }
             Double_t par_tof2tof1_plot1[6];
             
-            TF1 *g1_tof2tof1_plot1    = new TF1("g1_tof2tof1_plot1","gaus",32.4 , 32.9); // ,72.56,73);
-            TF1 *g2_tof2tof1_plot1    = new TF1("g2_tof2tof1_plot1","gaus",31.5 , 32.0); // ,71.75,72.15);
+            TF1 *g1_tof2tof1_plot1    = new TF1("g1_tof2tof1_plot1","gaus",32.4 , 32.9);
+            TF1 *g2_tof2tof1_plot1    = new TF1("g2_tof2tof1_plot1","gaus",31.5 , 32.0);
             tof_pid->Fit(g1_tof2tof1_plot1,"R");
             tof_pid->Fit(g2_tof2tof1_plot1,"R+");
             g1_tof2tof1_plot1->GetParameters(&par_tof2tof1_plot1[0]);
@@ -745,9 +663,9 @@ void proton_plots(
             }
             counter++;
 
-            recoAngle[counter]=cangle_sim_true; // cangle_sim_true
-            timeCut[counter]=sigma_p_diff_time_mctruth*5; // true
-            chAngleCut[counter]=spr_sim_true*5; // true
+            recoAngle[counter]=cangle_sim_true;
+            timeCut[counter]=sigma_p_diff_time_mctruth*5;
+            chAngleCut[counter]=spr_sim_true*5;
             prtangle_vector[counter]= i;
             
             ////////////
@@ -768,45 +686,35 @@ void proton_plots(
             hs->Add(p_cherenkov_bg_sim);
             hs->Add(p_cherenkov_data_sub);
             hs->Add(p_cherenkov_data_copy);
-            
             hs2->Add(nph_sim);
             hs2->Add(p_nph_sim);
             hs2->Add(p_nph_good_sim);
             //hs2->Add(p_nph_true_sim);
-            
             hs3->Add(p_diff_time_sim);
             hs3->Add(p_diff_time_bg_sim);
             hs3->Add(p_diff_time_data);
             hs3->Add(p_diff_time_mctruth);
             //hs3->Add(p_diff_time_data_sub);
-            
             hs4->Add(p_photon_time_sim_calc);
             hs4->Add(p_photon_time_data_calc);
-            
             hs5->Add(p_photon_time_sim);
             hs5->Add(p_photon_time_data);
-            
             hs6->Add(nph_data);
             hs6->Add(p_nph_data);
             hs6->Add(p_nph_good_data);
             //hs6->Add(dac_hits_data);
             //hs6->Add(dac_hits_sys_cus_data);
-            
             hs7->Add(p_cherenkov_bg_sim);
             hs7->Add(p_cherenkov_sim);
             hs7->Add(p_cherenkov_mc_same_path);
-            
             hs8->Add(histo_photon_ambiguity_wo_data);
             hs8->Add(histo_photon_ambiguity_wt_data);
             hs8->Add(histo_photon_ambiguity_wtc_data);
-            
             hs9->Add(histo_photon_ambiguity_wo_sim);
             hs9->Add(histo_photon_ambiguity_wt_sim);
             hs9->Add(histo_photon_ambiguity_wtc_sim);
-            
             hs10->Add(hist_ambiguity_sim);
             hs10->Add(hist_ambiguity_data);
-           
             gROOT->SetBatch(0);
             ///////////////
             // TOF PID  ///
@@ -832,7 +740,6 @@ void proton_plots(
                 tof_pid->Draw();
                 //leg_tofpid->Draw();
                 prt_canvasGet("r_tof_pid"+nid)->Update();
-                
                 TLine *line_proton_r = new TLine(0,0,0,1000);
                 line_proton_r->SetX1(32.9);
                 line_proton_r->SetX2(32.9);
@@ -840,7 +747,6 @@ void proton_plots(
                 line_proton_r->SetY2(gPad->GetUymax());
                 line_proton_r->SetLineColor(kRed);
                 line_proton_r->Draw();
-                
                 TLine *line_proton_l = new TLine(0,0,0,1000);
                 line_proton_l->SetX1(32.4);
                 line_proton_l->SetX2(32.4);
@@ -848,8 +754,6 @@ void proton_plots(
                 line_proton_l->SetY2(gPad->GetUymax());
                 line_proton_l->SetLineColor(kRed);
                 line_proton_l->Draw();
-                
-                /////////////////
                 TLine *line_pi_r = new TLine(0,0,0,1000);
                 line_pi_r->SetX1(32);
                 line_pi_r->SetX2(32);
@@ -857,7 +761,6 @@ void proton_plots(
                 line_pi_r->SetY2(gPad->GetUymax());
                 line_pi_r->SetLineColor(kBlue);
                 line_pi_r->Draw();
-                
                 TLine *line_pi_l = new TLine(0,0,0,1000);
                 line_pi_l->SetX1(31.5);
                 line_pi_l->SetX2(31.5);
@@ -866,7 +769,6 @@ void proton_plots(
                 line_pi_l->SetLineColor(kBlue);
                 line_pi_l->Draw();
             }
-            
             gROOT->SetBatch(0);
             //c1->cd();
             /////////////////////////////////
@@ -883,14 +785,11 @@ void proton_plots(
                 legend_signal->AddEntry(p_cherenkov_sim,"Ambiguity distribution","f");
                 legend_signal->AddEntry(p_cherenkov_mc_same_path," true path inside the prism ","f");
                 legend_signal->AddEntry(p_cherenkov_bg_sim," combinatorial background ","f");
-                
                 hs7->SetTitle(Form("Polar angle %3.1f", prtangle));
                 hs7->Draw("nostack");
                 hs7->GetXaxis()->SetTitle("#theta_{C} [rad]");
                 hs7->GetYaxis()->SetTitle("entries [#]");
                 legend_signal->Draw();
-                
-                
                 TLine *line_chcut_r_copy = new TLine(0,0,0,1000);
                 line_chcut_r_copy->SetX1(cangle_sim_true+5*spr_sim_true);
                 line_chcut_r_copy->SetX2(cangle_sim_true+5*spr_sim_true);
@@ -898,7 +797,6 @@ void proton_plots(
                 line_chcut_r_copy->SetY2(gPad->GetUymax());
                 line_chcut_r_copy->SetLineColor(kBlue);
                 line_chcut_r_copy->Draw();
-                
                 TLine *line_chcut_l_copy = new TLine(0,0,0,1000);
                 line_chcut_l_copy->SetX1(cangle_sim_true-5*spr_sim_true);
                 line_chcut_l_copy->SetX2(cangle_sim_true-5*spr_sim_true);
@@ -933,12 +831,10 @@ void proton_plots(
                 // line_sigm_l2_true->SetLineColor(kRed);
                 // line_sigm_l2_true->Draw();
             }
-    
             //////////////////////////////
             //  MC BG, Data, Data -BG  ///
             //////////////////////////////
-            
-            if(false) { // done
+            if(false) {
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 gPad->UseCurrentStyle();
@@ -949,7 +845,6 @@ void proton_plots(
                 legend_bg_sub->AddEntry(p_cherenkov_bg_sim," BG ","f");
                 prt_canvasAdd("r_bg_sub"+nid,800,400);
                 hs->SetTitle(Form("Polar angle %3.1f", prtangle));
-                
                 hs->Draw("nostack");
                 hs->GetXaxis()->SetTitle("#theta_{C} [rad]");
                 hs->GetYaxis()->SetTitle("entries [#]");
@@ -962,7 +857,6 @@ void proton_plots(
                 line_chcut_r->SetY2(gPad->GetUymax());
                 line_chcut_r->SetLineColor(kBlue);
                 line_chcut_r->Draw();
-                
                 TLine *line_chcut_l = new TLine(0,0,0,1000);
                 line_chcut_l->SetX1(cangle_sim_true-5*spr_sim_true);
                 line_chcut_l->SetX2(cangle_sim_true-5*spr_sim_true);
@@ -1007,9 +901,7 @@ void proton_plots(
                 line_sigm_diff_l->SetLineColor(kBlue);
                 line_sigm_diff_l->Draw();
                 prt_canvasGet("r_time_diff"+nid)->Update();
-                
             }
-            
             if (false) {
                 TLegend *legend_photon_time_calc= new TLegend(0.556391, 0.712, 0.890977, 0.874667);
                 legend_photon_time_calc->SetHeader("calculated time match (proton)", "C");
@@ -1022,7 +914,6 @@ void proton_plots(
                 hs4->GetYaxis()->SetTitle("entries [#]");
                 legend_photon_time_calc->Draw();
             }
-            
             if (false) {
                 TLegend *legend_photon_time=  new TLegend(0.556391, 0.712, 0.890977, 0.874667);
                 legend_photon_time->SetHeader("measured time match (proton)","C");
@@ -1035,7 +926,6 @@ void proton_plots(
                 hs5->GetYaxis()->SetTitle("entries [#]");
                 legend_photon_time->Draw();
             }
-            
             /////////////////////////
             // Draw photon yield  ///
             /////////////////////////
@@ -1048,15 +938,12 @@ void proton_plots(
                 legend_nph_sim->AddEntry(p_nph_sim,"DIRC hits with time cut ","l");
                 legend_nph_sim->AddEntry(p_nph_good_sim,"DIRC hits with #theta_{C} and time cuts","l");
                 //legend_nph_sim->AddEntry(p_nph_true_sim," DIRC hits true path inside prism","l");
-                
                 hs2->SetTitle(Form("Polar angle %3.1f", prtangle));
                 hs2->Draw("nostack");
                 hs2->GetYaxis()->SetTitle("entries [#]");
                 hs2->GetXaxis()->SetTitle("number of photon per track [#]");
-                
                 legend_nph_sim->Draw();
             }
-            
             if (false) {
                 TLegend * legend_nph_data= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_nph_data->SetHeader("photon yield (proton data)","C");
@@ -1073,7 +960,6 @@ void proton_plots(
                 hs6->GetXaxis()->SetTitle("number of photon per track [#]");
                 legend_nph_data->Draw();
             }
-            
             if (false) {
                 TLegend * legend_ambiguity_data= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_ambiguity_data->SetHeader("number of photon solutions (proton data)","C");
@@ -1088,7 +974,6 @@ void proton_plots(
                 hs8->GetXaxis()->SetTitle("number of photon solutions  [#]");
                 legend_ambiguity_data->Draw();
             }
-            
             if (false) {
                 TLegend * legend_ambiguity_sim= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_ambiguity_sim->SetHeader("number of photon solutions (proton data)","C");
@@ -1103,7 +988,6 @@ void proton_plots(
                 hs9->GetXaxis()->SetTitle("number of photon solutions  [#]");
                 legend_ambiguity_sim->Draw();
             }
-            
             if (false) {
                 TLegend * legend_lut_ambiguity= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_lut_ambiguity->SetHeader("number of LUT photon solutions for each pixel","C");
@@ -1118,14 +1002,10 @@ void proton_plots(
              c1->cd();
         }
     }
-    
-    
     ///////////////////
     ///// part III ////
     ///////////////////
-    
     if(true) {
-        
         calc_mom->SetLineColor(kBlack);
         calc_mom->SetMarkerColor(kBlack);
         calc_mom->SetMarkerStyle(21);
@@ -1184,9 +1064,7 @@ void proton_plots(
         //        TGraphErrors *graph_yield_DIRC_wo_cuts_data = new TGraphErrors(n,x,y_yield_nph_data,0, y_yield_nph_data_error);
         //        TGraphErrors *graph_yield_DIRC_wt_cuts_data = new TGraphErrors(n,x,y_yield_p_nph_data,0, y_yield_p_nph_data_error);
         //        TGraphErrors *graph_yield_DIRC_wtc_cuts_data = new TGraphErrors(n,x,y_yield_p_nph_good_data,0, y_yield_p_nph_good_data_error);
-        
-        
-        
+
         graph_yield_DIRC_wo_cuts_sim = new TGraph(n,x,y_yield_nph_sim);
         graph_yield_DIRC_wt_cuts_sim = new TGraph(n,x,y_yield_p_nph_sim);
         graph_yield_DIRC_wtc_cuts_sim = new TGraph(n,x,y_yield_p_nph_good_sim);
@@ -1196,7 +1074,6 @@ void proton_plots(
         graph_yield_DIRC_wtc_cuts_data = new TGraph(n,x,y_yield_p_nph_good_data);
         
         //TGraphErrors *graph_spr_data_correction = new TGraphErrors(n,x,y_spr_data_correction,0,y_spr_data_correction_error);
-        
         
         graph_spr_sim->SetLineColor(1);
         graph_spr_sim->SetLineWidth(4);
@@ -1360,8 +1237,6 @@ void proton_plots(
         
         graph_yield_DIRC_true_sim->SetLineStyle(1);
         
-        
-        
         if(false) { // not for website
             prt_canvasAdd("r_diff_time_shift",800,400);
             TLegend *leg_diff_mean = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
@@ -1378,7 +1253,6 @@ void proton_plots(
             mg_diff_mean->Draw("APL");
             leg_diff_mean->Draw();
         }
-        
         if(false) { // not for website
             prt_canvasAdd("r_diff_time",800,400);
             TLegend *leg_diff = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
@@ -1457,7 +1331,6 @@ void proton_plots(
         //////////////
         //// spr /////
         //////////////
-        
         if(true){
             graph_spr_data_org->SetLineColor(kBlack);
             graph_spr_data_org->SetMarkerColor(kBlack);
@@ -1520,10 +1393,6 @@ void proton_plots(
             mg_spr_3->GetHistogram()->GetYaxis()->SetRangeUser(0.,20);
             gPad->Modified();
             gPad->Update();
-            
-            
-            
-            
         }
         
         //////////////
@@ -2161,22 +2030,40 @@ Double_t  YieldGausFit_double(TH1F *photonYieldHistogram) {
     return return_yield;
 }
 
-void FitStyle() {
-    /////////////////
-    // Fitt style ///
-    /////////////////
-    gStyle->SetOptStat(0);
+void HistoStyle_3colors(TH1F *histo1, TH1F *histo2, TH1F *histo3){
     
-    //gROOT->SetStyle("Plain");
-    //gStyle->GetAttDate()->SetTextColor(1);
-    //gStyle->SetLabelFont(132,"XYZ");
-    //gStyle->SetTextFont(132);
-    //gStyle->SetTitleFont(132,"XYZ");
-    //gStyle->SetStatH(0.12);
-    //gStyle->SetStatW(0.15);
-    //gStyle->SetOptFit(1111);
-    //gStyle->SetOptTitle(0000000);
-    //gStyle->SetOptStat(1111);
+    histo1->SetLineColor(kRed);
+    histo1->SetLineStyle(1);
+    histo1->GetXaxis()->SetTitle("number of photon per track [#]");
+    histo1->GetYaxis()->SetTitle("entries [#]");
+    histo1->GetXaxis()->SetTitleSize(0.05);
+    histo1->GetYaxis()->SetTitleSize(0.05);
+    histo1->GetXaxis()->SetTitleOffset(0.9);
+    histo1->GetYaxis()->SetTitleOffset(1.0);
+    //histo1->SetFillColor(kRed);
+    //histo1->SetFillStyle(3001);
+    
+    histo2->SetLineColor(kBlue);
+    histo2->SetLineStyle(1);
+    histo2->GetXaxis()->SetTitle("number of photon per track [#]");
+    histo2->GetYaxis()->SetTitle("entries [#]");
+    histo2->GetXaxis()->SetTitleSize(0.05);
+    histo2->GetYaxis()->SetTitleSize(0.05);
+    histo2->GetXaxis()->SetTitleOffset(0.9);
+    histo2->GetYaxis()->SetTitleOffset(1.0);
+    //histo2->SetFillColor(kBlue);
+    //histo2->SetFillStyle(3003);
+    
+    histo3->SetLineColor(kBlack);
+    histo3->SetLineStyle(1);
+    histo3->GetXaxis()->SetTitle("number of photon per track [#]");
+    histo3->GetYaxis()->SetTitle("entries [#]");
+    histo3->GetXaxis()->SetTitleSize(0.05);
+    histo3->GetYaxis()->SetTitleSize(0.05);
+    histo3->GetXaxis()->SetTitleOffset(0.9);
+    histo3->GetYaxis()->SetTitleOffset(1.0);
+    //histo3->SetFillColor(kBlack);
+    //histo3->SetFillStyle(3002);
 }
 
 
