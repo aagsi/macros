@@ -102,7 +102,7 @@ void proton_plots(
     vector<Int_t> prtangle_vector(14);
     const Int_t n = 14;
     Double_t x[n], y_spr_data_sub[n], y_spr_sim_true[n], y_spr_sim[n], y_diff_true[n], y_diff_data[n], y_mean_diff_data[n], y_mean_diff_sim[n], y_mean_diff_true[n], y_diff_sim[n];
-    Double_t y_cangle_data_sub[n], y_deviation_cangle_data_sub[n], y_cangle_sim[n], y_deviation_cangle_sim_true[n];
+    Double_t y_cangle_data_sub[n], y_cangle_sim[n];
     Double_t y_cangle_sim_true[n];
     Double_t y_spr_data_cuts[n], y_spr_sim_cuts[n], y_spr_data_sub_cuts[n], y_spr_sim_true_cuts[n], y_yield_nph_sim[n], y_yield_p_nph_sim[n], y_yield_p_nph_good_sim[n],  y_yield_p_nph_true_sim[n], y_yield_nph_data[n], y_yield_p_nph_data[n], y_yield_p_nph_good_data[n], y_yield_dac_hits_sys_cus_data[n], y_cangle_data_correction[n], y_spr_data_org[n], y_cangle_data_org[n], y_spr_data_correction[n], y_spr_data_correction_error[n], y_spr_sim_correction[n], y_cangle_sim_correction[n];
     
@@ -133,7 +133,7 @@ void proton_plots(
     gStyle->SetOptFit(1);
     gStyle->SetOptStat(0);
     
-    TGraph * graph_spr_sim,* graph_spr_data_sub,* graph_spr_sim_true,* graph_spr_data_correction,* graph_spr_sim_correction,* graph_spr_data_org,* graph_spr_data_cuts,* graph_spr_sim_cuts,* graph_spr_data_sub_cuts,* graph_spr_sim_true_cuts,* graph_diff_true,* graph_diff_data,* graph_diff_sim,* graph_diff_data_mean,* graph_diff_sim_mean,* graph_diff_true_mean,* graph_diff_true_sim,* graph_cangle_data_sub,* graph_cangle_sim,* graph_cangle_sim_true,* graph_cangle_data_correction,* graph_cangle_sim_correction,* graph_cangle_data_org,* graph_deviation_cangle_data_sub,* graph_yield_DIRC_wo_cuts_sim,* graph_yield_DIRC_wt_cuts_sim,* graph_yield_DIRC_wtc_cuts_sim,* graph_yield_DIRC_true_sim,* graph_yield_DIRC_wo_cuts_data,* graph_yield_DIRC_wt_cuts_data,* graph_yield_DIRC_wtc_cuts_data;
+    TGraph * graph_spr_sim,* graph_spr_data_sub,* graph_spr_sim_true,* graph_spr_data_correction,* graph_spr_sim_correction,* graph_spr_data_org,* graph_spr_data_cuts,* graph_spr_sim_cuts,* graph_spr_data_sub_cuts,* graph_spr_sim_true_cuts,* graph_diff_true,* graph_diff_data,* graph_diff_sim,* graph_diff_data_mean,* graph_diff_sim_mean,* graph_diff_true_mean,* graph_diff_true_sim,* graph_cangle_data_sub,* graph_cangle_sim,* graph_cangle_sim_true,* graph_cangle_data_correction,* graph_cangle_sim_correction,* graph_cangle_data_org,* graph_yield_DIRC_wo_cuts_sim,* graph_yield_DIRC_wt_cuts_sim,* graph_yield_DIRC_wtc_cuts_sim,* graph_yield_DIRC_true_sim,* graph_yield_DIRC_wo_cuts_data,* graph_yield_DIRC_wt_cuts_data,* graph_yield_DIRC_wtc_cuts_data;
     
     
     for (int i=20; i<=150; i+=10) {
@@ -257,8 +257,6 @@ void proton_plots(
         //histo_photon_ambiguity_wtc_sim->SetFillColor(kBlack);
         //histo_photon_ambiguity_wtc_sim->SetFillStyle(3002);
         
-        
-        
         histo_photon_ambiguity_wo_data->SetLineColor(kRed);
         histo_photon_ambiguity_wo_data->SetLineStyle(1);
         histo_photon_ambiguity_wo_data->GetXaxis()->SetTitle("number of photon per track [#]");
@@ -350,10 +348,10 @@ void proton_plots(
                 fFit_p_cherenkov_data_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
                 fFit_p_cherenkov_data_correction->SetParLimits(0,0.1,1E6);
                 fFit_p_cherenkov_data_correction->SetParLimits(1,cangle_cor-0.04,cangle_cor+0.04);
-                fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.010000);
+                fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.014000);
                 p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.06,cangle_cor+0.06);
-                if (prtangle== 90 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.03,cangle_cor+0.06);
-                if (prtangle== 100 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.05,cangle_cor+0.06);
+                //if (prtangle== 90 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.03,cangle_cor+0.06);
+                //if (prtangle== 100 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.05,cangle_cor+0.06);
                 
                 legend_correction->SetHeader("Ambiguity distribution (proton data)","C");
                 legend_correction->AddEntry(p_cherenkov_data,"Ambiguity distribution","f");
@@ -420,7 +418,7 @@ void proton_plots(
             TSpectrum *fSpect= new TSpectrum(10);
             Double_t cangle_sim=0;
             Double_t spr_sim=0;
-            Int_t nfound = fSpect->Search(p_cherenkov_sim,1,"",0.9); //0.6
+            Int_t nfound = fSpect->Search(p_cherenkov_mc_same_path,1,"",0.9); //0.6
             if(nfound>0) cangle_sim = fSpect->GetPositionX()[0];
             cangle_sim =  p_cherenkov_sim->GetXaxis()->GetBinCenter(p_cherenkov_sim->GetMaximumBin());
             if(cangle_sim>0.85) cangle_sim=0.82;
@@ -429,10 +427,10 @@ void proton_plots(
             fFit_p_cherenkov_sim->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
             fFit_p_cherenkov_sim->SetParLimits(0,0.1,1E6);
             fFit_p_cherenkov_sim->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-            fFit_p_cherenkov_sim->SetParLimits(2,0.005,0.010000); // changed 0.014
+            fFit_p_cherenkov_sim->SetParLimits(2,0.005,0.014000); // changed 0.014
             p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.06,cangle_sim+0.06);
-            if (i== 90 ) p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.03,cangle_sim+0.06);
-            if (i== 100 )p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.05,cangle_sim+0.06);
+            //if (i== 90 ) p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.03,cangle_sim+0.06);
+            //if (i== 100 )p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.05,cangle_sim+0.06);
             //p_cherenkov_data_copy->Fit("fFit_p_cherenkov_sim","0","",cangle_sim-0.06,cangle_sim+0.06);
             //p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","R");
             Double_t chi = fFit_p_cherenkov_sim->GetChisquare()/fFit_p_cherenkov_sim->GetNDF();
@@ -450,16 +448,13 @@ void proton_plots(
             fFit_p_cherenkov_data->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
             fFit_p_cherenkov_data->SetParLimits(0,0.1,1E6);
             fFit_p_cherenkov_data->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-            fFit_p_cherenkov_data->SetParLimits(2,0.005,0.010000); // changed 0.014
+            fFit_p_cherenkov_data->SetParLimits(2,0.005,0.014000); // changed 0.014
             p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.06,cangle_sim+0.06);
-            if (i== 90 ) p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.03,cangle_sim+0.06);
-            if (i== 100 ) p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.05,cangle_sim+0.06);
+            //if (i== 90 ) p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.03,cangle_sim+0.06);
+            //if (i== 100 ) p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_sim-0.05,cangle_sim+0.06);
             Double_t cangle_data_org = fFit_p_cherenkov_data->GetParameter(1);
             Double_t spr_data_org = fFit_p_cherenkov_data->GetParameter(2);
             
-
-            
-
             ///////////////////
             // fit true MC  ///
             ///////////////////
@@ -468,7 +463,7 @@ void proton_plots(
             fFit_p_cherenkov_mc_same_path->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
             fFit_p_cherenkov_mc_same_path->SetParLimits(0,0.1,1E6);
             fFit_p_cherenkov_mc_same_path->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-            fFit_p_cherenkov_mc_same_path->SetParLimits(2,0.005,0.010000); // changed 0.014
+            fFit_p_cherenkov_mc_same_path->SetParLimits(2,0.005,0.014000); // changed 0.014
             p_cherenkov_mc_same_path->Fit("fFit_p_cherenkov_mc_same_path","0","",cangle_minus_5_sgma,cangle_plus_5_sgma);
             Double_t spr_sim_true = fFit_p_cherenkov_mc_same_path->GetParameter(2);
             Double_t cangle_sim_true = fFit_p_cherenkov_mc_same_path->GetParameter(1);
@@ -509,11 +504,11 @@ void proton_plots(
             fFit_p_cherenkov_data_sub->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
             fFit_p_cherenkov_data_sub->SetParLimits(0,0.1,1E6);
             fFit_p_cherenkov_data_sub->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-            fFit_p_cherenkov_data_sub->SetParLimits(2,0.005,0.010000); // changed 0.014
+            fFit_p_cherenkov_data_sub->SetParLimits(2,0.005,0.014000); // changed 0.014
             //p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","0","",cangle_minus_5_sgma,cangle_plus_5_sgma);
             p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.06,cangle_sim+0.06);
-            if (i== 90 ) p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.03,cangle_sim+0.06);
-            if (i== 100 ) p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.05,cangle_sim+0.06);
+            //if (i== 90 ) p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.03,cangle_sim+0.06);
+            //if (i== 100 ) p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_sim-0.05,cangle_sim+0.06);
             //p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","0","",cangle_sim-0.15,cangle_sim+0.15);
             Double_t cangle_data_sub = fFit_p_cherenkov_data_sub->GetParameter(1);
             Double_t spr_data_sub = fFit_p_cherenkov_data_sub->GetParameter(2);
@@ -608,7 +603,6 @@ void proton_plots(
             Double_t mean_p_diff_time_sim= fFit_p_diff_time_sim->GetParameter(1);
             Double_t sigma_p_diff_time_sim = fFit_p_diff_time_sim->GetParameter(2);
             
-            
             gROOT->SetBatch(0);
             prt_canvasAdd("r_ch_fit_data"+nid,800,400);
             TF1 *fFit_p_cherenkov_data_correction = new TF1("fFit_p_cherenkov_data_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
@@ -616,10 +610,10 @@ void proton_plots(
             fFit_p_cherenkov_data_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
             fFit_p_cherenkov_data_correction->SetParLimits(0,0.1,1E6);
             fFit_p_cherenkov_data_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-            fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.010000);
+            fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.014000);
             p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.06,cangle_sim+0.06);
-            if (prtangle== 90 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
-            if (prtangle== 100 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
+            //if (prtangle== 90 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
+            //if (prtangle== 100 ) p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
             p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
             p_cherenkov_data_correction->Draw();
             Double_t cangle_data_correction = fFit_p_cherenkov_data_correction->GetParameter(1);
@@ -631,27 +625,28 @@ void proton_plots(
             fFit_p_cherenkov_sim_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
             fFit_p_cherenkov_sim_correction->SetParLimits(0,0.1,1E6);
             fFit_p_cherenkov_sim_correction->SetParLimits(1,cangle_sim-0.04,cangle_sim+0.04);
-            fFit_p_cherenkov_sim_correction->SetParLimits(2,0.005,0.010000); // changed 0.014
+            fFit_p_cherenkov_sim_correction->SetParLimits(2,0.005,0.014000); // changed 0.014
             p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.06,cangle_sim+0.06);
-            if (prtangle== 90 ) p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
-            if (prtangle== 100 ) p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
+            //if (prtangle== 90 ) p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.03,cangle_sim+0.06);
+            //if (prtangle== 100 ) p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_sim-0.05,cangle_sim+0.06);
             p_cherenkov_sim_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
             p_cherenkov_sim_correction->Draw();
             Double_t cangle_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(1);
             Double_t spr_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(2);
             gROOT->SetBatch(1);
+            c1->cd();
             //////////////////
             //  Fill graph ///
             /////////////////
             x[counter]=i;
             
-            y_spr_sim[counter]=spr_sim;
-            y_spr_sim_true[counter]=spr_sim_true;
-            y_spr_sim_correction[counter]=spr_sim_correction;
+            y_spr_sim[counter]=spr_sim*1000;
+            y_spr_sim_true[counter]=spr_sim_true*1000;
+            y_spr_sim_correction[counter]=spr_sim_correction*1000;
             
-            y_spr_data_org[counter]=spr_data_org;
-            y_spr_data_sub[counter]=spr_data_sub;
-            y_spr_data_correction[counter]=spr_data_correction;
+            y_spr_data_org[counter]=spr_data_org*1000;
+            y_spr_data_sub[counter]=spr_data_sub*1000;
+            y_spr_data_correction[counter]=spr_data_correction*1000;
             
             y_cangle_sim[counter]=cangle_sim;
             y_cangle_sim_true[counter]=cangle_sim_true;
@@ -661,15 +656,15 @@ void proton_plots(
             y_cangle_data_sub[counter]=cangle_data_sub;
             y_cangle_data_correction[counter]=cangle_data_correction;
             
-            y_diff_true[counter]=sigma_p_diff_time_mctruth*5;//time diff sigma true
-            y_diff_data[counter]=sigma_p_diff_time_data*5;//time diff sigam data
-            y_diff_sim[counter]=sigma_p_diff_time_sim*5;//time diff sigam sim
-            y_mean_diff_data[counter]=mean_p_diff_time_data;//time diff mean data
-            y_mean_diff_sim[counter]=mean_p_diff_time_sim;//time diff mean sim
-            y_mean_diff_true[counter]=mean_p_diff_time_mctruth;//time diff mean true
+            y_diff_true[counter]=sigma_p_diff_time_mctruth*5;
+            y_diff_data[counter]=sigma_p_diff_time_data*5;
+            y_diff_sim[counter]=sigma_p_diff_time_sim*5;
+            y_mean_diff_data[counter]=mean_p_diff_time_data;
+            y_mean_diff_sim[counter]=mean_p_diff_time_sim;
+            y_mean_diff_true[counter]=mean_p_diff_time_mctruth;
             
             // remove
-            y_deviation_cangle_data_sub[counter]= fAngleP - spr_data_sub;
+
             y_spr_data_cuts[counter]=fAngleP-spr_data_org;// warning switch between p and pi
             y_spr_sim_cuts[counter]=fAngleP-spr_sim;// warning
             y_spr_data_sub_cuts[counter]=fAngleP- spr_data_sub; // warning
@@ -693,7 +688,6 @@ void proton_plots(
                 Float_t yp_tof2tof1_plot1 = tof_pid->GetBinContent(bin_tof2tof1_plot1);
             }
             Double_t par_tof2tof1_plot1[6];
-            
             
             TF1 *g1_tof2tof1_plot1    = new TF1("g1_tof2tof1_plot1","gaus",32.4 , 32.9); // ,72.56,73);
             TF1 *g2_tof2tof1_plot1    = new TF1("g2_tof2tof1_plot1","gaus",31.5 , 32.0); // ,71.75,72.15);
@@ -747,7 +741,6 @@ void proton_plots(
                 y_yield_p_nph_data_error[counter]=p_nph_data->GetRMS();
                 y_yield_p_nph_good_data_error[counter]=p_nph_good_data->GetRMS();
                 
-                
                 y_spr_data_correction_error[counter]=p_cherenkov_data_correction->GetRMSError();
             }
             counter++;
@@ -781,12 +774,6 @@ void proton_plots(
             hs2->Add(p_nph_good_sim);
             //hs2->Add(p_nph_true_sim);
             
-            hs6->Add(nph_data);
-            hs6->Add(p_nph_data);
-            hs6->Add(p_nph_good_data);
-            //hs6->Add(dac_hits_data);
-            //hs6->Add(dac_hits_sys_cus_data);
-            
             hs3->Add(p_diff_time_sim);
             hs3->Add(p_diff_time_bg_sim);
             hs3->Add(p_diff_time_data);
@@ -799,11 +786,15 @@ void proton_plots(
             hs5->Add(p_photon_time_sim);
             hs5->Add(p_photon_time_data);
             
+            hs6->Add(nph_data);
+            hs6->Add(p_nph_data);
+            hs6->Add(p_nph_good_data);
+            //hs6->Add(dac_hits_data);
+            //hs6->Add(dac_hits_sys_cus_data);
+            
             hs7->Add(p_cherenkov_bg_sim);
             hs7->Add(p_cherenkov_sim);
             hs7->Add(p_cherenkov_mc_same_path);
-            
-
             
             hs8->Add(histo_photon_ambiguity_wo_data);
             hs8->Add(histo_photon_ambiguity_wt_data);
@@ -1186,8 +1177,6 @@ void proton_plots(
         graph_cangle_sim_correction = new TGraph(n,x,y_cangle_sim_correction);
         graph_cangle_data_org = new TGraph(n,x,y_cangle_data_org);
         
-        graph_deviation_cangle_data_sub = new TGraph(n,x,y_deviation_cangle_data_sub);
-        
         //        TGraphErrors *graph_yield_DIRC_wo_cuts_sim = new TGraphErrors(n,x,y_yield_nph_sim,0, y_yield_nph_sim_error);
         //        TGraphErrors *graph_yield_DIRC_wt_cuts_sim = new TGraphErrors(n,x,y_yield_p_nph_sim,0, y_yield_p_nph_sim_error);
         //        TGraphErrors *graph_yield_DIRC_wtc_cuts_sim = new TGraphErrors(n,x,y_yield_p_nph_good_sim,0, y_yield_p_nph_good_sim_error);
@@ -1347,7 +1336,7 @@ void proton_plots(
         graph_yield_DIRC_wtc_cuts_sim->SetMarkerColor(kMagenta);
         graph_yield_DIRC_true_sim->SetMarkerColor(kRed);
         graph_yield_DIRC_wo_cuts_data->SetMarkerColor(kRed);
-        graph_yield_DIRC_wt_cuts_data->SetMarkerColor(kPink);
+        graph_yield_DIRC_wt_cuts_data->SetMarkerColor(kGreen);
         graph_yield_DIRC_wtc_cuts_data->SetMarkerColor(kCyan);
         //graph_yield_sys_wo_cuts_data->SetMarkerColor(8);
         
@@ -1445,6 +1434,7 @@ void proton_plots(
             
             mg_cangle_data_sub->SetTitle("reco cherenkov angle ; #theta [degree]; #theta_{C} [rad]");
             mg_cangle_data_sub->Draw("APL");
+            mg_cangle_data_sub->GetHistogram()->GetYaxis()->SetRangeUser(0.8,0.85);
             leg_cangle_data_sub->Draw();
             prt_canvasGet("r_graph_cangle")->Update();
             TLine *line_ch_p = new TLine(0,0,0,1000);
@@ -1463,31 +1453,6 @@ void proton_plots(
             line_ch_pi->SetLineColor(kBlue);
             line_ch_pi->Draw();
         }
-        //        //////////////////
-        //        //// spr old /////
-        //        //////////////////
-        //        if(false) {
-        //
-        //            prt_canvasAdd("r_spr",800,400);
-        //            TLegend *leg = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
-        //            leg->SetHeader("spr (proton)","C");
-        //            leg->AddEntry(graph_spr_data_org, "Data befor correction", "lp");
-        //            leg->AddEntry(graph_spr_data_sub, "Data - BG", "lp");
-        //            leg->AddEntry(graph_spr_sim, "Simulation", "lp");
-        //            leg->AddEntry(graph_spr_sim_true, "Sim true path inside prism", "lp");
-        //            leg->AddEntry(graph_spr_data_correction, "Data after correction", "lp");
-        //
-        //            TMultiGraph *mg = new TMultiGraph();
-        //            mg->Add(graph_spr_data_sub);
-        //            mg->Add(graph_spr_data_org);
-        //            mg->Add(graph_spr_sim);
-        //            mg->Add(graph_spr_sim_true);
-        //            mg->Add(graph_spr_data_correction);
-        //            mg->SetTitle("Single Photon Resolution; #theta [degree]; SPR [rad]");
-        //            mg->Draw("APL");
-        //            leg->Draw();
-        //
-        //        }
         
         //////////////
         //// spr /////
@@ -1509,51 +1474,62 @@ void proton_plots(
             graph_spr_sim_correction->SetLineColor(kCyan);
             graph_spr_sim_correction->SetMarkerColor(kCyan);
             
-            TMultiGraph *mg_spr1 = new TMultiGraph();
-            TMultiGraph *mg_spr2 = new TMultiGraph();
-            TMultiGraph *mg_spr3 = new TMultiGraph();
+            TMultiGraph *mg_spr_1 = new TMultiGraph();
+            TMultiGraph *mg_spr_2 = new TMultiGraph();
+            TMultiGraph *mg_spr_3 = new TMultiGraph();
             
-            mg_spr1->Add(graph_spr_data_org);
-            mg_spr1->Add(graph_spr_sim);
+            mg_spr_1->Add(graph_spr_data_org);
+            mg_spr_1->Add(graph_spr_sim);
             TLegend *leg_spr1 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_spr1->SetHeader("photon spr (proton)","C");
             leg_spr1->AddEntry(graph_spr_data_org, "Data without corrections ", "lp");
             leg_spr1->AddEntry(graph_spr_sim, "Sim without corrections", "lp");
             
-            mg_spr2->Add(graph_spr_data_sub);
-            mg_spr2->Add(graph_spr_sim_true);
+            mg_spr_2->Add(graph_spr_data_org);
+            mg_spr_2->Add(graph_spr_data_correction);
             TLegend *leg_spr2 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_spr2->SetHeader("photon spr (proton)","C");
-            leg_spr2->AddEntry(graph_spr_data_sub, "Data BG subtraction  ", "lp");
-            leg_spr2->AddEntry(graph_spr_sim_true, "Sim true path inside prism", "lp");
+            leg_spr2->AddEntry(graph_spr_data_org, "Data without corrections ", "lp");
+            leg_spr2->AddEntry(graph_spr_data_correction, "Data with corrections", "lp");
             
-            mg_spr3->Add(graph_spr_data_correction);
-            mg_spr3->Add(graph_spr_sim_correction);
+            mg_spr_3->Add(graph_spr_data_correction);
+            mg_spr_3->Add(graph_spr_sim_correction);
             TLegend *leg_spr3 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_spr3->SetHeader("photon spr (proton)","C");
             leg_spr3->AddEntry(graph_spr_data_correction, "Data with corrections ", "lp");
             leg_spr3->AddEntry(graph_spr_sim_correction, "Sim with corrections", "lp");
             
             prt_canvasAdd("r_spr_1",800,400);
-            mg_spr1->SetTitle(" spr ;#theta [degree]; SPR [rad]");
-            mg_spr1->Draw("APL");
+            mg_spr_1->SetTitle(" spr ;#theta [degree]; SPR [rad]");
+            mg_spr_1->Draw("APL");
             leg_spr1->Draw();
-            
+            mg_spr_1->GetHistogram()->GetYaxis()->SetRangeUser(0.,20);
+            gPad->Modified();
+            gPad->Update();
             prt_canvasAdd("r_spr_2",800,400);
-            mg_spr2->SetTitle(" spr ;#theta [degree]; SPR [rad]");
-            mg_spr2->Draw("APL");
+            mg_spr_2->SetTitle(" spr ;#theta [degree]; SPR [rad]");
+            mg_spr_2->Draw("APL");
             leg_spr2->Draw();
-            
+            mg_spr_2->GetHistogram()->GetYaxis()->SetRangeUser(0.,20);
+            gPad->Modified();
+            gPad->Update();
             prt_canvasAdd("r_spr_3",800,400);
-            mg_spr3->SetTitle(" spr ;#theta [degree]; SPR [rad]");
-            mg_spr3->Draw("APL");
+            mg_spr_3->SetTitle(" spr ;#theta [degree]; SPR [rad]");
+            mg_spr_3->Draw("APL");
             leg_spr3->Draw();
+            mg_spr_3->GetHistogram()->GetYaxis()->SetRangeUser(0.,20);
+            gPad->Modified();
+            gPad->Update();
+            
+            
+            
+            
         }
         
         //////////////
         //// yield ///
         //////////////
-        if(bool_part3_3) {
+        if(true) {
             prt_canvasAdd("r_photon_yield_all",800,400);
             TLegend *leg_yield = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_yield->SetHeader("photon yield (proton)","C");
@@ -1579,47 +1555,51 @@ void proton_plots(
             mg_yield->Draw("APL");
             leg_yield->Draw();
             
-            TMultiGraph *mg_yield1 = new TMultiGraph();
-            TMultiGraph *mg_yield2 = new TMultiGraph();
-            TMultiGraph *mg_yield3 = new TMultiGraph();
+            TMultiGraph *mg_yield_1 = new TMultiGraph();
+            TMultiGraph *mg_yield_2 = new TMultiGraph();
+            TMultiGraph *mg_yield_3 = new TMultiGraph();
             
-            mg_yield1->Add(graph_yield_DIRC_wo_cuts_sim);
-            mg_yield1->Add(graph_yield_DIRC_wo_cuts_data);
+            mg_yield_1->Add(graph_yield_DIRC_wo_cuts_sim);
+            mg_yield_1->Add(graph_yield_DIRC_wo_cuts_data);
             TLegend *leg_yield1 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_yield1->SetHeader("photon yield (proton)","C");
             leg_yield1->AddEntry(graph_yield_DIRC_wo_cuts_sim, "graph_yield_DIRC_wo_cuts_sim ", "lp");
             leg_yield1->AddEntry(graph_yield_DIRC_wo_cuts_data, "graph_yield_DIRC_wo_cuts_data", "lp");
             
-            mg_yield2->Add(graph_yield_DIRC_wt_cuts_sim);
-            mg_yield2->Add(graph_yield_DIRC_wt_cuts_data);
+            mg_yield_2->Add(graph_yield_DIRC_wt_cuts_sim);
+            mg_yield_2->Add(graph_yield_DIRC_wt_cuts_data);
             TLegend *leg_yield2 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_yield2->SetHeader("photon yield (proton)","C");
             leg_yield2->AddEntry(graph_yield_DIRC_wt_cuts_sim, "graph_yield_DIRC_wt_cuts_sim ", "lp");
             leg_yield2->AddEntry(graph_yield_DIRC_wt_cuts_data, "graph_yield_DIRC_wt_cuts_data", "lp");
             
-            mg_yield3->Add(graph_yield_DIRC_wtc_cuts_sim);
-            mg_yield3->Add(graph_yield_DIRC_wtc_cuts_data);
+            mg_yield_3->Add(graph_yield_DIRC_wtc_cuts_sim);
+            mg_yield_3->Add(graph_yield_DIRC_wtc_cuts_data);
             TLegend *leg_yield3 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_yield3->SetHeader("photon yield (proton)","C");
             leg_yield3->AddEntry(graph_yield_DIRC_wtc_cuts_sim, "graph_yield_DIRC_wtc_cuts_sim ", "lp");
             leg_yield3->AddEntry(graph_yield_DIRC_wtc_cuts_data, "graph_yield_DIRC_wtc_cuts_data", "lp");
             
-            TCanvas *c_yield = new TCanvas("c_yield","c_yield",200,10,700,500);
-            c_yield->Divide(1,3);
-            c_yield->cd(1);
-            mg_yield1->SetTitle("photon yield ;#theta [degree]; count [#]");
-            mg_yield1->Draw("APL");
+            prt_canvasAdd("r_yield_1",800,400);
+            mg_yield_1->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_1->Draw("APL");
+            mg_yield_1->GetHistogram()->GetYaxis()->SetRangeUser(0,100);
             leg_yield1->Draw();
             
-            c_yield->cd(2);
-            mg_yield2->SetTitle("photon yield ;#theta [degree]; count [#]");
-            mg_yield2->Draw("APL");
+            prt_canvasAdd("r_yield_2",800,400);
+            mg_yield_2->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_2->Draw("APL");
+            mg_yield_2->GetHistogram()->GetYaxis()->SetRangeUser(0,100);
             leg_yield2->Draw();
             
-            c_yield->cd(3);
-            mg_yield3->SetTitle("photon yield ;#theta [degree]; count [#]");
-            mg_yield3->Draw("APL");
+            prt_canvasAdd("r_yield_3",800,400);
+            mg_yield_3->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_3->Draw("APL");
+            mg_yield_3->GetHistogram()->GetYaxis()->SetRangeUser(0,100);
             leg_yield3->Draw();
+            
+            gPad->Modified();
+            gPad->Update();
             
         }
         /////////////////////////////
@@ -1722,7 +1702,6 @@ void proton_plots(
      delete graph_cangle_data_correction;
      delete graph_cangle_sim_correction;
      delete graph_cangle_data_org;
-     delete graph_deviation_cangle_data_sub;
      delete graph_yield_DIRC_wo_cuts_sim;
      delete graph_yield_DIRC_wt_cuts_sim;
      delete graph_yield_DIRC_wtc_cuts_sim;
