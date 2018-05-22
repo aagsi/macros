@@ -211,6 +211,12 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     for(Int_t i=0; i<770; i++) {
         Int_t direction_lut =fLutNode[i]->Entries();
         hist_ambiguity->Fill(i, direction_lut);
+        
+        Double_t pos_x   = fLutNode[i]->GetHitPos(i).X();
+        Double_t pos_y   = fLutNode[i]->GetHitPos(i).Y();
+        Double_t pos_z   = fLutNode[i]->GetHitPos(i).Z();
+        lut_pix_pos_xy->Fill(pos_x ,pos_y);
+        
     }
     
     
@@ -1535,15 +1541,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Int_t photon_ambiguity_counter_wtc=0;
             for(Int_t i=0; i<size; i++) {
                 
-                Double_t pos_x   = fLutNode[sensorId]->GetHitPos(i).X();
-                Double_t pos_y   = fLutNode[sensorId]->GetHitPos(i).Y();
-                Double_t pos_z   = fLutNode[sensorId]->GetHitPos(i).Z();
-                
-                //std::cout<<"############ pos_x "<< pos_x <<std::endl;
-                //std::cout<<"############ pos_y "<< pos_y <<std::endl;
-                //std::cout<<"############ pos_z "<< pos_z <<std::endl;
-                
-                lut_pix_pos_xy->Fill(pos_x ,pos_y);
+
                 
                 
                 
