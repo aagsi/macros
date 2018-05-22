@@ -214,6 +214,19 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     }
     
     
+    Double_t pos_x,pos_y, pos_z;
+    for (Int_t mcpid_int=0; mcpid_int<12; i++){
+        for (Int_t pixid_int=1; pixid_int<65; i++){
+            Int_t sensorId_int = 100*mcpid_int + pixid_int ;
+            pos_x   = fLutNode[sensorId_int]->GetHitPos(1).X();
+            pos_y   = fLutNode[sensorId_int]->GetHitPos(1).Y();
+            pos_z   = fLutNode[sensorId_int]->GetHitPos(1).Z();
+            lut_pix_pos_xy->Fill(pos_x ,pos_y);
+        }
+    }
+
+    
+    
     
     
     cout << "-I- PrtLutReco: Intialization successfull" << endl;
@@ -1516,7 +1529,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             //std::cout<< pixid << " nedge "<<nedge <<" x " <<x << "  y  "<<y<<std::endl;
             // bad channels
             Int_t sensorId = 100*mcpid+fHit.GetPixelId();
-            std::cout<< "sensorId = "<< sensorId << "      GetPixelId = "<<fHit.GetPixelId()  <<"    mcpid= " <<mcpid <<std::endl;
+            //std::cout<< "sensorId = "<< sensorId << "      GetPixelId = "<<fHit.GetPixelId()  <<"    mcpid= " <<mcpid <<std::endl;
             
             if(sensorId==1) continue;
             //if(sensorId==231) continue;
@@ -1537,10 +1550,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Int_t photon_ambiguity_counter_wtc=0;
             for(Int_t i=0; i<size; i++) {
                 
-                Double_t pos_x   = fLutNode[sensorId]->GetHitPos(i).X();
-                Double_t pos_y   = fLutNode[sensorId]->GetHitPos(i).Y();
-                Double_t pos_z   = fLutNode[sensorId]->GetHitPos(i).Z();
-                lut_pix_pos_xy->Fill(pos_x ,pos_y);
+                
+
                 
                 
                 
