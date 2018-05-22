@@ -40,7 +40,7 @@ TH1F*  fHist2 = new TH1F("time2",";calculated time [ns];entries [#]", 500,0,50);
 
 
 
-TH2F*  lut_pix_pos_xy = new TH2F("lut_pix_pos_xy",";X pos []; Y pos []", 400,-100,300, 400,-100,200);
+TH2F*  lut_pix_pos_xy = new TH2F("lut_pix_pos_xy",";X pos []; Y pos []", 400,-100,300, 400,-200,200);
 
 
 TH2F*  fHist3 = new TH2F("time3",";calculated time [ns];measured time [ns]", 500,0,80, 500,0,40);
