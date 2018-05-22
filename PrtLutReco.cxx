@@ -38,6 +38,11 @@ TH1F*  hist_ambiguity = new TH1F("hist_ambiguity",";Pixel number [#]; Ambiguity 
 TH1F*  fHist1 = new TH1F("time1",";measured time [ns];entries [#]",   500,0,50);  // test
 TH1F*  fHist2 = new TH1F("time2",";calculated time [ns];entries [#]", 500,0,50); //test
 
+
+
+TH2F*  lut_pix_pos_xy = new TH2F("lut_pix_pos_xy",";X pos []; Y pos []", 400,-200,200, 400,-200,200);
+
+
 TH2F*  fHist3 = new TH2F("time3",";calculated time [ns];measured time [ns]", 500,0,80, 500,0,40);
 TH2F*  fHist4 = new TH2F("time4",";#theta_{c}sin(#varphi_{c});#theta_{c}cos(#varphi_{c}", 100,-1,1, 100,-1,1);
 TH2F*  fHist5 = new TH2F("time5",";#theta_{c}sin(#varphi_{c});#theta_{c}cos(#varphi_{c}", 100,-1,1, 100,-1,1);
@@ -1534,9 +1539,13 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                 Double_t pos_y   = fLutNode[sensorId]->GetHitPos(i).Y();
                 Double_t pos_z   = fLutNode[sensorId]->GetHitPos(i).Z();
                 
-                std::cout<<"############ pos_x "<< pos_x <<std::endl;
-                std::cout<<"############ pos_y "<< pos_y <<std::endl;
-                std::cout<<"############ pos_z "<< pos_z <<std::endl;
+                //std::cout<<"############ pos_x "<< pos_x <<std::endl;
+                //std::cout<<"############ pos_y "<< pos_y <<std::endl;
+                //std::cout<<"############ pos_z "<< pos_z <<std::endl;
+                
+                lut_pix_pos_xy->Fill(pos_x ,pos_y);
+                
+                
                 
                 
                 
@@ -2135,6 +2144,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     std::cout<<"solution_number_approach_selection= "<<solution_number_approach_selection<<std::endl;
     std::cout<<"solution_number= "<<solution_number<<std::endl;
     tree.Write();
+    lut_pix_pos_xy->Write();
     hist_ambiguity->Write();
     fHist->Write();
     fHist_copy->Write();
