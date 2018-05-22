@@ -541,11 +541,6 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     
     //TString outFile =PrtManager::Instance()->GetOutName()+"_spr.root" ;
     
-    
-    
-    
-    
-    
     Double_t minChangle(0);
     Double_t maxChangle(1);
     Double_t rad = TMath::Pi()/180.;
@@ -1534,6 +1529,16 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Int_t photon_ambiguity_counter_wt=0;
             Int_t photon_ambiguity_counter_wtc=0;
             for(Int_t i=0; i<size; i++) {
+                
+                Double_t pos_x   = fLutNode[sensorId]->GetHitPos(i).X();
+                Double_t pos_y   = fLutNode[sensorId]->GetHitPos(i).Y();
+                Double_t pos_z   = fLutNode[sensorId]->GetHitPos(i).Z();
+                
+                std::cout<<"############ pos_x "<< pos_x <<std::endl;
+                std::cout<<"############ pos_y "<< pos_y <<std::endl;
+                std::cout<<"############ pos_z "<< pos_z <<std::endl;
+                
+                
                 
                 weight = 1;//fLutNode[sensorId]->GetWeight(i);
                 dird   = fLutNode[sensorId]->GetEntryCs(i,nedge); // nedge=0
