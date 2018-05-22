@@ -215,8 +215,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     
     
     Double_t pos_x,pos_y, pos_z;
-    for (Int_t mcpid_int=0; mcpid_int<12; i++){
-        for (Int_t pixid_int=1; pixid_int<65; i++){
+    for (Int_t mcpid_int=0; mcpid_int<12; mcpid_int++){
+        for (Int_t pixid_int=1; pixid_int<65; pixid_int++){
             Int_t sensorId_int = 100*mcpid_int + pixid_int ;
             pos_x   = fLutNode[sensorId_int]->GetHitPos(1).X();
             pos_y   = fLutNode[sensorId_int]->GetHitPos(1).Y();
