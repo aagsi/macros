@@ -218,9 +218,9 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
     for (Int_t mcpid_int=0; mcpid_int<12; mcpid_int++){
         for (Int_t pixid_int=1; pixid_int<65; pixid_int++){
             Int_t sensorId_int = 100*mcpid_int + pixid_int ;
-            pos_x   = fLutNode[sensorId_int]->GetDigiPos(1).X();
-            pos_y   = fLutNode[sensorId_int]->GetDigiPos(1).Y();
-            pos_z   = fLutNode[sensorId_int]->GetDigiPos(1).Z();
+            pos_x   = fLutNode[sensorId_int]->GetDigiPos().X();
+            pos_y   = fLutNode[sensorId_int]->GetDigiPos().Y();
+            pos_z   = fLutNode[sensorId_int]->GetDigiPos().Z();
             lut_pix_pos_xy->Fill(pos_x ,pos_y);
         }
     }
