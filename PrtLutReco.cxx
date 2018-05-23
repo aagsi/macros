@@ -491,8 +491,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
         //data
-        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
-        cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
+        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/pdf/histo_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/pdf/histo_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
         //sim
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
@@ -529,13 +529,16 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             integral_data[pix] = fHistCh_read_p[pix]->Integral(bmin_data[pix],bmax_data[pix]);
             fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
             //fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
+            
             axis_data_pi[pix] = fHistCh_read_pi[pix]->GetXaxis();
             bmin_data_pi[pix] = axis_data_pi[pix]->FindBin(xmin_data);
             bmax_data_pi[pix] = axis_data_pi[pix]->FindBin(xmax_data);
-            //integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
+            integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
             fHistCh_read_pi[pix]->Scale(1/integral_data_pi[pix]);
-            fHistCh_read_pi[pix]->Scale(1/pdf_nph_pi);
+            //fHistCh_read_pi[pix]->Scale(1/pdf_nph_pi);
+            
             fHistCh_read_pi[pix]->SetLineColor(kRed);
+            // pdf graphs not used
             fHistCh_graph_p[pix] =new TGraph(fHistCh_read_p[pix]);
             fHistCh_graph_pi[pix] =new TGraph(fHistCh_read_pi[pix]);
         }
@@ -1916,19 +1919,15 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                             // use graphs
                             //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs
                             //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
-                            // use histograms with normalization
-                            //Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
-                            //Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
-                            // use PDF without normalization
-                            //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
-                            //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
-                            // use PDF with normalization
-                            //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp)/pdf_nph_p);
-                            //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi)/pdf_nph_pi);
+                            // use histograms
+                            Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
+                            Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
+                            sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
+                            sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
                             //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
-                            // use  function
-                            sum1 += TMath::Log(gF1->Eval(tangle)+noise);
-                            sum2 += TMath::Log(gF2->Eval(tangle)+noise);
+                            // use standared
+                            //sum1 += TMath::Log(gF1->Eval(tangle)+noise);
+                            //sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                         }
                         
                         if(fVerbose==3) {
