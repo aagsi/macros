@@ -33,6 +33,7 @@
 #include "TSpectrum.h"
 #include "TVirtualFitter.h"
 #define PI 3.14159265
+#include <tuple>
 
 TCanvas *c1 = new TCanvas("c1","c1",300,200);
 // Constants
@@ -49,6 +50,9 @@ Double_t  prtangle;
 ////////////////////
 // proto types//////
 ////////////////////
+std::pair<Double_t, Double_t> FitHisto_m(TH1F *hiso_m_fit_option, Double_t cangle_true, Double_t fit_range);
+std::pair<Double_t, Double_t> FitHisto_0(TH1F *hiso_0_fit_option, Double_t cangle_true, Double_t fit_range);
+
 // file existance
 bool exists_test (const std::string& name);
 // histo style
@@ -204,6 +208,13 @@ void proton_plots(
         /////////////
         tof_pid=(TH1F*)ffile_data->Get("hdelta_tof2tof1");
         
+        
+        
+        TSpectrum *fSpect= new TSpectrum(10);
+        //Int_t nfound = fSpect->Search(p_cherenkov_mc_same_path,1,"",0.9); //0.6
+        //Double_t cangle_MC_true = fSpect->GetPositionX()[0];
+        Double_t cangle_MC_true =  p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(p_cherenkov_mc_same_path->GetMaximumBin());
+        
         ///////////////////
         ///// part I //////
         ///////////////////
@@ -258,7 +269,7 @@ void proton_plots(
                 fFit_p_cherenkov_data_correction->SetParLimits(1,cangle_cor-0.04,cangle_cor+0.04);
                 fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.014000);
                 p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.06,cangle_cor+0.06);
-
+                
                 legend_correction->SetHeader("Ambiguity distribution (proton data)","C");
                 legend_correction->AddEntry(p_cherenkov_data,"Ambiguity distribution","f");
                 legend_correction->AddEntry(p_cherenkov_data_correction," Ambiguity distribution corrected ","f");
@@ -318,12 +329,8 @@ void proton_plots(
         ///////////////////
         ///// part II /////
         ///////////////////
-        if(true) {
+        if(false) {
             gROOT->SetBatch(1);
-            TSpectrum *fSpect= new TSpectrum(10);
-            //Int_t nfound = fSpect->Search(p_cherenkov_mc_same_path,1,"",0.9); //0.6
-            //Double_t cangle_MC_true = fSpect->GetPositionX()[0];
-            Double_t cangle_MC_true =  p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(p_cherenkov_mc_same_path->GetMaximumBin());
             /////////////////////////////
             // cherenkov normalization /
             /////////////////////////////
@@ -349,116 +356,40 @@ void proton_plots(
             p_cherenkov_data_sub = (TH1F *)p_cherenkov_data_copy->Clone();
             p_cherenkov_data_sub->Add(p_cherenkov_bg_sim,-1);
             std::cout<<"############"<< " no problem 3 " <<std::endl;
+            
             ////////////////////
-            // fit ch data sub//
-            ////////////////////
-            TF1 *fFit_p_cherenkov_data_sub = new TF1("fFit_p_cherenkov_data_sub","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            fFit_p_cherenkov_data_sub->SetParameters(100,cangle_MC_true,0.010);
-            fFit_p_cherenkov_data_sub->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            fFit_p_cherenkov_data_sub->SetParLimits(0,0.1,1E6);
-            fFit_p_cherenkov_data_sub->SetParLimits(1,cangle_MC_true-0.04,cangle_MC_true+0.04);
-            fFit_p_cherenkov_data_sub->SetParLimits(2,0.005,0.014000);
-            p_cherenkov_data_sub->Fit("fFit_p_cherenkov_data_sub","M","",cangle_MC_true-0.06,cangle_MC_true+0.06);
-            Double_t cangle_data_sub = fFit_p_cherenkov_data_sub->GetParameter(1);
-            Double_t spr_data_sub = fFit_p_cherenkov_data_sub->GetParameter(2);
-            Double_t cangle_data_sub_minus_5_sgma = cangle_data_sub-5*spr_data_sub;
-            Double_t cangle_data_sub_plus_5_sgma = cangle_data_sub+5*spr_data_sub;
-            Double_t cangle_data_sub_minus_3_sgma = cangle_data_sub-3*spr_data_sub;
-            Double_t cangle_data_sub_plus_3_sgma = cangle_data_sub+3*spr_data_sub;
-            Double_t r_min_data_sub = cangle_data_sub-8*spr_data_sub;
-            Double_t r_max_data_sub = cangle_data_sub+8*spr_data_sub;
-            //////////////////////////////////////////
-            // fit ch data copy after normalization //
-            //////////////////////////////////////////
-            TF1 *fFit_p_cherenkov_data_copy = new TF1("fFit_p_cherenkov_data_copy","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            fFit_p_cherenkov_data_copy->SetParameters(100,cangle_MC_true,0.010);
-            fFit_p_cherenkov_data_copy->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            fFit_p_cherenkov_data_copy->SetParLimits(0,0.1,1E6);
-            fFit_p_cherenkov_data_copy->SetParLimits(1,cangle_MC_true-0.04,cangle_MC_true+0.04);
-            fFit_p_cherenkov_data_copy->SetParLimits(2,0.005,0.014000);
-            p_cherenkov_data_copy->Fit("fFit_p_cherenkov_data_copy","M","",cangle_MC_true-0.06,cangle_MC_true+0.06);
-            p_cherenkov_data_copy->SetTitle(Form("Polar angle %3.1f", prtangle));
-            Double_t cangle_data_copy = fFit_p_cherenkov_data_copy->GetParameter(1);
-            Double_t spr_data_copy = fFit_p_cherenkov_data_copy->GetParameter(2);
-            ////////////////////////////////////
-            // fit Cherenkove data correction //
-            ////////////////////////////////////
-            //            prt_canvasAdd("r_ch_fit_data"+nid,800,400);
-            TF1 *fFit_p_cherenkov_data_correction = new TF1("fFit_p_cherenkov_data_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            fFit_p_cherenkov_data_correction->SetParameters(100,cangle_MC_true,0.010);
-            fFit_p_cherenkov_data_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            fFit_p_cherenkov_data_correction->SetParLimits(0,0.1,1E6);
-            fFit_p_cherenkov_data_correction->SetParLimits(1,cangle_MC_true-0.04,cangle_MC_true+0.04);
-            fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.014000);
-            p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_MC_true-0.06,cangle_MC_true+0.06);
-            //            p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
-            //            p_cherenkov_data_correction->Draw();
-            Double_t cangle_data_correction = fFit_p_cherenkov_data_correction->GetParameter(1);
-            Double_t spr_data_correction = fFit_p_cherenkov_data_correction->GetParameter(2);
-            
-            
-            
-            
-            ///////////////////////////////////
-            // fit Cherenkove sim correction //
-            ///////////////////////////////////
-            //            prt_canvasAdd("r_ch_fit_sim"+nid,800,400);
-            TF1 *fFit_p_cherenkov_sim_correction = new TF1("fFit_p_cherenkov_sim_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            fFit_p_cherenkov_sim_correction->SetParameters(100,cangle_MC_true,0.010);
-            fFit_p_cherenkov_sim_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            fFit_p_cherenkov_sim_correction->SetParLimits(0,0.1,1E6);
-            fFit_p_cherenkov_sim_correction->SetParLimits(1,cangle_MC_true-0.04,cangle_MC_true+0.04);
-            fFit_p_cherenkov_sim_correction->SetParLimits(2,0.005,0.014000);
-            p_cherenkov_sim_correction->Fit("fFit_p_cherenkov_sim_correction","M","",cangle_MC_true-0.06,cangle_MC_true+0.06);
-            //            p_cherenkov_sim_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
-            //            p_cherenkov_sim_correction->Draw();
-            Double_t cangle_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(1);
-            Double_t spr_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(2);
-            
-            
-            
-            
-            //////////////////////////////////////
-            // fit Cherenkove sim WO correction //
-            //////////////////////////////////////
-            TF1 *fFit_p_cherenkov_sim = new TF1("fFit_p_cherenkov_sim","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            fFit_p_cherenkov_sim->SetParameters(100,cangle_MC_true,0.010);
-            fFit_p_cherenkov_sim->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            fFit_p_cherenkov_sim->SetParLimits(0,0.1,1E6);
-            fFit_p_cherenkov_sim->SetParLimits(1,cangle_MC_true-0.04,cangle_MC_true+0.04);
-            fFit_p_cherenkov_sim->SetParLimits(2,0.005,0.014000);
-            p_cherenkov_sim->Fit("fFit_p_cherenkov_sim","0","",cangle_MC_true-0.06,cangle_MC_true+0.06);
-            Double_t chi = fFit_p_cherenkov_sim->GetChisquare()/fFit_p_cherenkov_sim->GetNDF();
-            Double_t cangle_sim_org = fFit_p_cherenkov_sim->GetParameter(1);
-            Double_t spr_sim_org = fFit_p_cherenkov_sim->GetParameter(2);
-            //////////////////////////////////////
-            // fit Cherenkove data WO correction //
-            //////////////////////////////////////
-            TF1 *fFit_p_cherenkov_data = new TF1("fFit_p_cherenkov_data","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            fFit_p_cherenkov_data->SetParameters(100,cangle_MC_true,0.010);
-            fFit_p_cherenkov_data->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            fFit_p_cherenkov_data->SetParLimits(0,0.1,1E6);
-            fFit_p_cherenkov_data->SetParLimits(1,cangle_MC_true-0.04,cangle_MC_true+0.04);
-            fFit_p_cherenkov_data->SetParLimits(2,0.005,0.014000);
-            p_cherenkov_data->Fit("fFit_p_cherenkov_data","0","",cangle_MC_true-0.06,cangle_MC_true+0.06);
-            Double_t cangle_data_org = fFit_p_cherenkov_data->GetParameter(1);
-            Double_t spr_data_org = fFit_p_cherenkov_data->GetParameter(2);
+            // fit Cherenkove //
             ///////////////////
-            // fit true MC  ///
-            ///////////////////
-            TF1 *fFit_p_cherenkov_mc_same_path = new TF1("fFit_p_cherenkov_mc_same_path","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-            fFit_p_cherenkov_mc_same_path->SetParameters(100,cangle_MC_true,0.010);
-            fFit_p_cherenkov_mc_same_path->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-            fFit_p_cherenkov_mc_same_path->SetParLimits(0,0.1,1E6);
-            fFit_p_cherenkov_mc_same_path->SetParLimits(1,cangle_MC_true-0.04,cangle_MC_true+0.04);
-            fFit_p_cherenkov_mc_same_path->SetParLimits(2,0.005,0.014000);
-            p_cherenkov_mc_same_path->Fit("fFit_p_cherenkov_mc_same_path","M","",cangle_MC_true-0.06,cangle_MC_true+0.06);
-            Double_t spr_sim_true = fFit_p_cherenkov_mc_same_path->GetParameter(2);
-            Double_t cangle_sim_true = fFit_p_cherenkov_mc_same_path->GetParameter(1);
-            Double_t cangle_minus_5_sgma = cangle_sim_true-5*spr_sim_true;
-            Double_t cangle_plus_5_sgma = cangle_sim_true+5*spr_sim_true;
-            Double_t cangle_minus_3_sgma = cangle_sim_true-3*spr_sim_true;
-            Double_t cangle_plus_3_sgma = cangle_sim_true+3*spr_sim_true;
+            auto resultPair= FitHisto_m( p_cherenkov_data_correction , cangle_MC_true, 0.06);
+            Double_t cangle_data_correction = resultPair.first;
+            Double_t spr_data_correction = resultPair.second;
+            
+            resultPair= FitHisto_m( p_cherenkov_sim_correction , cangle_MC_true, 0.06);
+            Double_t cangle_sim_correction = resultPair.first;
+            Double_t spr_sim_correction = resultPair.second;
+            
+            resultPair= FitHisto_m( p_cherenkov_mc_same_path , cangle_MC_true, 0.06);
+            Double_t cangle_sim_true = resultPair.first;
+            Double_t spr_sim_true = resultPair.second;
+            
+            resultPair= FitHisto_m( p_cherenkov_data_sub , cangle_MC_true, 0.06);
+            Double_t cangle_data_sub = resultPair.first;
+            Double_t spr_data_sub = resultPair.second;
+            
+            resultPair= FitHisto_m( p_cherenkov_data_copy , cangle_MC_true, 0.06);
+            Double_t cangle_data_copy = resultPair.first;
+            Double_t spr_data_copy = resultPair.second;
+
+            resultPair= FitHisto_0( p_cherenkov_sim , cangle_MC_true, 0.06);
+            Double_t cangle_sim_org = resultPair.first;
+            Double_t spr_sim_org = resultPair.second;
+            
+            resultPair= FitHisto_0( p_cherenkov_data , cangle_MC_true, 0.06);
+            Double_t cangle_data_org = resultPair.first;
+            Double_t spr_data_org = resultPair.second;
+            
+            
+
             
             //////////////////////////////
             // time diff normalization ///
@@ -707,8 +638,8 @@ void proton_plots(
                 p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
                 p_cherenkov_data_correction->Draw();
                 
-                Double_t mean_p_cherenkov_data_correction = fFit_p_cherenkov_data_correction->GetParameter(1);
-                Double_t sigma_p_cherenkov_data_correction = fFit_p_cherenkov_data_correction->GetParameter(2)* 1000;
+                Double_t mean_p_cherenkov_data_correction = cangle_data_correction;
+                Double_t sigma_p_cherenkov_data_correction = spr_data_correction* 1000;
                 TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
                 pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_p_cherenkov_data_correction));
                 pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", sigma_p_cherenkov_data_correction));
@@ -718,8 +649,8 @@ void proton_plots(
                 prt_canvasAdd("r_ch_fit_sim"+nid,800,400);
                 p_cherenkov_sim_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
                 p_cherenkov_sim_correction->Draw();
-                Double_t mean_p_cherenkov_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(1);
-                Double_t sigma_p_cherenkov_sim_correction = fFit_p_cherenkov_sim_correction->GetParameter(2)* 1000;
+                Double_t mean_p_cherenkov_sim_correction = cangle_sim_correction;
+                Double_t sigma_p_cherenkov_sim_correction = spr_sim_correction* 1000;
                 TPaveText *pt_sim_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
                 pt_sim_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_p_cherenkov_sim_correction));
                 pt_sim_corrected->AddText(Form("#sigma =  %1.3f [mrad]", sigma_p_cherenkov_sim_correction));
@@ -1015,7 +946,7 @@ void proton_plots(
     ///////////////////
     ///// part III ////
     ///////////////////
-    if(true) {
+    if(false) {
         calc_mom->SetLineColor(kBlack);
         calc_mom->SetMarkerColor(kBlack);
         calc_mom->SetMarkerStyle(21);
@@ -2077,6 +2008,38 @@ void HistoStyle_3colors(TH1F *histo1, TH1F *histo2, TH1F *histo3){
     histo3->GetYaxis()->SetTitleOffset(1.0);
     //histo3->SetFillColor(kBlack);
     //histo3->SetFillStyle(3002);
+}
+
+
+
+std::pair<Double_t, Double_t> FitHisto_m(TH1F *hiso_m_fit_option, Double_t cangle_true, Double_t fit_range)
+{
+    TF1 *fFit_hiso_m_fit_option = new TF1("fFit_hiso_m_fit_option","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+    fFit_hiso_m_fit_option->SetParameters(100,cangle_true,0.010);
+    fFit_hiso_m_fit_option->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+    fFit_hiso_m_fit_option->SetParLimits(0,0.1,1E6);
+    fFit_hiso_m_fit_option->SetParLimits(1,cangle_true-fit_range,cangle_true+fit_range);
+    fFit_hiso_m_fit_option->SetParLimits(2,0.005,0.014000);
+    hiso_m_fit_option->Fit("fFit_hiso_m_fit_option","M","",cangle_true-fit_range,cangle_true+fit_range);
+    Double_t cangle_FitHisto_m = fFit_hiso_m_fit_option->GetParameter(1);
+    Double_t spr_FitHisto_m = fFit_hiso_m_fit_option->GetParameter(2);
+    return std::make_pair(cangle_FitHisto_m, spr_FitHisto_m);
+}
+
+
+
+std::pair<Double_t, Double_t> FitHisto_0(TH1F *hiso_0_fit_option, Double_t cangle_true, Double_t fit_range)
+{
+    TF1 *fFit_hiso_0_fit_option = new TF1("fFit_hiso_0_fit_option","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+    fFit_hiso_0_fit_option->SetParameters(100,cangle_true,0.010);
+    fFit_hiso_0_fit_option->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+    fFit_hiso_0_fit_option->SetParLimits(0,0.1,1E6);
+    fFit_hiso_0_fit_option->SetParLimits(1,cangle_true-fit_range,cangle_true+fit_range);
+    fFit_hiso_0_fit_option->SetParLimits(2,0.005,0.014000);
+    hiso_0_fit_option->Fit("fFit_hiso_0_fit_option","M","",cangle_true-fit_range,cangle_true+fit_range);
+    Double_t cangle_FitHisto_0 = fFit_hiso_0_fit_option->GetParameter(1);
+    Double_t spr_FitHisto_0 = fFit_hiso_0_fit_option->GetParameter(2);
+    return std::make_pair(cangle_FitHisto_0, spr_FitHisto_0);
 }
 
 
