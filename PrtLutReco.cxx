@@ -118,13 +118,9 @@ Double_t xmax_data = 1.0;
 // delta
 TH1F *hdelta_tof2tof1= new TH1F("hdelta_tof2tof1","",bin_d_tof2tof1, x_d_tof2tof1, y_d_tof2tof1);
 TH1F *hdelta_tof2tof1_isproton= new TH1F("hdelta_tof2tof1_isproton","",bin_d_tof2tof1, x_d_tof2tof1, y_d_tof2tof1);
-
-
 TH1F *histo_photon_ambiguity_wo= new TH1F("histo_photon_ambiguity_wo","",100, 0, 100);
 TH1F *histo_photon_ambiguity_wt= new TH1F("histo_photon_ambiguity_wt","",100, 0, 100);
 TH1F *histo_photon_ambiguity_wtc= new TH1F("histo_photon_ambiguity_wtc","",100, 0, 100);
-
-
 
 /*
  // hodo
@@ -139,7 +135,6 @@ TH2D * hodoF = new TH2D("3","4",16,0,16,16,0,16);
 TH1D * hodoV_select = new TH1D("1_select","vertical fibers selection",16,0,16);
 TH1D * hodoH_select = new TH1D("2_select","horizontal fibers selection ",16,0,16);
 TH2D *hodo_afterCut = new TH2D("5","6",16,0,16,16,0,16);
-
 TH2D *hodo_multi_withmedHfiber = new TH2D("7","8",16,0,16,16,0,16);
 TH2D *hodo_multi_withmedVfiber = new TH2D("9","10",16,0,16,16,0,16);
 
@@ -225,9 +220,6 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose) {
         }
     }
 
-    
-    
-    
     
     cout << "-I- PrtLutReco: Intialization successfull" << endl;
     for(Int_t i=0; i<prt_nmcp; i++) {
@@ -499,15 +491,15 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_2BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
         //data
-	cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
+        cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/ambiguit_pdf/histo_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
-	//sim
+        //sim
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_4BarRefl_%g_sph_p_data_cherenkovPDF.root", prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_4BarRefl_%g_sph_pi_data_cherenkovPDF.root", prtangle_pdf);
-	//test  number of event sgenerate PDF
+        //test  number of event sgenerate PDF
         //cherenkov_data_p_path =  Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_%d_%g_sph_p_data_cherenkovPDF.root", openChCorr,prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_%d_%g_sph_pi_data_cherenkovPDF.root",openChCorr,prtangle_pdf);
-
+        
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_pi_data_cherenkovPDF.root", 40);
         cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
@@ -535,13 +527,13 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             bmin_data[pix] = axis_data[pix]->FindBin(xmin_data);
             bmax_data[pix] = axis_data[pix]->FindBin(xmax_data);
             integral_data[pix] = fHistCh_read_p[pix]->Integral(bmin_data[pix],bmax_data[pix]);
-            //fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
-            fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
+            fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
+            //fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
             axis_data_pi[pix] = fHistCh_read_pi[pix]->GetXaxis();
             bmin_data_pi[pix] = axis_data_pi[pix]->FindBin(xmin_data);
             bmax_data_pi[pix] = axis_data_pi[pix]->FindBin(xmax_data);
-            integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
-            //fHistCh_read_pi[pix]->Scale(1/integral_data_pi[pix]);
+            //integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
+            fHistCh_read_pi[pix]->Scale(1/integral_data_pi[pix]);
             fHistCh_read_pi[pix]->Scale(1/pdf_nph_pi);
             fHistCh_read_pi[pix]->SetLineColor(kRed);
             fHistCh_graph_p[pix] =new TGraph(fHistCh_read_p[pix]);
@@ -558,11 +550,12 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     }
     
     //TString outFile =PrtManager::Instance()->GetOutName()+"_spr.root" ;
-    
     Double_t minChangle(0);
     Double_t maxChangle(1);
     Double_t rad = TMath::Pi()/180.;
     Double_t criticalAngle = asin(1.00028/1.47125); // n_quarzt = 1.47125; //(1.47125 <==> 390nm)
+    Int_t nsEvents(0);
+    
     prt_setRootPalette(1);
     prt_createMap();
     prt_initDigi();
@@ -585,7 +578,6 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     tree.Branch("test3",&test3,"test3/D");
     tree.Branch("theta",&theta,"theta/D");
     tree.Branch("phi",&phi,"phi/D");
-    
     tree.Branch("chAngleCut",&chAngleCut,"chAngleCut/D");
     tree.Branch("recoAngle",&recoAngle,"recoAngle/D");
     tree.Branch("timeRes",&timeRes,"timeRes/D");
@@ -593,9 +585,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     tree.Branch("end",&end,"end/I");
     tree.Branch("solution_number_approach_selection",&end,"solution_number_approach_selection/I");
     tree.Branch("solution_number",&end,"solution_number/I");
-    
-    
-    
+    tree.Branch("nsEvents",&nsEvents,"nsEvents/I");
     
     
     test1 = PrtManager::Instance()->GetTest1();
@@ -605,17 +595,14 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     fMethod = PrtManager::Instance()->GetRunType();
     Int_t nEvents = fChain->GetEntries();
     if(end==0) end = nEvents;
-    if (gPDF==1 )start = 500001;
-   // if (gPDF==1 )start = 0;
+    if (gPDF==1 )start = 500001; // for data
+    // if (gPDF==1 )start = 0;   // for simulation
     cout<<"@@@@@@@@@@@@ test1="<< test1 << endl;
     cout<<"@@@@@@@@@@@@ test2="<< test2 << endl;
     cout<<"@@@@@@@@@@@@  sim ?="<< fEvent->GetType()<< endl;
-
-    
     cout<<"@@@@@@@@@@@@ gPDF="<< gPDF << "    start= "<< start << endl;
-    
     std::cout<<"Run started for ["<<start<<","<<end <<"]"<<std::endl;
-    Int_t nsHits(0),nsEvents(0),studyId(0), nHits(0), ninfit(1);
+    Int_t nsHits(0),studyId(0), nHits(0), ninfit(1);
     if(start<0) {
         ninfit=abs(start);
         start=0;
@@ -686,8 +673,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         tofPid=fEvent->GetParticle();
         if(tofPid==212) tofPid=211;
         //std::cout<<"$$$$$$$$$$$$$$$$$$$ up $$$$$$ tofPid "<<tofPid <<std::endl;
-	//std::cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$  "<< fEvent->GetType() <<std::endl;
-
+        //std::cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$  "<< fEvent->GetType() <<std::endl;
+        
         
         Int_t pdg[]= {11,13,211,321,2212};
         Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
@@ -807,14 +794,10 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Int_t count_hodoH_1369 =0;
             Int_t count_hodoH_1370 =0;
             
-            
             Int_t count_hodoV_1350 =0;
             Int_t count_hodoV_1351 =0;
             Int_t count_hodoV_1352 =0;
-            
-            
-            
-            
+
             for(Int_t h=0; h<fEvent->GetHitSize(); h++) {
                 fHit = fEvent->GetHit(h);
                 Int_t gch=fHit.GetChannel();
@@ -1549,14 +1532,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             Int_t photon_ambiguity_counter_wt=0;
             Int_t photon_ambiguity_counter_wtc=0;
             for(Int_t i=0; i<size; i++) {
-                
-                
 
-                
-                
-                
-                
-                
                 weight = 1;//fLutNode[sensorId]->GetWeight(i);
                 dird   = fLutNode[sensorId]->GetEntryCs(i,nedge); // nedge=0
                 //dird   = fLutNode[sensorId]->GetEntry(i);
@@ -1936,7 +1912,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         }
                         //if(tofPid==211 &&fabs(tangle-fAnglePi)> chAngleCut) continue;
                         //if(tofPid==2212 &&fabs(tangle-fAngleP)> chAngleCut) continue;
-                        if(method_type == 3 && tangle>0.75 && tangle<0.88 ) {
+                        if(method_type == 3 && tangle>0.75 && tangle<0.88){
                             // use graphs
                             //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs
                             //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
