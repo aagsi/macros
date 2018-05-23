@@ -94,7 +94,7 @@ Double_t y_d_tof2tof1=34; // 35;//85;//75
 
 TAxis *axis_data[960], *axis_data_pi[960];
 Int_t bmin_data[960],  bmax_data[960], bmin_data_pi[960], bmax_data_pi[960];
-Double_t integral_data[960], integral_data_pi[960];
+Double_t integral_data[960], integral_data_pi[960], scale_p[960], scale_pi[960] ;
 Double_t xmin_data = 0.6;
 Double_t xmax_data = 1.0;
 
@@ -521,21 +521,27 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         cout<<"@@@@@@@@@@@@ pdf_nph_p="<< pdf_nph_p << endl;
         cout<<"@@@@@@@@@@@@ pdf_nph_pi="<< pdf_nph_pi << endl;
         for(Int_t pix=0; pix<960; pix++) {
-            axis_data[pix] = fHistCh_read_p[pix]->GetXaxis();
-            if (prtangle_pdf==90)xmin_data  = 0.9;
-            if (prtangle_pdf==90)xmax_data  = 1.0;
-            bmin_data[pix] = axis_data[pix]->FindBin(xmin_data);
-            bmax_data[pix] = axis_data[pix]->FindBin(xmax_data);
-            integral_data[pix] = fHistCh_read_p[pix]->Integral(bmin_data[pix],bmax_data[pix]);
-            fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
-            //fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
-            
-            axis_data_pi[pix] = fHistCh_read_pi[pix]->GetXaxis();
-            bmin_data_pi[pix] = axis_data_pi[pix]->FindBin(xmin_data);
-            bmax_data_pi[pix] = axis_data_pi[pix]->FindBin(xmax_data);
-            integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
-            fHistCh_read_pi[pix]->Scale(1/integral_data_pi[pix]);
-            //fHistCh_read_pi[pix]->Scale(1/pdf_nph_pi);
+
+            //            axis_data[pix] = fHistCh_read_p[pix]->GetXaxis();
+            //            if (prtangle_pdf==90)xmin_data  = 0.9;
+            //            if (prtangle_pdf==90)xmax_data  = 1.0;
+            //            bmin_data[pix] = axis_data[pix]->FindBin(xmin_data);
+            //            bmax_data[pix] = axis_data[pix]->FindBin(xmax_data);
+            //            integral_data[pix] = fHistCh_read_p[pix]->Integral(bmin_data[pix],bmax_data[pix]);
+            //            fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
+            //            //fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
+            //
+            //            axis_data_pi[pix] = fHistCh_read_pi[pix]->GetXaxis();
+            //            bmin_data_pi[pix] = axis_data_pi[pix]->FindBin(xmin_data);
+            //            bmax_data_pi[pix] = axis_data_pi[pix]->FindBin(xmax_data);
+            //            integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
+            //            fHistCh_read_pi[pix]->Scale(1/integral_data_pi[pix]);
+            //            //fHistCh_read_pi[pix]->Scale(1/pdf_nph_pi);
+
+            scale_p[pix] = 1/fHistCh_read_p[pix]->Integral();
+            scale_pi[pix] = 1/fHistCh_read_pi[pix]->Integral();
+            fHistCh_read_p[pix]->Scale(scale_p[pix]);
+            fHistCh_read_pi[pix]->Scale(scale_pi[pix]);
             
             fHistCh_read_pi[pix]->SetLineColor(kRed);
             // pdf graphs not used
