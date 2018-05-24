@@ -58,12 +58,12 @@ TH1F*  nHits_dac = new TH1F("nHits_dac",";number of photons solutions per proton
 TH1F*  nHits_dac_syscut_p = new TH1F("nHits_dac_syscut_p",";number of photons per proton track after sys cut [#];entries [#]",   100,0,200);
 TH1F*  fnHits_true_sim = new TH1F("fnHits_true_sim",";number of photons per track [#];entries [#]",   100,0,200);
 
-//TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
-//TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-600,600);
+TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",800,-600,600);
+TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",800,-600,600);
 
 // in case of standared method choose smaller range for the liklhood histo
-TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-150, 150);
-TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-150, 150);
+//TH1F *hLnDiffP = new TH1F("hLnDiffP",  ";ln L(p) - ln L(#pi);entries [#]",200,-150, 150);
+//TH1F *hLnDiffPi = new TH1F("hLnDiffPi",";ln L(p) - ln L(#pi);entries [#]",200,-150, 150);
 
 
 
@@ -499,7 +499,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         //test  number of event sgenerate PDF
         //cherenkov_data_p_path =  Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_%d_%g_sph_p_data_cherenkovPDF.root", openChCorr,prtangle_pdf);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/sim/332/histo_sim_%d_%g_sph_pi_data_cherenkovPDF.root",openChCorr,prtangle_pdf);
-        
+
         //cherenkov_data_p_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_p_data_cherenkovPDF.root", 40);
         //cherenkov_data_pi_path = Form("/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/recon/data/332/histo_%d_sph_pi_data_cherenkovPDF.root", 40);
         cout<<"cherenkov_data_p_path= " <<cherenkov_data_p_path<<endl;
@@ -521,28 +521,33 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         cout<<"@@@@@@@@@@@@ pdf_nph_p="<< pdf_nph_p << endl;
         cout<<"@@@@@@@@@@@@ pdf_nph_pi="<< pdf_nph_pi << endl;
         for(Int_t pix=0; pix<960; pix++) {
+                        axis_data[pix] = fHistCh_read_p[pix]->GetXaxis();
+                        if (prtangle_pdf==90)xmin_data  = 0.9;
+                        if (prtangle_pdf==90)xmax_data  = 1.0;
+                        bmin_data[pix] = axis_data[pix]->FindBin(xmin_data);
+                        bmax_data[pix] = axis_data[pix]->FindBin(xmax_data);
+                        integral_data[pix] = fHistCh_read_p[pix]->Integral(bmin_data[pix],bmax_data[pix]);
+                        //fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
+                        fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
 
-            //            axis_data[pix] = fHistCh_read_p[pix]->GetXaxis();
-            //            if (prtangle_pdf==90)xmin_data  = 0.9;
-            //            if (prtangle_pdf==90)xmax_data  = 1.0;
-            //            bmin_data[pix] = axis_data[pix]->FindBin(xmin_data);
-            //            bmax_data[pix] = axis_data[pix]->FindBin(xmax_data);
-            //            integral_data[pix] = fHistCh_read_p[pix]->Integral(bmin_data[pix],bmax_data[pix]);
-            //            fHistCh_read_p[pix]->Scale(1/integral_data[pix]);
-            //            //fHistCh_read_p[pix]->Scale(1/pdf_nph_p);
-            //
-            //            axis_data_pi[pix] = fHistCh_read_pi[pix]->GetXaxis();
-            //            bmin_data_pi[pix] = axis_data_pi[pix]->FindBin(xmin_data);
-            //            bmax_data_pi[pix] = axis_data_pi[pix]->FindBin(xmax_data);
-            //            integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
-            //            fHistCh_read_pi[pix]->Scale(1/integral_data_pi[pix]);
-            //            //fHistCh_read_pi[pix]->Scale(1/pdf_nph_pi);
+                        axis_data_pi[pix] = fHistCh_read_pi[pix]->GetXaxis();
+                        bmin_data_pi[pix] = axis_data_pi[pix]->FindBin(xmin_data);
+                        bmax_data_pi[pix] = axis_data_pi[pix]->FindBin(xmax_data);
+                        integral_data_pi[pix] = fHistCh_read_pi[pix]->Integral(bmin_data_pi[pix],bmax_data_pi[pix]);
+                        //fHistCh_read_pi[pix]->Scale(1/integral_data_pi[pix]);
+                        fHistCh_read_pi[pix]->Scale(1/pdf_nph_pi);
 
-            scale_p[pix] = 1/fHistCh_read_p[pix]->Integral();
-            scale_pi[pix] = 1/fHistCh_read_pi[pix]->Integral();
-            fHistCh_read_p[pix]->Scale(scale_p[pix]);
-            fHistCh_read_pi[pix]->Scale(scale_pi[pix]);
-            
+	    //normalize the histogram to 1
+            //scale_p[pix] = 1/fHistCh_read_p[pix]->Integral();
+            //scale_pi[pix] = 1/fHistCh_read_pi[pix]->Integral();
+	    //or
+	    //normalize histogram per entry and per unit of X axis
+            //scale_p[pix] = axis_data[pix]->GetBinWidth(1)/fHistCh_read_p[pix]->GetIntegral(); // problem 
+            //scale_pi[pix]= axis_data_pi[pix]->GetBinWidth(1)/fHistCh_read_pi[pix]->GetIntegral(); // problem 
+
+            //fHistCh_read_p[pix]->Scale(scale_p[pix]);
+            //fHistCh_read_pi[pix]->Scale(scale_pi[pix]);
+
             fHistCh_read_pi[pix]->SetLineColor(kRed);
             // pdf graphs not used
             fHistCh_graph_p[pix] =new TGraph(fHistCh_read_p[pix]);
@@ -1593,6 +1598,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                     if(samepath) isGoodHit_true_sim=true;
                     if(samepath) fHist_same_path_wotc->Fill(tangle ,weight);
                     ++photon_ambiguity_counter_wo;
+		     //if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); bad separation power
                     // time cut
                     if(fabs(diff_variable)>timeRes) continue;
                     isGoodHit_TimeCutOnly=true;
@@ -1908,7 +1914,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         if(tofPid==211 &&  fEvent->GetType()==1 && samepath) fHistMcp_same_path[mcpid]->Fill(tangle ,weight); // pi candidate changed
                         
                         solution_number++;
-                        if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight);
+                        if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // good after time cut
                         
                         if(0.7<tangle && tangle<0.9) {
                             if(fabs(tangle-recoAngle)<chAngleCut) {
@@ -1921,7 +1927,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         }
                         //if(tofPid==211 &&fabs(tangle-fAnglePi)> chAngleCut) continue;
                         //if(tofPid==2212 &&fabs(tangle-fAngleP)> chAngleCut) continue;
-                        if(method_type == 3 && tangle>0.75 && tangle<0.88){
+                        if(method_type == 3 && tangle>0.6 && tangle<1.0){
                             // use graphs
                             //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs
                             //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
@@ -1935,7 +1941,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                             //sum1 += TMath::Log(gF1->Eval(tangle)+noise);
                             //sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                         }
-                        
+
                         if(fVerbose==3) {
                             TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
                             rdir.RotateUz(cz);
