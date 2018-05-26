@@ -56,8 +56,8 @@ std::pair<Double_t, Double_t> FitHisto_0(TH1F *hiso_0_fit_option, Double_t cangl
 // file existance
 bool exists_test (const std::string& name);
 // histo style
-void HistoStyle(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_sub, TH1F *p_cherenkov_mc_same_path, TH1F *p_cherenkov_bg_sim, TH1F *nph_sim, TH1F *p_nph_sim,TH1F *p_nph_good_sim, TH1F *p_nph_true_sim, TH1F *p_diff_time_sim, TH1F*p_diff_time_data, TH1F*p_diff_time_data_sub, TH1F*p_diff_time_mctruth, TH1F* p_diff_time_bg_sim, TH1F *p_cherenkov_data_copy, TH1F *p_photon_time_sim, TH1F *p_photon_time_data, TH1F *p_photon_time_sim_calc, TH1F *p_photon_time_data_calc, TH1F *nph_data, TH1F *p_nph_data, TH1F *p_nph_good_data, TH1F *dac_hits_data, TH1F *dac_hits_sys_cus_data);
-void HistoStyleMatch(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data);
+void HistoStyle(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_sub, TH1F *p_cherenkov_mc_same_path, TH1F *p_cherenkov_bg_sim, TH1F *nph_sim, TH1F *p_nph_sim,TH1F *p_nph_good_sim, TH1F *p_nph_true_sim, TH1F *p_diff_time_sim, TH1F*p_diff_time_data, TH1F*p_diff_time_data_sub, TH1F*p_diff_time_mctruth, TH1F* p_diff_time_bg_sim, TH1F *p_cherenkov_data_copy, TH1F *p_photon_time_sim, TH1F *p_photon_time_data, TH1F *p_photon_time_sim_calc, TH1F *p_photon_time_data_calc, TH1F *nph_data, TH1F *p_nph_data, TH1F *p_nph_good_data, TH1F *dac_hits_data, TH1F *dac_hits_sys_cus_data);
+void HistoStyleMatch(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data);
 void HistoStyle_3colors(TH1F *histo1, TH1F *histo2, TH1F *histo3);
 Double_t*  YieldGausFit(TH1F *photonYieldHistogram);
 Double_t  YieldGausFit_double(TH1F *photonYieldHistogram) ;
@@ -78,17 +78,13 @@ Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.473
 // error Stuff//
 ////////////////
 TFile *ffile_error_polar_sim_p, *ffile_error_stat_sim_p, *ffile_error_fit_range_sim_p;
+TH1F *error_polar_p_cherenkov_sim_org,*error_polar_p_cherenkov_data,*error_polar_p_cherenkov_sim_corrected ,*error_polar_p_cherenkov_data_corrected,*error_polar_p_cherenkov_data_copy,*error_polar_p_cherenkov_sim_org_copy,*error_polar_p_cherenkov_mc_same_path,*error_polar_p_cherenkov_bg_sim,*error_polar_nph_sim,*error_polar_p_nph_sim,*error_polar_p_nph_good_sim,*error_polar_p_nph_true_sim,*error_polar_nph_data,*error_polar_p_nph_data,*error_polar_p_nph_good_data;
+TH1F *error_stat_p_cherenkov_sim_org,*error_stat_p_cherenkov_data,*error_stat_p_cherenkov_sim_corrected ,*error_stat_p_cherenkov_data_corrected,*error_stat_p_cherenkov_data_copy,*error_stat_p_cherenkov_sim_org_copy,*error_stat_p_cherenkov_mc_same_path,*error_stat_p_cherenkov_bg_sim,*error_stat_nph_sim,*error_stat_p_nph_sim,*error_stat_p_nph_good_sim,*error_stat_p_nph_true_sim,*error_stat_nph_data,*error_stat_p_nph_data,*error_stat_p_nph_good_data;
 
-TH1F *error_polar_p_cherenkov_sim,*error_polar_p_cherenkov_data,*error_polar_p_cherenkov_sim_correction ,*error_polar_p_cherenkov_data_correction,*error_polar_p_cherenkov_data_copy,*error_polar_p_cherenkov_sim_copy,*error_polar_p_cherenkov_mc_same_path,*error_polar_p_cherenkov_bg_sim,*error_polar_nph_sim,*error_polar_p_nph_sim,*error_polar_p_nph_good_sim,*error_polar_p_nph_true_sim,*error_polar_nph_data,*error_polar_p_nph_data,*error_polar_p_nph_good_data;
+TH1F *error_fit_range_p_cherenkov_sim_org,*error_fit_range_p_cherenkov_data,*error_fit_range_p_cherenkov_sim_corrected ,*error_fit_range_p_cherenkov_data_corrected,*error_fit_range_p_cherenkov_data_copy,*error_fit_range_p_cherenkov_sim_org_copy,*error_fit_range_p_cherenkov_mc_same_path,*error_fit_range_p_cherenkov_bg_sim,*error_fit_range_nph_sim,*error_fit_range_p_nph_sim,*error_fit_range_p_nph_good_sim,*error_fit_range_p_nph_true_sim,*error_fit_range_nph_data,*error_fit_range_p_nph_data,*error_fit_range_p_nph_good_data;
 
-TH1F *error_stat_p_cherenkov_sim,*error_stat_p_cherenkov_data,*error_stat_p_cherenkov_sim_correction ,*error_stat_p_cherenkov_data_correction,*error_stat_p_cherenkov_data_copy,*error_stat_p_cherenkov_sim_copy,*error_stat_p_cherenkov_mc_same_path,*error_stat_p_cherenkov_bg_sim,*error_stat_nph_sim,*error_stat_p_nph_sim,*error_stat_p_nph_good_sim,*error_stat_p_nph_true_sim,*error_stat_nph_data,*error_stat_p_nph_data,*error_stat_p_nph_good_data;
-
-
-TH1F *error_fit_range_p_cherenkov_sim,*error_fit_range_p_cherenkov_data,*error_fit_range_p_cherenkov_sim_correction ,*error_fit_range_p_cherenkov_data_correction,*error_fit_range_p_cherenkov_data_copy,*error_fit_range_p_cherenkov_sim_copy,*error_fit_range_p_cherenkov_mc_same_path,*error_fit_range_p_cherenkov_bg_sim,*error_fit_range_nph_sim,*error_fit_range_p_nph_sim,*error_fit_range_p_nph_good_sim,*error_fit_range_p_nph_true_sim,*error_fit_range_nph_data,*error_fit_range_p_nph_data,*error_fit_range_p_nph_good_data;
-
-TH1F *histo_distribution_error_polar_spr_p_cherenkov_sim[14], *histo_distribution_error_stat_spr_p_cherenkov_sim[14], *histo_distribution_error_fit_range_spr_p_cherenkov_sim[14];
-
-
+TH1F *histo_distribution_error_polar_spr_p_cherenkov_sim_org[14], *histo_distribution_error_stat_spr_p_cherenkov_sim_org[14], *histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[14];
+TH1F *histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[14], *histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[14], *histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[14];
 
 
 ////////////////////
@@ -122,17 +118,18 @@ void proton_plots(
     vector<Int_t> prtangle_vector(14);
     const Int_t n = 14;
     Double_t error_all_y_spr_sim_org[n]={0};
-
-    Double_t x[n], y_spr_data_sub[n], y_spr_sim_true[n], y_spr_sim_org[n], y_diff_true[n], y_diff_data[n], y_mean_diff_data[n], y_mean_diff_sim[n], y_mean_diff_true[n], y_diff_sim[n];
+    Double_t error_all_y_spr_sim_corrected[n]={0};
+    
+    Double_t x[n], y_spr_data_sub[n], y_spr_sim_true[n], y_spr_sim_org[n],y_spr_sim_corrected[n],  y_diff_true[n], y_diff_data[n], y_mean_diff_data[n], y_mean_diff_sim[n], y_mean_diff_true[n], y_diff_sim[n];
     Double_t y_cangle_data_sub[n], y_cangle_sim_org[n];
     Double_t y_cangle_sim_org_true[n];
-    Double_t y_spr_data_cuts[n], y_spr_sim_cuts[n], y_spr_data_sub_cuts[n], y_spr_sim_true_cuts[n], y_yield_nph_sim[n], y_yield_p_nph_sim[n], y_yield_p_nph_good_sim[n],  y_yield_p_nph_true_sim[n], y_yield_nph_data[n], y_yield_p_nph_data[n], y_yield_p_nph_good_data[n], y_yield_dac_hits_sys_cus_data[n], y_cangle_data_correction[n], y_spr_data_org[n], y_cangle_data_org[n], y_spr_data_correction[n], y_spr_data_correction_error[n], y_spr_sim_correction[n], y_cangle_sim_org_correction[n];
+    Double_t y_spr_data_cuts[n], y_spr_sim_cuts[n], y_spr_data_sub_cuts[n], y_spr_sim_true_cuts[n], y_yield_nph_sim[n], y_yield_p_nph_sim[n], y_yield_p_nph_good_sim[n],  y_yield_p_nph_true_sim[n], y_yield_nph_data[n], y_yield_p_nph_data[n], y_yield_p_nph_good_data[n], y_yield_dac_hits_sys_cus_data[n], y_cangle_data_corrected[n], y_spr_data_org[n], y_cangle_data_org[n], y_spr_data_corrected[n], y_spr_data_corrected_error[n], y_cangle_sim_corrected[n];
     Double_t y_yield_nph_sim_error[n], y_yield_p_nph_sim_error[n], y_yield_p_nph_good_sim_error[n], y_yield_p_nph_true_sim_error[n], y_yield_nph_data_error[n], y_yield_p_nph_data_error[n], y_yield_p_nph_good_data_error[n];
     int counter =0 ;
     prt_savepath="proton";
     std::cout<<"fSavePath  "<< prt_savepath <<std::endl;
     TFile *ffile_sim, *ffile_data;
-    TH1F *tof_pid, *p_cherenkov_sim, *p_cherenkov_data, *p_cherenkov_data_copy, *p_cherenkov_sim_copy, *p_cherenkov_data_sub, *p_cherenkov_mc_same_path, *p_cherenkov_bg_sim, *p_cherenkov_data_correction, *p_cherenkov_sim_correction, *nph_sim, *p_nph_sim, *p_nph_good_sim, *p_nph_true_sim;
+    TH1F *tof_pid, *p_cherenkov_sim_org, *p_cherenkov_data, *p_cherenkov_data_copy, *p_cherenkov_sim_copy, *p_cherenkov_data_sub, *p_cherenkov_mc_same_path, *p_cherenkov_bg_sim, *p_cherenkov_data_corrected, *p_cherenkov_sim_corrected, *nph_sim, *p_nph_sim, *p_nph_good_sim, *p_nph_true_sim;
     TH1F *p_diff_time_sim, *p_diff_time_data, *p_diff_time_data_sub, *p_diff_time_mctruth, * p_diff_time_bg_sim, *p_photon_time_sim, *p_photon_time_data,*p_photon_time_sim_calc, *p_photon_time_data_calc;
     TH1F *nph_data, *p_nph_data, *p_nph_good_data, *dac_hits_data, *dac_hits_sys_cus_data;
     TH1F *hist_ambiguity_sim, *histo_photon_ambiguity_wo_sim, *histo_photon_ambiguity_wt_sim, *histo_photon_ambiguity_wtc_sim;
@@ -145,53 +142,59 @@ void proton_plots(
     TGraph *calc_e_tof1tof2_distance = new TGraph();
     //gStyle->SetOptFit(1);
     //gStyle->SetOptStat(0);
-    TGraph * graph_spr_data_sub,* graph_spr_sim_true,* graph_spr_data_correction,* graph_spr_sim_correction,* graph_spr_data_org,* graph_spr_data_cuts,* graph_spr_sim_cuts,* graph_spr_data_sub_cuts,* graph_spr_sim_true_cuts,* graph_diff_true,* graph_diff_data,* graph_diff_sim,* graph_diff_data_mean,* graph_diff_sim_mean,* graph_diff_true_mean,* graph_diff_true_sim,* graph_cangle_data_sub,* graph_cangle_sim,* graph_cangle_sim_true,* graph_cangle_data_correction,* graph_cangle_sim_correction,* graph_cangle_data_org,* graph_yield_DIRC_wo_cuts_sim,* graph_yield_DIRC_wt_cuts_sim,* graph_yield_DIRC_wtc_cuts_sim,* graph_yield_DIRC_true_sim,* graph_yield_DIRC_wo_cuts_data,* graph_yield_DIRC_wt_cuts_data,* graph_yield_DIRC_wtc_cuts_data;
-    
-    //TGraphErrors *graph_spr_sim;
+    TGraph * graph_spr_data_sub,* graph_spr_sim_true,* graph_spr_data_cuts,* graph_spr_sim_cuts,* graph_spr_data_sub_cuts,* graph_spr_sim_true_cuts,* graph_diff_true,* graph_diff_data,* graph_diff_sim,* graph_diff_data_mean,* graph_diff_sim_mean,* graph_diff_true_mean,* graph_diff_true_sim,* graph_cangle_data_sub,* graph_cangle_sim,* graph_cangle_sim_true,* graph_cangle_data_corrected,* graph_cangle_sim_corrected,* graph_cangle_data_org,* graph_yield_DIRC_wo_cuts_sim,* graph_yield_DIRC_wt_cuts_sim,* graph_yield_DIRC_wtc_cuts_sim,* graph_yield_DIRC_true_sim,* graph_yield_DIRC_wo_cuts_data,* graph_yield_DIRC_wt_cuts_data,* graph_yield_DIRC_wtc_cuts_data;
     
     ///////////////////////////
     // Error Calculations   ///
     ///////////////////////////
-
     
+    ///////////////////////////
+    // Error fit range      ///
+    ///////////////////////////
     for (Int_t e=0; e<=14; e++) {
-        histo_distribution_error_fit_range_spr_p_cherenkov_sim[e] = new TH1F(Form("histo_distribution_error_fit_range_spr_p_cherenkov_sim_%d",e),Form("histo_distribution_error_fit_range_spr_p_cherenkov_sim_%d; SPR [mrad];entries [#]",e), 100,6,14);
+        histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[e] = new TH1F(Form("histo_distribution_error_fit_range_spr_p_cherenkov_sim_org_%d",e),Form("histo_distribution_error_fit_range_spr_p_cherenkov_sim_org_%d; SPR [mrad];entries [#]",e), 50,6,14);
+        
+        histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[e] = new TH1F(Form("histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected_%d",e),Form("histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected_%d; SPR [mrad];entries [#]",e), 50,6,14);
     }
     Int_t counter_error_fit_range=0;
     for (int i=20; i<=150; i+=10) {
         prtangle= i;
         TString nid = Form("_%2.0d", i);
-        
-        for (int j=300; j<=1200; j+=1) {
-            
-
+        for (int j=3; j<=12; j+=1) { // changable
             TString calc_error_fit_range_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
-            
             cout<<"sim path for error calc p = " <<calc_error_fit_range_sim_p_path<<endl;
             string path_calc_error_fit_range_sim_p = (string)calc_error_fit_range_sim_p_path;
             cout<<"exists_test(path_calc_error_fit_range_sim_p)" <<exists_test(path_calc_error_fit_range_sim_p)<<endl;
             if (!exists_test(path_calc_error_fit_range_sim_p)) continue;
             ffile_error_fit_range_sim_p = TFile::Open(calc_error_fit_range_sim_p_path,"read");
+            error_fit_range_p_cherenkov_sim_org=(TH1F*)ffile_error_fit_range_sim_p->Get("fHist");
+            error_fit_range_p_cherenkov_sim_corrected=(TH1F*)ffile_error_fit_range_sim_p->Get("fHist_correction");
             
-            error_fit_range_p_cherenkov_sim=(TH1F*)ffile_error_fit_range_sim_p->Get("fHist");
             error_fit_range_p_cherenkov_mc_same_path=(TH1F*)ffile_error_fit_range_sim_p->Get("fHist_same_path");
             Double_t error_fit_range_cangle_MC_true =  error_fit_range_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_fit_range_p_cherenkov_mc_same_path->GetMaximumBin());
+            Double_t fit_range_value= j /100.0; // changable
             
-            Double_t fit_range_value= j /10000.0;
-            auto error_fit_range_resultPair= FitHisto_0( error_fit_range_p_cherenkov_sim , error_fit_range_cangle_MC_true, fit_range_value);
-            Double_t error_fit_range_cangle_error_fit_range_p_cherenkov_sim = error_fit_range_resultPair.first;
-            Double_t error_fit_range_spr_error_fit_range_p_cherenkov_sim = error_fit_range_resultPair.second;
-            cout<<"counter_error_fit_range = " <<counter_error_fit_range<<endl;
-            histo_distribution_error_fit_range_spr_p_cherenkov_sim[counter_error_fit_range]->Fill(error_fit_range_spr_error_fit_range_p_cherenkov_sim*1000.0);
+            auto error_fit_range_resultPair_org= FitHisto_0( error_fit_range_p_cherenkov_sim_org , error_fit_range_cangle_MC_true, fit_range_value);
+            Double_t error_fit_range_cangle_error_fit_range_p_cherenkov_sim_org = error_fit_range_resultPair_org.first;
+            Double_t error_fit_range_spr_error_fit_range_p_cherenkov_sim_org = error_fit_range_resultPair_org.second;
             
+            auto error_fit_range_resultPair_corrected= FitHisto_0( error_fit_range_p_cherenkov_sim_corrected , error_fit_range_cangle_MC_true, fit_range_value);
+            Double_t error_fit_range_cangle_error_fit_range_p_cherenkov_sim_corrected = error_fit_range_resultPair_corrected.first;
+            Double_t error_fit_range_spr_error_fit_range_p_cherenkov_sim_corrected = error_fit_range_resultPair_corrected.second;
             
-            delete error_fit_range_p_cherenkov_sim;
+            //cout<<"counter_error_fit_range = " <<counter_error_fit_range<<endl;
+            histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter_error_fit_range]->Fill(error_fit_range_spr_error_fit_range_p_cherenkov_sim_org*1000.0);
+            histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter_error_fit_range]->Fill(error_fit_range_spr_error_fit_range_p_cherenkov_sim_corrected*1000.0);
+            
+            delete error_fit_range_p_cherenkov_sim_org;
             delete error_fit_range_p_cherenkov_mc_same_path;
+            delete error_fit_range_p_cherenkov_sim_corrected;
+            
+            
             //            delete error_fit_range_p_cherenkov_data;
-            //            delete error_fit_range_p_cherenkov_sim_correction;
-            //            delete error_fit_range_p_cherenkov_data_correction;
+            //            delete error_fit_range_p_cherenkov_data_corrected;
             //            delete error_fit_range_p_cherenkov_data_copy;
-            //            delete error_fit_range_p_cherenkov_sim_copy;
+            //            delete error_fit_range_p_cherenkov_sim_org_copy;
             //            delete error_fit_range_p_cherenkov_bg_sim;
             //            delete error_fit_range_nph_sim;
             //            delete error_fit_range_p_nph_sim;
@@ -200,7 +203,6 @@ void proton_plots(
             //            delete error_fit_range_nph_data;
             //            delete error_fit_range_p_nph_data;
             //            delete error_fit_range_p_nph_good_data;
-            
             ///////////////////
             // Close files  ///
             ///////////////////
@@ -211,49 +213,53 @@ void proton_plots(
     //    for (Int_t e=0; e<=14; e++) {
     //
     //        TString ko = Form("_%d", e);
-    //        prt_canvasAdd("r_test_fit_range"+ko,800,400);
-    //        histo_distribution_error_fit_range_spr_p_cherenkov_sim[e]->Draw();
+    //        prt_canvasAdd("r_test_fit_range_org"+ko,800,400);
+    //        histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[e]->Draw();
+    //        prt_canvasAdd("r_test_fit_range_corrected"+ko,800,400);
+    //        histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[e]->Draw();
     //    }
 
-    
-    
-    
-    
-    
+    ///////////////////////////
+    // Error statistics     ///
+    ///////////////////////////
     for (Int_t e=0; e<=14; e++) {
-        histo_distribution_error_stat_spr_p_cherenkov_sim[e] = new TH1F(Form("histo_distribution_error_stat_spr_p_cherenkov_sim_%d",e),Form("histo_distribution_error_stat_spr_p_cherenkov_sim_%d; SPR [mrad];entries [#]",e), 100,6,14);
+        histo_distribution_error_stat_spr_p_cherenkov_sim_org[e] = new TH1F(Form("histo_distribution_error_stat_spr_p_cherenkov_sim_org_%d",e),Form("histo_distribution_error_stat_spr_p_cherenkov_sim_org_%d; SPR [mrad];entries [#]",e), 100,6,14);
+        histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[e] = new TH1F(Form("histo_distribution_error_stat_spr_p_cherenkov_sim_corrected_%d",e),Form("histo_distribution_error_stat_spr_p_cherenkov_sim_corrected_%d; SPR [mrad];entries [#]",e), 100,6,14);
     }
     Int_t counter_error_stat=0;
     for (int i=20; i<=150; i+=10) {
         prtangle= i;
         TString nid = Form("_%2.0d", i);
-        
         for (int j=0; j<=100; j+=1) {
-
             TString calc_error_stat_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%i_seed_%d_3lsph_proton_sim_spr.root", i, j);
             cout<<"sim path for error calc p = " <<calc_error_stat_sim_p_path<<endl;
             string path_calc_error_stat_sim_p = (string)calc_error_stat_sim_p_path;
             cout<<"exists_test(path_calc_error_stat_sim_p)" <<exists_test(path_calc_error_stat_sim_p)<<endl;
             if (!exists_test(path_calc_error_stat_sim_p)) continue;
             ffile_error_stat_sim_p = TFile::Open(calc_error_stat_sim_p_path,"read");
-            
-            error_stat_p_cherenkov_sim=(TH1F*)ffile_error_stat_sim_p->Get("fHist");
+            error_stat_p_cherenkov_sim_org=(TH1F*)ffile_error_stat_sim_p->Get("fHist");
+            error_stat_p_cherenkov_sim_corrected=(TH1F*)ffile_error_stat_sim_p->Get("fHist_correction");
             error_stat_p_cherenkov_mc_same_path=(TH1F*)ffile_error_stat_sim_p->Get("fHist_same_path");
             Double_t error_stat_cangle_MC_true =  error_stat_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_stat_p_cherenkov_mc_same_path->GetMaximumBin());
-            auto error_stat_resultPair= FitHisto_0( error_stat_p_cherenkov_sim , error_stat_cangle_MC_true, 0.06);
-            Double_t error_stat_cangle_error_stat_p_cherenkov_sim = error_stat_resultPair.first;
-            Double_t error_stat_spr_error_stat_p_cherenkov_sim = error_stat_resultPair.second;
-            cout<<"counter_error_stat = " <<counter_error_stat<<endl;
-            histo_distribution_error_stat_spr_p_cherenkov_sim[counter_error_stat]->Fill(error_stat_spr_error_stat_p_cherenkov_sim*1000.0);
+            auto error_stat_resultPair= FitHisto_0( error_stat_p_cherenkov_sim_org , error_stat_cangle_MC_true, 0.06);
+            Double_t error_stat_cangle_error_stat_p_cherenkov_sim_org = error_stat_resultPair.first;
+            Double_t error_stat_spr_error_stat_p_cherenkov_sim_org = error_stat_resultPair.second;
+            
+            auto error_stat_resultPair_corrected= FitHisto_0( error_stat_p_cherenkov_sim_corrected , error_stat_cangle_MC_true, 0.06);
+            Double_t error_stat_cangle_error_stat_p_cherenkov_sim_corrected = error_stat_resultPair_corrected.first;
+            Double_t error_stat_spr_error_stat_p_cherenkov_sim_corrected = error_stat_resultPair_corrected.second;
             
             
-            delete error_stat_p_cherenkov_sim;
+            histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter_error_stat]->Fill(error_stat_spr_error_stat_p_cherenkov_sim_org*1000.0);
+            histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter_error_stat]->Fill(error_stat_spr_error_stat_p_cherenkov_sim_corrected*1000.0);
+            
+            delete error_stat_p_cherenkov_sim_org;
             delete error_stat_p_cherenkov_mc_same_path;
+            delete error_stat_p_cherenkov_sim_corrected;
             //            delete error_stat_p_cherenkov_data;
-            //            delete error_stat_p_cherenkov_sim_correction;
-            //            delete error_stat_p_cherenkov_data_correction;
+            //            delete error_stat_p_cherenkov_data_corrected;
             //            delete error_stat_p_cherenkov_data_copy;
-            //            delete error_stat_p_cherenkov_sim_copy;
+            //            delete error_stat_p_cherenkov_sim_org_copy;
             //            delete error_stat_p_cherenkov_bg_sim;
             //            delete error_stat_nph_sim;
             //            delete error_stat_p_nph_sim;
@@ -273,19 +279,23 @@ void proton_plots(
     //    for (Int_t e=0; e<=14; e++) {
     //        TString ko = Form("_%d", e);
     //        prt_canvasAdd("r_test_stat"+ko,800,400);
-    //        histo_distribution_error_stat_spr_p_cherenkov_sim[e]->Draw();
+    //        histo_distribution_error_stat_spr_p_cherenkov_sim_org[e]->Draw();
     //    }
-
+    
+    ///////////////////////////
+    // Error Polar angle    ///
+    ///////////////////////////
     for (Int_t e=0; e<=14; e++) {
-        histo_distribution_error_polar_spr_p_cherenkov_sim[e] = new TH1F(Form("histo_distribution_error_polar_spr_p_cherenkov_sim_%d",e),Form("histo_distribution_error_polar_spr_p_cherenkov_sim_%d; SPR [mrad];entries [#]",e), 100,6,14);
+        histo_distribution_error_polar_spr_p_cherenkov_sim_org[e] = new TH1F(Form("histo_distribution_error_polar_spr_p_cherenkov_sim_org_%d",e),Form("histo_distribution_error_polar_spr_p_cherenkov_sim_org_%d; SPR [mrad];entries [#]",e), 100,6,14);
+        histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[e] = new TH1F(Form("histo_distribution_error_polar_spr_p_cherenkov_sim_corrected_%d",e),Form("histo_distribution_error_polar_spr_p_cherenkov_sim_corrected_%d; SPR [mrad];entries [#]",e), 100,6,14);
     }
-    Int_t counter_error=0;
+    Int_t counter_error_polar=0;
     for (int i=20; i<=150; i+=10) {
         prtangle= i;
         TString nid = Form("_%2.0d", i);
         
         for (int j=-9; j<=9; j+=1) {
-        //for (int j=-90; j<=90; j+=1) {
+            //for (int j=-90; j<=90; j+=1) {
             Double_t jj = (Float_t) i+j/10.0 ;
             TString jj_string = Form("_theta_%.1f", jj);
             TString calc_error_polar_sim_p_path = "/Users/ahmed/perforamnce/spr_data_sim/error_polar/spr_polar_error"+jj_string+"_3lsph_proton_sim_spr.root";
@@ -293,28 +303,34 @@ void proton_plots(
             //Double_t kk = (Float_t) i+j/100.0 ;
             //TString kk_string = Form("_theta_%.2f", kk);
             //TString calc_error_polar_sim_p_path = "/Users/ahmed/perforamnce/spr_data_sim/error_polar_more/spr_polar_error"+kk_string+"_3lsph_proton_sim_spr.root";
-
+            
             //cout<<"sim path for error calc p = " <<calc_error_polar_sim_p_path<<endl;
             string path_calc_error_polar_sim_p = (string)calc_error_polar_sim_p_path;
             cout<<"exists_test(path_calc_error_polar_sim_p)" <<exists_test(path_calc_error_polar_sim_p)<<endl;
             if (!exists_test(path_calc_error_polar_sim_p)) continue;
             ffile_error_polar_sim_p = TFile::Open(calc_error_polar_sim_p_path,"read");
-            error_polar_p_cherenkov_sim=(TH1F*)ffile_error_polar_sim_p->Get("fHist");
+            error_polar_p_cherenkov_sim_org=(TH1F*)ffile_error_polar_sim_p->Get("fHist");
+            error_polar_p_cherenkov_sim_corrected=(TH1F*)ffile_error_polar_sim_p->Get("fHist_correction");
             error_polar_p_cherenkov_mc_same_path=(TH1F*)ffile_error_polar_sim_p->Get("fHist_same_path");
             Double_t error_polar_cangle_MC_true =  error_polar_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_polar_p_cherenkov_mc_same_path->GetMaximumBin());
-            auto error_polar_resultPair= FitHisto_0( error_polar_p_cherenkov_sim , error_polar_cangle_MC_true, 0.06);
-            Double_t error_polar_cangle_error_polar_p_cherenkov_sim = error_polar_resultPair.first;
-            Double_t error_polar_spr_error_polar_p_cherenkov_sim = error_polar_resultPair.second;
-            cout<<"counter_error = " <<counter_error<<endl;
-            histo_distribution_error_polar_spr_p_cherenkov_sim[counter_error]->Fill(error_polar_spr_error_polar_p_cherenkov_sim*1000.0);
+            auto error_polar_resultPair= FitHisto_0( error_polar_p_cherenkov_sim_org , error_polar_cangle_MC_true, 0.06);
+            Double_t error_polar_cangle_error_polar_p_cherenkov_sim_org = error_polar_resultPair.first;
+            Double_t error_polar_spr_error_polar_p_cherenkov_sim_org = error_polar_resultPair.second;
             
-            delete error_polar_p_cherenkov_sim;
+            auto error_polar_resultPair_corrected= FitHisto_0( error_polar_p_cherenkov_sim_corrected , error_polar_cangle_MC_true, 0.06);
+            Double_t error_polar_cangle_error_polar_p_cherenkov_sim_corrected = error_polar_resultPair_corrected.first;
+            Double_t error_polar_spr_error_polar_p_cherenkov_sim_corrected = error_polar_resultPair_corrected.second;
+            
+            histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter_error_polar]->Fill(error_polar_spr_error_polar_p_cherenkov_sim_org*1000.0);
+            histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter_error_polar]->Fill(error_polar_spr_error_polar_p_cherenkov_sim_corrected*1000.0);
+            
+            delete error_polar_p_cherenkov_sim_org;
             delete error_polar_p_cherenkov_mc_same_path;
+            delete error_polar_p_cherenkov_sim_corrected;
             //            delete error_polar_p_cherenkov_data;
-            //            delete error_polar_p_cherenkov_sim_correction;
-            //            delete error_polar_p_cherenkov_data_correction;
+            //            delete error_polar_p_cherenkov_data_corrected;
             //            delete error_polar_p_cherenkov_data_copy;
-            //            delete error_polar_p_cherenkov_sim_copy;
+            //            delete error_polar_p_cherenkov_sim_org_copy;
             //            delete error_polar_p_cherenkov_bg_sim;
             //            delete error_polar_nph_sim;
             //            delete error_polar_p_nph_sim;
@@ -329,24 +345,26 @@ void proton_plots(
             ///////////////////
             delete ffile_error_polar_sim_p;
         }
-        ++counter_error;
+        ++counter_error_polar;
     }
     
     
     //        for (Int_t e=1; e<=14; e++) {
     //            TString ko = Form("_%d", e);
     //            prt_canvasAdd("r_test_polar"+ko,800,400);
-    //            histo_distribution_error_polar_spr_p_cherenkov_sim[e]->Draw();
+    //            histo_distribution_error_polar_spr_p_cherenkov_sim_org[e]->Draw();
     //        }
-
     
+    ///////////////////////////
+    // Analysis             ///
+    ///////////////////////////
     for (int i=20; i<=150; i+=10) {
         prtangle= i;
         TString nid = Form("_%2.0d", i);
         // proton
         TString cherenkov_data_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wtb_%d_sph_p_data_spr.root", i);
-        TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
-        //TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%i_seed_0_3lsph_proton_sim_spr.root", i);
+        //TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
+        TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%i_seed_99_3lsph_proton_sim_spr.root", i);
         // pi
         //TString cherenkov_data_path = Form("/u/aali/work/%d_sph_pi_data_spr.root", i);
         //TString cherenkov_sim_path = Form("/u/aali/work/reco_pi_bar_3lsph_grease_theta_%d_sim_spr.root", i);
@@ -366,20 +384,20 @@ void proton_plots(
         gROOT->ForceStyle(kTRUE);
         ffile_sim  = new TFile(cherenkov_sim_path, "READ");
         ffile_data  = new TFile(cherenkov_data_path, "READ");
-    
+        
         //////////////////////////
         // cherenkov histogram //
         //////////////////////////
-        p_cherenkov_sim=(TH1F*)ffile_sim->Get("fHist");
-        //p_cherenkov_sim->SetStats(0);
+        p_cherenkov_sim_org=(TH1F*)ffile_sim->Get("fHist");
+        //p_cherenkov_sim_org->SetStats(0);
         p_cherenkov_data=(TH1F*)ffile_data->Get("fHist");
         p_cherenkov_data->SetStats(0);//kFALSE
         p_cherenkov_data_copy=(TH1F*)ffile_data->Get("fHist_copy");
         p_cherenkov_sim_copy=(TH1F*)ffile_sim->Get("fHist_copy");
         p_cherenkov_mc_same_path=(TH1F*)ffile_sim->Get("fHist_same_path");
         p_cherenkov_bg_sim=(TH1F*)ffile_sim->Get("fHist_bg");
-        p_cherenkov_data_correction=(TH1F*)ffile_data->Get("fHist_correction");
-        p_cherenkov_sim_correction=(TH1F*)ffile_sim->Get("fHist_correction");
+        p_cherenkov_data_corrected=(TH1F*)ffile_data->Get("fHist_correction");
+        p_cherenkov_sim_corrected=(TH1F*)ffile_sim->Get("fHist_correction");
         ////////////////////////////
         // photon yield histogram //
         ////////////////////////////
@@ -426,7 +444,7 @@ void proton_plots(
         // TOF PID //
         /////////////
         tof_pid=(TH1F*)ffile_data->Get("hdelta_tof2tof1");
-
+        
         //TSpectrum *fSpect= new TSpectrum(10);
         //Int_t nfound = fSpect->Search(p_cherenkov_mc_same_path,1,"",0.9); //0.6
         //Double_t cangle_MC_true = fSpect->GetPositionX()[0];
@@ -439,15 +457,15 @@ void proton_plots(
             if (bool_part1_1) {
                 //gStyle->SetOptFit(0);
                 //gStyle->SetOptStat(0);
-                DiffNorm(p_cherenkov_sim, p_cherenkov_data);
-                HistoStyleMatch(p_cherenkov_sim, p_cherenkov_data);
+                DiffNorm(p_cherenkov_sim_org, p_cherenkov_data);
+                HistoStyleMatch(p_cherenkov_sim_org, p_cherenkov_data);
                 TLegend *legend_ch_match= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
                 legend_ch_match->SetHeader("Ambiguity distribution (proton data)","C");
                 prt_canvasAdd("r_ch_match"+nid,800,400);
-                p_cherenkov_sim->SetTitle(Form("Polar angle %3.1f", prtangle));
-                legend_ch_match->AddEntry(p_cherenkov_sim,"Ambiguity distribution sim","f");
+                p_cherenkov_sim_org->SetTitle(Form("Polar angle %3.1f", prtangle));
+                legend_ch_match->AddEntry(p_cherenkov_sim_org,"Ambiguity distribution sim","f");
                 legend_ch_match->AddEntry(p_cherenkov_data," Ambiguity distribution data ","f");
-                p_cherenkov_sim->Draw("hist");
+                p_cherenkov_sim_org->Draw("hist");
                 p_cherenkov_data->Draw("samehist");
                 legend_ch_match->Draw();
                 prt_canvasGet("r_ch_match"+nid)->Update();
@@ -468,29 +486,29 @@ void proton_plots(
                 prt_canvasGet("r_ch_match"+nid)->Update();
             }
             if(bool_part1_2) {
-                prt_canvasAdd("r_correction"+nid,800,400);
-                p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f (proton data)", prtangle));
-                HistoStyleMatch(p_cherenkov_data,p_cherenkov_data_correction);
-                p_cherenkov_data_correction->Draw();
+                prt_canvasAdd("r_corrected"+nid,800,400);
+                p_cherenkov_data_corrected->SetTitle(Form("Polar angle %3.1f (proton data)", prtangle));
+                HistoStyleMatch(p_cherenkov_data,p_cherenkov_data_corrected);
+                p_cherenkov_data_corrected->Draw();
                 p_cherenkov_data->Draw("same");
-                TLegend *legend_correction= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
+                TLegend *legend_corrected= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
                 
-                TF1 *fFit_p_cherenkov_data_correction = new TF1("fFit_p_cherenkov_data_correction","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
-                fFit_p_cherenkov_data_correction->SetLineColor(1);
-                Double_t cangle_cor =  p_cherenkov_data_correction->GetXaxis()->GetBinCenter(p_cherenkov_sim->GetMaximumBin());
+                TF1 *fFit_p_cherenkov_data_corrected = new TF1("fFit_p_cherenkov_data_corrected","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
+                fFit_p_cherenkov_data_corrected->SetLineColor(1);
+                Double_t cangle_cor =  p_cherenkov_data_corrected->GetXaxis()->GetBinCenter(p_cherenkov_sim_org->GetMaximumBin());
                 if(cangle_cor>0.85) cangle_cor=0.82;
-                fFit_p_cherenkov_data_correction->SetParameters(100,cangle_cor,0.010);
-                fFit_p_cherenkov_data_correction->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
-                fFit_p_cherenkov_data_correction->SetParLimits(0,0.1,1E6);
-                fFit_p_cherenkov_data_correction->SetParLimits(1,cangle_cor-0.04,cangle_cor+0.04);
-                fFit_p_cherenkov_data_correction->SetParLimits(2,0.005,0.014000);
-                p_cherenkov_data_correction->Fit("fFit_p_cherenkov_data_correction","M","",cangle_cor-0.06,cangle_cor+0.06);
+                fFit_p_cherenkov_data_corrected->SetParameters(100,cangle_cor,0.010);
+                fFit_p_cherenkov_data_corrected->SetParNames("p0","#theta_{c}","#sigma_{c}","p3","p4");
+                fFit_p_cherenkov_data_corrected->SetParLimits(0,0.1,1E6);
+                fFit_p_cherenkov_data_corrected->SetParLimits(1,cangle_cor-0.04,cangle_cor+0.04);
+                fFit_p_cherenkov_data_corrected->SetParLimits(2,0.005,0.014000);
+                p_cherenkov_data_corrected->Fit("fFit_p_cherenkov_data_corrected","M","",cangle_cor-0.06,cangle_cor+0.06);
                 
-                legend_correction->SetHeader("Ambiguity distribution (proton data)","C");
-                legend_correction->AddEntry(p_cherenkov_data,"Ambiguity distribution","f");
-                legend_correction->AddEntry(p_cherenkov_data_correction," Ambiguity distribution corrected ","f");
-                legend_correction->Draw();
-                prt_canvasGet("r_correction"+nid)->Update();
+                legend_corrected->SetHeader("Ambiguity distribution (proton data)","C");
+                legend_corrected->AddEntry(p_cherenkov_data,"Ambiguity distribution","f");
+                legend_corrected->AddEntry(p_cherenkov_data_corrected," Ambiguity distribution corrected ","f");
+                legend_corrected->Draw();
+                prt_canvasGet("r_corrected"+nid)->Update();
                 TLine *line_ch_p_v = new TLine(0,0,0,1000);
                 line_ch_p_v->SetX1(fAngleP);
                 line_ch_p_v->SetX2(fAngleP);
@@ -506,21 +524,21 @@ void proton_plots(
                 line_ch_pi_v->SetLineColor(kBlue);
                 line_ch_p_v->Draw();
                 line_ch_pi_v->Draw();
-                prt_canvasGet("r_correction"+nid)->Update();
+                prt_canvasGet("r_corrected"+nid)->Update();
             }
             if(bool_part1_3) {
-                DiffNorm(p_cherenkov_sim_correction, p_cherenkov_data_correction);
+                DiffNorm(p_cherenkov_sim_corrected, p_cherenkov_data_corrected);
                 prt_canvasAdd("r_corrected_match"+nid,800,400);
-                p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f (proton data)", prtangle));
-                HistoStyleMatch(p_cherenkov_sim_correction,p_cherenkov_data_correction);
-                p_cherenkov_data_correction->Draw();
-                p_cherenkov_sim_correction->Draw("same");
-                TLegend *legend_correction= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
+                p_cherenkov_data_corrected->SetTitle(Form("Polar angle %3.1f (proton data)", prtangle));
+                HistoStyleMatch(p_cherenkov_sim_corrected,p_cherenkov_data_corrected);
+                p_cherenkov_data_corrected->Draw();
+                p_cherenkov_sim_corrected->Draw("same");
+                TLegend *legend_corrected= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
                 
-                legend_correction->SetHeader("Ambiguity distribution corrected match )","C");
-                legend_correction->AddEntry(p_cherenkov_data_correction,"Ambiguity distribution (proton data corrected )","p");
-                legend_correction->AddEntry(p_cherenkov_sim_correction,"Ambiguity distribution (proton sim corrected )","f");
-                legend_correction->Draw();
+                legend_corrected->SetHeader("Ambiguity distribution corrected match )","C");
+                legend_corrected->AddEntry(p_cherenkov_data_corrected,"Ambiguity distribution (proton data corrected )","p");
+                legend_corrected->AddEntry(p_cherenkov_sim_corrected,"Ambiguity distribution (proton sim corrected )","f");
+                legend_corrected->Draw();
                 prt_canvasGet("r_corrected_match"+nid)->Update();
                 TLine *line_ch_p_v = new TLine(0,0,0,1000);
                 line_ch_p_v->SetX1(fAngleP);
@@ -548,22 +566,22 @@ void proton_plots(
             /////////////////////////////
             // cherenkov normalization /
             /////////////////////////////
-            TAxis *axis = p_cherenkov_sim_correction->GetXaxis();
+            TAxis *axis = p_cherenkov_sim_corrected->GetXaxis();
             double xmin = 0.6;
             double xmax = 0.74;
             if (i==90)xmin = 0.9;
             if (i==90)xmax = 1.0;
             int bmin = axis->FindBin(xmin);
             int bmax = axis->FindBin(xmax);
-            double integral = p_cherenkov_sim_correction->Integral(bmin,bmax);
-            TAxis *axis_data = p_cherenkov_data_correction->GetXaxis();
+            double integral = p_cherenkov_sim_corrected->Integral(bmin,bmax);
+            TAxis *axis_data = p_cherenkov_data_corrected->GetXaxis();
             double xmin_data = 0.6;
             double xmax_data = 0.74;
             if (i==90)xmin_data = 0.9;
             if (i==90)xmax_data = 1.0;
             int bmin_data = axis_data->FindBin(xmin_data);
             int bmax_data = axis_data->FindBin(xmax_data);
-            double integral_data = p_cherenkov_data_correction->Integral(bmin_data,bmax_data);
+            double integral_data = p_cherenkov_data_corrected->Integral(bmin_data,bmax_data);
             Double_t norm= integral/integral_data ;
             //std::cout<<"############  norm= "<< norm <<std::endl;
             p_cherenkov_data_copy->Scale(norm);
@@ -574,13 +592,13 @@ void proton_plots(
             ////////////////////
             // fit Cherenkove //
             ///////////////////
-            auto resultPair= FitHisto_m( p_cherenkov_data_correction , cangle_MC_true, 0.06);
-            Double_t cangle_data_correction = resultPair.first;
-            Double_t spr_data_correction = resultPair.second;
+            auto resultPair= FitHisto_m( p_cherenkov_data_corrected , cangle_MC_true, 0.06);
+            Double_t cangle_data_corrected = resultPair.first;
+            Double_t spr_data_corrected = resultPair.second;
             
-            resultPair= FitHisto_m( p_cherenkov_sim_correction , cangle_MC_true, 0.06);
-            Double_t cangle_sim_correction = resultPair.first;
-            Double_t spr_sim_correction = resultPair.second;
+            resultPair= FitHisto_m( p_cherenkov_sim_corrected , cangle_MC_true, 0.06);
+            Double_t cangle_sim_corrected = resultPair.first;
+            Double_t spr_sim_corrected = resultPair.second;
             
             resultPair= FitHisto_m( p_cherenkov_mc_same_path , cangle_MC_true, 0.06);
             Double_t cangle_sim_true = resultPair.first;
@@ -594,7 +612,7 @@ void proton_plots(
             Double_t cangle_data_copy = resultPair.first;
             Double_t spr_data_copy = resultPair.second;
             
-            resultPair= FitHisto_0( p_cherenkov_sim , cangle_MC_true, 0.06);
+            resultPair= FitHisto_0( p_cherenkov_sim_org , cangle_MC_true, 0.06);
             Double_t cangle_sim_org = resultPair.first;
             Double_t spr_sim_org = resultPair.second;
             
@@ -611,7 +629,7 @@ void proton_plots(
             //////////////////////////////
             // function histogram style///
             //////////////////////////////
-            HistoStyle(p_cherenkov_sim, p_cherenkov_data, p_cherenkov_data_sub, p_cherenkov_mc_same_path, p_cherenkov_bg_sim, nph_sim, p_nph_sim, p_nph_good_sim, p_nph_true_sim, p_diff_time_sim, p_diff_time_data, p_diff_time_data_sub, p_diff_time_mctruth, p_diff_time_bg_sim, p_cherenkov_data_copy, p_photon_time_sim, p_photon_time_data, p_photon_time_sim_calc, p_photon_time_data_calc, nph_data, p_nph_data, p_nph_good_data, dac_hits_data, dac_hits_sys_cus_data);
+            HistoStyle(p_cherenkov_sim_org, p_cherenkov_data, p_cherenkov_data_sub, p_cherenkov_mc_same_path, p_cherenkov_bg_sim, nph_sim, p_nph_sim, p_nph_good_sim, p_nph_true_sim, p_diff_time_sim, p_diff_time_data, p_diff_time_data_sub, p_diff_time_mctruth, p_diff_time_bg_sim, p_cherenkov_data_copy, p_photon_time_sim, p_photon_time_data, p_photon_time_sim_calc, p_photon_time_data_calc, nph_data, p_nph_data, p_nph_good_data, dac_hits_data, dac_hits_sys_cus_data);
             ////////////////////////////
             // fit true time diff path //
             /////////////////////////////
@@ -719,14 +737,14 @@ void proton_plots(
             
             x[counter]=i;
             
-
+            
             if (false){
                 prt_canvasAdd("r_polar_error"+nid,800,400);
-                histo_distribution_error_polar_spr_p_cherenkov_sim[counter]->SetTitle(Form("SPR Error Polar angle %3.1f", prtangle));
-                histo_distribution_error_polar_spr_p_cherenkov_sim[counter]->Draw();
-                Int_t entries_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim[counter]->GetEntries();
-                Double_t mean_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim[counter]->GetMean();
-                Double_t RMS_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim[counter]->GetRMS();
+                histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR Error Polar angle %3.1f", prtangle));
+                histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->Draw();
+                Int_t entries_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->GetEntries();
+                Double_t mean_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->GetMean();
+                Double_t RMS_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->GetRMS();
                 TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
                 pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
                 pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_polar_distribution));
@@ -737,11 +755,56 @@ void proton_plots(
             
             if (false){
                 prt_canvasAdd("r_stat_error"+nid,800,400);
-                histo_distribution_error_stat_spr_p_cherenkov_sim[counter]->SetTitle(Form("SPR Error stat angle %3.1f", prtangle));
-                histo_distribution_error_stat_spr_p_cherenkov_sim[counter]->Draw();
-                Int_t entries_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim[counter]->GetEntries();
-                Double_t mean_error_stat_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim[counter]->GetMean();
-                Double_t RMS_error_stat_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim[counter]->GetRMS();
+                histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR Error stat angle %3.1f", prtangle));
+                histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->Draw();
+                Int_t entries_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->GetEntries();
+                Double_t mean_error_stat_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->GetMean();
+                Double_t RMS_error_stat_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->GetRMS();
+                TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
+                pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
+                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_stat_distribution));
+                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", RMS_error_stat_distribution));
+                pt_data_corrected->Draw();
+                prt_canvasGet("r_stat_error"+nid)->Update();
+            }
+            
+            if (false){
+                prt_canvasAdd("r_fit_range_error"+nid,800,400);
+                histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR Error fit_range angle %3.1f", prtangle));
+                histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->Draw();
+                Int_t entries_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->GetEntries();
+                Double_t mean_error_fit_range_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->GetMean();
+                Double_t RMS_error_fit_range_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->GetRMS();
+                TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
+                pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
+                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_fit_range_distribution));
+                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", RMS_error_fit_range_distribution));
+                pt_data_corrected->Draw();
+                prt_canvasGet("r_fit_range_error"+nid)->Update();
+            }
+            ////////////////////////////
+            if (true){
+                prt_canvasAdd("r_polar_error"+nid,800,400);
+                histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR Error Polar angle %3.1f", prtangle));
+                histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->Draw();
+                Int_t entries_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetEntries();
+                Double_t mean_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetMean();
+                Double_t RMS_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
+                TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
+                pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
+                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_polar_distribution));
+                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", RMS_error_polar_distribution));
+                pt_data_corrected->Draw();
+                prt_canvasGet("r_polar_error"+nid)->Update();
+            }
+            
+            if (true){
+                prt_canvasAdd("r_stat_error"+nid,800,400);
+                histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR Error stat angle %3.1f", prtangle));
+                histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->Draw();
+                Int_t entries_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->GetEntries();
+                Double_t mean_error_stat_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->GetMean();
+                Double_t RMS_error_stat_distribution = histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
                 TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
                 pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
                 pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_stat_distribution));
@@ -752,11 +815,11 @@ void proton_plots(
             
             if (true){
                 prt_canvasAdd("r_fit_range_error"+nid,800,400);
-                histo_distribution_error_fit_range_spr_p_cherenkov_sim[counter]->SetTitle(Form("SPR Error fit_range angle %3.1f", prtangle));
-                histo_distribution_error_fit_range_spr_p_cherenkov_sim[counter]->Draw();
-                Int_t entries_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim[counter]->GetEntries();
-                Double_t mean_error_fit_range_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim[counter]->GetMean();
-                Double_t RMS_error_fit_range_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim[counter]->GetRMS();
+                histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR Error fit_range angle %3.1f", prtangle));
+                histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->Draw();
+                Int_t entries_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->GetEntries();
+                Double_t mean_error_fit_range_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->GetMean();
+                Double_t RMS_error_fit_range_distribution = histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
                 TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
                 pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
                 pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_fit_range_distribution));
@@ -765,28 +828,33 @@ void proton_plots(
                 prt_canvasGet("r_fit_range_error"+nid)->Update();
             }
             
-
             
-            Double_t error_polar_spr_sim_org= histo_distribution_error_polar_spr_p_cherenkov_sim[counter]->GetRMS();
-            Double_t error_stat_spr_sim_org= histo_distribution_error_stat_spr_p_cherenkov_sim[counter]->GetRMS();
-            Double_t error_fit_range_spr_sim_org= histo_distribution_error_fit_range_spr_p_cherenkov_sim[counter]->GetRMS();
-
+            Double_t error_polar_spr_sim_org= histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->GetRMS();
+            Double_t error_stat_spr_sim_org= histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->GetRMS();
+            Double_t error_fit_range_spr_sim_org= histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->GetRMS();
+            /////////
+            Double_t error_polar_spr_sim_corrected= histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
+            Double_t error_stat_spr_sim_corrected= histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
+            Double_t error_fit_range_spr_sim_corrected= histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
+            
             
             y_spr_sim_org[counter]=spr_sim_org*1000.0;
             error_all_y_spr_sim_org[counter]= sqrt (error_polar_spr_sim_org*error_polar_spr_sim_org + error_stat_spr_sim_org * error_stat_spr_sim_org + error_fit_range_spr_sim_org * error_fit_range_spr_sim_org ) ;
-            
+            /////////
+            y_spr_sim_corrected[counter]=spr_sim_corrected*1000.0;
+            error_all_y_spr_sim_corrected[counter]= sqrt (error_polar_spr_sim_corrected*error_polar_spr_sim_corrected + error_stat_spr_sim_corrected * error_stat_spr_sim_corrected + error_fit_range_spr_sim_corrected * error_fit_range_spr_sim_corrected ) ;
+            /////////
             
             y_spr_sim_true[counter]=spr_sim_true*1000.0;
-            y_spr_sim_correction[counter]=spr_sim_correction*1000.0;
             y_spr_data_org[counter]=spr_data_org*1000.0;
             y_spr_data_sub[counter]=spr_data_sub*1000.0;
-            y_spr_data_correction[counter]=spr_data_correction*1000.0;
+            y_spr_data_corrected[counter]=spr_data_corrected*1000.0;
             y_cangle_sim_org[counter]=cangle_sim_org;
             y_cangle_sim_org_true[counter]=cangle_sim_true;
-            y_cangle_sim_org_correction[counter]=cangle_sim_correction;
+            y_cangle_sim_corrected[counter]=cangle_sim_corrected;
             y_cangle_data_org[counter]=cangle_data_org;
             y_cangle_data_sub[counter]=cangle_data_sub;
-            y_cangle_data_correction[counter]=cangle_data_correction;
+            y_cangle_data_corrected[counter]=cangle_data_corrected;
             y_diff_true[counter]=sigma_p_diff_time_mctruth*5;
             y_diff_data[counter]=sigma_p_diff_time_data*5;
             y_diff_sim[counter]=sigma_p_diff_time_sim*5;
@@ -838,7 +906,7 @@ void proton_plots(
                 y_yield_p_nph_data_error[counter]=p_nph_data->GetRMS();
                 y_yield_p_nph_good_data_error[counter]=p_nph_good_data->GetRMS();
                 
-                y_spr_data_correction_error[counter]=p_cherenkov_data_correction->GetRMSError();
+                y_spr_data_corrected_error[counter]=p_cherenkov_data_corrected->GetRMSError();
             }
             counter++;
             
@@ -884,7 +952,7 @@ void proton_plots(
             //hs6->Add(dac_hits_data);
             //hs6->Add(dac_hits_sys_cus_data);
             hs7->Add(p_cherenkov_bg_sim);
-            hs7->Add(p_cherenkov_sim);
+            hs7->Add(p_cherenkov_sim_org);
             hs7->Add(p_cherenkov_mc_same_path);
             hs8->Add(histo_photon_ambiguity_wo_data);
             hs8->Add(histo_photon_ambiguity_wt_data);
@@ -905,25 +973,25 @@ void proton_plots(
                 gStyle->SetOptStat(0);
                 
                 prt_canvasAdd("r_ch_fit_data"+nid,800,400);
-                p_cherenkov_data_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
-                p_cherenkov_data_correction->Draw();
+                p_cherenkov_data_corrected->SetTitle(Form("Polar angle %3.1f", prtangle));
+                p_cherenkov_data_corrected->Draw();
                 
-                Double_t mean_p_cherenkov_data_correction = cangle_data_correction;
-                Double_t sigma_p_cherenkov_data_correction = spr_data_correction* 1000;
+                Double_t mean_p_cherenkov_data_corrected = cangle_data_corrected;
+                Double_t sigma_p_cherenkov_data_corrected = spr_data_corrected* 1000;
                 TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
-                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_p_cherenkov_data_correction));
-                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", sigma_p_cherenkov_data_correction));
+                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_p_cherenkov_data_corrected));
+                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", sigma_p_cherenkov_data_corrected));
                 pt_data_corrected->Draw();
                 prt_canvasGet("r_ch_fit_data"+nid)->Update();
                 
                 prt_canvasAdd("r_ch_fit_sim"+nid,800,400);
-                p_cherenkov_sim_correction->SetTitle(Form("Polar angle %3.1f", prtangle));
-                p_cherenkov_sim_correction->Draw();
-                Double_t mean_p_cherenkov_sim_correction = cangle_sim_correction;
-                Double_t sigma_p_cherenkov_sim_correction = spr_sim_correction* 1000;
+                p_cherenkov_sim_corrected->SetTitle(Form("Polar angle %3.1f", prtangle));
+                p_cherenkov_sim_corrected->Draw();
+                Double_t mean_p_cherenkov_sim_corrected = cangle_sim_corrected;
+                Double_t sigma_p_cherenkov_sim_corrected = spr_sim_corrected* 1000;
                 TPaveText *pt_sim_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
-                pt_sim_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_p_cherenkov_sim_correction));
-                pt_sim_corrected->AddText(Form("#sigma =  %1.3f [mrad]", sigma_p_cherenkov_sim_correction));
+                pt_sim_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_p_cherenkov_sim_corrected));
+                pt_sim_corrected->AddText(Form("#sigma =  %1.3f [mrad]", sigma_p_cherenkov_sim_corrected));
                 pt_sim_corrected->Draw();
                 prt_canvasGet("r_ch_fit_sim"+nid)->Update();
             }
@@ -992,8 +1060,8 @@ void proton_plots(
                 TLegend *legend_signal= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
                 legend_signal->SetHeader("cherenkov angle (proton sim)","C");
                 prt_canvasAdd("r_mctruth"+nid,800,400);
-                p_cherenkov_sim->SetTitle(Form("Polar angle %3.1f", prtangle));
-                legend_signal->AddEntry(p_cherenkov_sim,"Ambiguity distribution","f");
+                p_cherenkov_sim_org->SetTitle(Form("Polar angle %3.1f", prtangle));
+                legend_signal->AddEntry(p_cherenkov_sim_org,"Ambiguity distribution","f");
                 legend_signal->AddEntry(p_cherenkov_mc_same_path," true path inside the prism ","f");
                 legend_signal->AddEntry(p_cherenkov_bg_sim," combinatorial background ","f");
                 hs7->SetTitle(Form("Polar angle %3.1f", prtangle));
@@ -1243,9 +1311,11 @@ void proton_plots(
         
         graph_spr_data_sub = new TGraph(n,x,y_spr_data_sub);
         graph_spr_sim_true = new TGraph(n,x,y_spr_sim_true);
-        graph_spr_data_correction = new TGraph(n,x,y_spr_data_correction);
-        graph_spr_sim_correction = new TGraph(n,x,y_spr_sim_correction);
-        graph_spr_data_org = new TGraph(n,x,y_spr_data_org);
+        //graph_spr_data_corrected = new TGraph(n,x,y_spr_data_corrected);
+        //graph_spr_data_org = new TGraph(n,x,y_spr_data_org);
+        
+        
+
         
         graph_spr_data_cuts = new TGraph(n,x,y_spr_data_cuts);
         graph_spr_sim_cuts = new TGraph(n,x,y_spr_sim_cuts);
@@ -1265,8 +1335,8 @@ void proton_plots(
         graph_cangle_data_sub = new TGraph(n,x,y_cangle_data_sub);
         graph_cangle_sim = new TGraph(n,x,y_cangle_sim_org);
         graph_cangle_sim_true = new TGraph(n,x,y_cangle_sim_org_true);
-        graph_cangle_data_correction = new TGraph(n,x,y_cangle_data_correction);
-        graph_cangle_sim_correction = new TGraph(n,x,y_cangle_sim_org_correction);
+        graph_cangle_data_corrected = new TGraph(n,x,y_cangle_data_corrected);
+        graph_cangle_sim_corrected = new TGraph(n,x,y_cangle_sim_corrected);
         graph_cangle_data_org = new TGraph(n,x,y_cangle_data_org);
         
         
@@ -1277,8 +1347,13 @@ void proton_plots(
         Double_t ex[dd] = {1,1,1,1,1,1,1,1,1,1};
         Double_t ey[dd] = {.8,.7,.6,.5,.4,.4,.5,.6,.7,.8};
         
-        TGraphErrors *graph_spr_sim = new TGraphErrors(n,x,y_spr_sim_org,ex,error_all_y_spr_sim_org);
-        //TGraphErrors *graph_spr_sim = new TGraphErrors(n,x,y_spr_sim_org, 0, 0);
+        TGraphErrors *graph_spr_sim_org = new TGraphErrors(n,x,y_spr_sim_org,ex,error_all_y_spr_sim_org);
+        TGraphErrors *graph_spr_data_org = new TGraphErrors(n,x,y_spr_data_org,ex,error_all_y_spr_sim_org);
+        
+        TGraphErrors *graph_spr_sim_corrected = new TGraphErrors(n,x,y_spr_sim_corrected,ex,error_all_y_spr_sim_corrected);
+        TGraphErrors *graph_spr_data_corrected = new TGraphErrors(n,x,y_spr_data_corrected,ex,error_all_y_spr_sim_corrected);
+        
+        //TGraphErrors *graph_spr_sim_org = new TGraphErrors(n,x,y_spr_sim_org, 0, 0);
         
         //        TGraphErrors *graph_yield_DIRC_wo_cuts_sim = new TGraphErrors(n,x,y_yield_nph_sim,0, y_yield_nph_sim_error);
         //        TGraphErrors *graph_yield_DIRC_wt_cuts_sim = new TGraphErrors(n,x,y_yield_p_nph_sim,0, y_yield_p_nph_sim_error);
@@ -1296,13 +1371,13 @@ void proton_plots(
         graph_yield_DIRC_wt_cuts_data = new TGraph(n,x,y_yield_p_nph_data);
         graph_yield_DIRC_wtc_cuts_data = new TGraph(n,x,y_yield_p_nph_good_data);
         
-        //TGraphErrors *graph_spr_data_correction = new TGraphErrors(n,x,y_spr_data_correction,0,y_spr_data_correction_error);
+        //TGraphErrors *graph_spr_data_corrected = new TGraphErrors(n,x,y_spr_data_corrected,0,y_spr_data_corrected_error);
         
-        graph_spr_sim->SetLineColor(1);
-        graph_spr_sim->SetLineWidth(1);
-        graph_spr_sim->SetMarkerColor(1);
-        graph_spr_sim->SetMarkerStyle(21);
-        graph_spr_sim->SetLineStyle(1);
+        graph_spr_sim_org->SetLineColor(1);
+        graph_spr_sim_org->SetLineWidth(1);
+        graph_spr_sim_org->SetMarkerColor(1);
+        graph_spr_sim_org->SetMarkerStyle(21);
+        graph_spr_sim_org->SetLineStyle(1);
         
         graph_spr_data_sub->SetLineColor(2);
         graph_spr_data_sub->SetLineWidth(1);
@@ -1338,17 +1413,17 @@ void proton_plots(
         graph_spr_sim_true_cuts->SetMarkerStyle(21);
         graph_spr_sim_true_cuts->SetLineStyle(1);
         
-        graph_spr_data_correction->SetLineColor(kBlack);
-        graph_spr_data_correction->SetLineWidth(1);
-        graph_spr_data_correction->SetMarkerColor(kBlack);
-        graph_spr_data_correction->SetMarkerStyle(21);
-        graph_spr_data_correction->SetLineStyle(1);
+        graph_spr_data_corrected->SetLineColor(kBlack);
+        graph_spr_data_corrected->SetLineWidth(1);
+        graph_spr_data_corrected->SetMarkerColor(kBlack);
+        graph_spr_data_corrected->SetMarkerStyle(21);
+        graph_spr_data_corrected->SetLineStyle(1);
         
-        graph_spr_sim_correction->SetLineColor(kGreen);
-        graph_spr_sim_correction->SetLineWidth(1);
-        graph_spr_sim_correction->SetMarkerColor(kGreen);
-        graph_spr_sim_correction->SetMarkerStyle(21);
-        graph_spr_sim_correction->SetLineStyle(1);
+        graph_spr_sim_corrected->SetLineColor(kGreen);
+        graph_spr_sim_corrected->SetLineWidth(1);
+        graph_spr_sim_corrected->SetMarkerColor(kGreen);
+        graph_spr_sim_corrected->SetMarkerStyle(21);
+        graph_spr_sim_corrected->SetLineStyle(1);
         
         graph_spr_data_org->SetLineColor(kRed);
         graph_spr_data_org->SetLineWidth(1);
@@ -1392,17 +1467,17 @@ void proton_plots(
         graph_cangle_data_sub->SetMarkerColor(1);
         graph_cangle_data_sub->SetMarkerStyle(21);
         
-        graph_cangle_data_correction->SetLineColor(kBlack);
-        graph_cangle_data_correction->SetLineWidth(1);
-        graph_cangle_data_correction->SetMarkerColor(kBlack);
-        graph_cangle_data_correction->SetMarkerStyle(21);
-        graph_cangle_data_correction->SetLineStyle(1);
+        graph_cangle_data_corrected->SetLineColor(kBlack);
+        graph_cangle_data_corrected->SetLineWidth(1);
+        graph_cangle_data_corrected->SetMarkerColor(kBlack);
+        graph_cangle_data_corrected->SetMarkerStyle(21);
+        graph_cangle_data_corrected->SetLineStyle(1);
         
-        graph_cangle_sim_correction->SetLineColor(kGreen);
-        graph_cangle_sim_correction->SetLineWidth(1);
-        graph_cangle_sim_correction->SetMarkerColor(kGreen);
-        graph_cangle_sim_correction->SetMarkerStyle(21);
-        graph_cangle_sim_correction->SetLineStyle(1);
+        graph_cangle_sim_corrected->SetLineColor(kGreen);
+        graph_cangle_sim_corrected->SetLineWidth(1);
+        graph_cangle_sim_corrected->SetMarkerColor(kGreen);
+        graph_cangle_sim_corrected->SetMarkerStyle(21);
+        graph_cangle_sim_corrected->SetLineStyle(1);
         
         graph_cangle_data_org->SetLineColor(kRed);
         graph_cangle_data_org->SetLineWidth(1);
@@ -1472,7 +1547,7 @@ void proton_plots(
             mg_diff_mean->Add(graph_diff_data_mean);
             mg_diff_mean->Add(graph_diff_sim_mean);
             mg_diff_mean->Add(graph_diff_true_mean);
-            mg_diff_mean->SetTitle("time difference shift (should be before applaying any correction on hit time); #theta [degree]; t_{calc}-t_{measured} shift [ns]");
+            mg_diff_mean->SetTitle("time difference shift (should be before applaying any corrected on hit time); #theta [degree]; t_{calc}-t_{measured} shift [ns]");
             mg_diff_mean->Draw("APL");
             leg_diff_mean->Draw();
         }
@@ -1516,18 +1591,18 @@ void proton_plots(
             prt_canvasAdd("r_graph_cangle",800,400);
             TLegend *leg_cangle_data_sub = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_cangle_data_sub->SetHeader("(proton #theta_{c} data)","C");
-            leg_cangle_data_sub->AddEntry(graph_cangle_data_org, "Data befor correction", "lp");
+            leg_cangle_data_sub->AddEntry(graph_cangle_data_org, "Data befor corrected", "lp");
             //leg_cangle_data_sub->AddEntry(graph_cangle_data_sub, "Data - BG", "lp");
             //leg_cangle_data_sub->AddEntry(graph_cangle_sim, "Sim", "lp");
             //leg_cangle_data_sub->AddEntry(graph_cangle_sim_true, "Sim true inside prism", "lp");
-            leg_cangle_data_sub->AddEntry(graph_cangle_data_correction, "Data after correction", "lp");
+            leg_cangle_data_sub->AddEntry(graph_cangle_data_corrected, "Data after corrected", "lp");
             
             TMultiGraph *mg_cangle_data_sub = new TMultiGraph();
             //mg_cangle_data_sub->Add(graph_cangle_data_sub);
             mg_cangle_data_sub->Add(graph_cangle_data_org);
             //mg_cangle_data_sub->Add(graph_cangle_sim);
             //mg_cangle_data_sub->Add(graph_cangle_sim_true);
-            mg_cangle_data_sub->Add(graph_cangle_data_correction);
+            mg_cangle_data_sub->Add(graph_cangle_data_corrected);
             
             mg_cangle_data_sub->SetTitle("reco cherenkov angle ; #theta [degree]; #theta_{C} [rad]");
             mg_cangle_data_sub->Draw("APL");
@@ -1557,43 +1632,43 @@ void proton_plots(
         if(true){
             graph_spr_data_org->SetLineColor(kBlack);
             graph_spr_data_org->SetMarkerColor(kBlack);
-            graph_spr_sim->SetLineColor(kRed);
-            graph_spr_sim->SetMarkerColor(kRed);
+            graph_spr_sim_org->SetLineColor(kRed);
+            graph_spr_sim_org->SetMarkerColor(kRed);
             
             graph_spr_data_sub->SetLineColor(kBlue);
             graph_spr_data_sub->SetMarkerColor(kBlue);
             graph_spr_sim_true->SetLineColor(kGreen);
             graph_spr_sim_true->SetMarkerColor(kGreen);
             
-            graph_spr_data_correction->SetLineColor(kMagenta);
-            graph_spr_data_correction->SetMarkerColor(kMagenta);
-            graph_spr_sim_correction->SetLineColor(kCyan);
-            graph_spr_sim_correction->SetMarkerColor(kCyan);
+            graph_spr_data_corrected->SetLineColor(kMagenta);
+            graph_spr_data_corrected->SetMarkerColor(kMagenta);
+            graph_spr_sim_corrected->SetLineColor(kCyan);
+            graph_spr_sim_corrected->SetMarkerColor(kCyan);
             
             TMultiGraph *mg_spr_1 = new TMultiGraph();
             TMultiGraph *mg_spr_2 = new TMultiGraph();
             TMultiGraph *mg_spr_3 = new TMultiGraph();
             
             mg_spr_1->Add(graph_spr_data_org);
-            mg_spr_1->Add(graph_spr_sim);
+            mg_spr_1->Add(graph_spr_sim_org);
             TLegend *leg_spr1 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_spr1->SetHeader("photon spr (proton)","C");
             leg_spr1->AddEntry(graph_spr_data_org, "Data without corrections ", "lp");
-            leg_spr1->AddEntry(graph_spr_sim, "Sim without corrections", "lp");
+            leg_spr1->AddEntry(graph_spr_sim_org, "Sim without corrections", "lp");
             
             mg_spr_2->Add(graph_spr_data_org);
-            mg_spr_2->Add(graph_spr_data_correction);
+            mg_spr_2->Add(graph_spr_data_corrected);
             TLegend *leg_spr2 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_spr2->SetHeader("photon spr (proton)","C");
             leg_spr2->AddEntry(graph_spr_data_org, "Data without corrections ", "lp");
-            leg_spr2->AddEntry(graph_spr_data_correction, "Data with corrections", "lp");
+            leg_spr2->AddEntry(graph_spr_data_corrected, "Data with corrections", "lp");
             
-            mg_spr_3->Add(graph_spr_data_correction);
-            mg_spr_3->Add(graph_spr_sim_correction);
+            mg_spr_3->Add(graph_spr_data_corrected);
+            mg_spr_3->Add(graph_spr_sim_corrected);
             TLegend *leg_spr3 = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
             leg_spr3->SetHeader("photon spr (proton)","C");
-            leg_spr3->AddEntry(graph_spr_data_correction, "Data with corrections ", "lp");
-            leg_spr3->AddEntry(graph_spr_sim_correction, "Sim with corrections", "lp");
+            leg_spr3->AddEntry(graph_spr_data_corrected, "Data with corrections ", "lp");
+            leg_spr3->AddEntry(graph_spr_sim_corrected, "Sim with corrections", "lp");
             
             prt_canvasAdd("r_spr_1",800,400);
             graph_spr_data_org->Draw();
@@ -1753,10 +1828,10 @@ void proton_plots(
     
     
     // histo
-    delete p_cherenkov_sim;
+    delete p_cherenkov_sim_org;
     delete p_cherenkov_data;
-    delete p_cherenkov_sim_correction;
-    delete p_cherenkov_data_correction;
+    delete p_cherenkov_sim_corrected;
+    delete p_cherenkov_data_corrected;
     delete p_cherenkov_data_copy;
     delete p_cherenkov_sim_copy;
     delete p_cherenkov_mc_same_path;
@@ -1778,20 +1853,13 @@ void proton_plots(
     delete p_photon_time_data_calc;
     
     
-    //    for (Int_t e=0; e<=14; e++) {
-    //        delete histo_distribution_error_polar_spr_p_cherenkov_sim[e];
-    //    }
-    
-    
-    
-    
     /*
      //graphs
-     delete graph_spr_sim;
+     delete graph_spr_sim_org;
      delete graph_spr_data_sub;
      delete graph_spr_sim_true;
-     delete graph_spr_data_correction;
-     delete graph_spr_sim_correction;
+     delete graph_spr_data_corrected;
+     delete graph_spr_sim_corrected;
      delete graph_spr_data_org;
      delete graph_spr_data_cuts;
      delete graph_spr_sim_cuts;
@@ -1806,8 +1874,8 @@ void proton_plots(
      delete graph_diff_true_sim;
      delete graph_cangle_sim;
      delete graph_cangle_sim_true;
-     delete graph_cangle_data_correction;
-     delete graph_cangle_sim_correction;
+     delete graph_cangle_data_corrected;
+     delete graph_cangle_sim_corrected;
      delete graph_cangle_data_org;
      delete graph_yield_DIRC_wo_cuts_sim;
      delete graph_yield_DIRC_wt_cuts_sim;
@@ -1822,9 +1890,6 @@ void proton_plots(
      delete calc_e_tof1tof2_distance;
      */
     
-    
-    //ffile_error_polar_sim_p.Close();
-    //ffile_error_polar_sim_pi.Close();
     ffile_sim->Close();
     ffile_data->Close();
     
@@ -1832,8 +1897,6 @@ void proton_plots(
     std::cout<<"############ P cherenkov angle= "<< fAngleP <<std::endl;
     std::cout<<"############ Pi cherenkov angle= "<< fAnglePi <<std::endl;
     std::cout<<"############"<< " Macro End Succsessfully " <<std::endl;
-    
-    
 }
 
 
@@ -1850,18 +1913,18 @@ bool exists_test (const std::string& name) {
 ///////////////////////////////
 // histo style calculation ////
 ///////////////////////////////
-void HistoStyle(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_sub, TH1F *p_cherenkov_mc_same_path, TH1F *p_cherenkov_bg_sim, TH1F *nph_sim, TH1F *p_nph_sim,TH1F *p_nph_good_sim, TH1F *p_nph_true_sim, TH1F *p_diff_time_sim, TH1F*p_diff_time_data, TH1F*p_diff_time_data_sub, TH1F*p_diff_time_mctruth, TH1F* p_diff_time_bg_sim, TH1F *p_cherenkov_data_copy, TH1F *p_photon_time_sim, TH1F *p_photon_time_data, TH1F *p_photon_time_sim_calc, TH1F *p_photon_time_data_calc, TH1F *nph_data, TH1F *p_nph_data, TH1F *p_nph_good_data, TH1F *dac_hits_data, TH1F *dac_hits_sys_cus_data) {
-    p_cherenkov_sim->SetName("MC signal");
-    p_cherenkov_sim->SetLineColor(12);
-    p_cherenkov_sim->SetLineStyle(1);
-    p_cherenkov_sim->GetXaxis()->SetTitle("#theta_{C} [rad]");
-    p_cherenkov_sim->GetYaxis()->SetTitle("entries [#]");
-    p_cherenkov_sim->GetXaxis()->SetTitleSize(0.05);
-    p_cherenkov_sim->GetYaxis()->SetTitleSize(0.05);
-    p_cherenkov_sim->GetXaxis()->SetTitleOffset(0.9);
-    p_cherenkov_sim->GetYaxis()->SetTitleOffset(1.0);
-    p_cherenkov_sim->SetFillColor(12);
-    p_cherenkov_sim->SetFillStyle(3003);
+void HistoStyle(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data, TH1F *p_cherenkov_data_sub, TH1F *p_cherenkov_mc_same_path, TH1F *p_cherenkov_bg_sim, TH1F *nph_sim, TH1F *p_nph_sim,TH1F *p_nph_good_sim, TH1F *p_nph_true_sim, TH1F *p_diff_time_sim, TH1F*p_diff_time_data, TH1F*p_diff_time_data_sub, TH1F*p_diff_time_mctruth, TH1F* p_diff_time_bg_sim, TH1F *p_cherenkov_data_copy, TH1F *p_photon_time_sim, TH1F *p_photon_time_data, TH1F *p_photon_time_sim_calc, TH1F *p_photon_time_data_calc, TH1F *nph_data, TH1F *p_nph_data, TH1F *p_nph_good_data, TH1F *dac_hits_data, TH1F *dac_hits_sys_cus_data) {
+    p_cherenkov_sim_org->SetName("MC signal");
+    p_cherenkov_sim_org->SetLineColor(12);
+    p_cherenkov_sim_org->SetLineStyle(1);
+    p_cherenkov_sim_org->GetXaxis()->SetTitle("#theta_{C} [rad]");
+    p_cherenkov_sim_org->GetYaxis()->SetTitle("entries [#]");
+    p_cherenkov_sim_org->GetXaxis()->SetTitleSize(0.05);
+    p_cherenkov_sim_org->GetYaxis()->SetTitleSize(0.05);
+    p_cherenkov_sim_org->GetXaxis()->SetTitleOffset(0.9);
+    p_cherenkov_sim_org->GetYaxis()->SetTitleOffset(1.0);
+    p_cherenkov_sim_org->SetFillColor(12);
+    p_cherenkov_sim_org->SetFillStyle(3003);
     
     p_cherenkov_data->SetLineColor(kBlue);
     p_cherenkov_data->SetLineStyle(1);
@@ -2206,18 +2269,18 @@ void DiffNorm(TH1F *p_diff_time_sim, TH1F *p_diff_time_data) {
     //
 }
 
-void HistoStyleMatch(TH1F *p_cherenkov_sim, TH1F *p_cherenkov_data) {
-    p_cherenkov_sim->SetName("MC signal");
-    p_cherenkov_sim->SetLineColor(kMagenta);
-    p_cherenkov_sim->SetLineStyle(1);
-    p_cherenkov_sim->GetXaxis()->SetTitle("#theta_{C} [rad]");
-    p_cherenkov_sim->GetYaxis()->SetTitle("entries [#]");
-    p_cherenkov_sim->GetXaxis()->SetTitleSize(0.05);
-    p_cherenkov_sim->GetYaxis()->SetTitleSize(0.05);
-    p_cherenkov_sim->GetXaxis()->SetTitleOffset(0.9);
-    p_cherenkov_sim->GetYaxis()->SetTitleOffset(1.0);
-    p_cherenkov_sim->SetFillColor(kMagenta);
-    p_cherenkov_sim->SetFillStyle(3001);
+void HistoStyleMatch(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data) {
+    p_cherenkov_sim_org->SetName("MC signal");
+    p_cherenkov_sim_org->SetLineColor(kMagenta);
+    p_cherenkov_sim_org->SetLineStyle(1);
+    p_cherenkov_sim_org->GetXaxis()->SetTitle("#theta_{C} [rad]");
+    p_cherenkov_sim_org->GetYaxis()->SetTitle("entries [#]");
+    p_cherenkov_sim_org->GetXaxis()->SetTitleSize(0.05);
+    p_cherenkov_sim_org->GetYaxis()->SetTitleSize(0.05);
+    p_cherenkov_sim_org->GetXaxis()->SetTitleOffset(0.9);
+    p_cherenkov_sim_org->GetYaxis()->SetTitleOffset(1.0);
+    p_cherenkov_sim_org->SetFillColor(kMagenta);
+    p_cherenkov_sim_org->SetFillStyle(3001);
     
     p_cherenkov_data->SetLineColor(kBlack);
     p_cherenkov_data->SetLineStyle(1);
