@@ -77,11 +77,13 @@ Double_t fAnglePi= acos(sqrt(momentum*momentum + mass[2]*mass[2])/momentum/1.473
 ////////////////
 // error Stuff//
 ////////////////
-TFile *error_ffile_sim_p;
+TFile *error_polar_ffile_sim_p, *error_stat_ffile_sim_p;
 
-TH1F *error_p_cherenkov_sim,*error_p_cherenkov_data,*error_p_cherenkov_sim_correction ,*error_p_cherenkov_data_correction,*error_p_cherenkov_data_copy,*error_p_cherenkov_sim_copy,*error_p_cherenkov_mc_same_path,*error_p_cherenkov_bg_sim,*error_nph_sim,*error_p_nph_sim,*error_p_nph_good_sim,*error_p_nph_true_sim,*error_nph_data,*error_p_nph_data,*error_p_nph_good_data;
+TH1F *error_polar_p_cherenkov_sim,*error_polar_p_cherenkov_data,*error_polar_p_cherenkov_sim_correction ,*error_polar_p_cherenkov_data_correction,*error_polar_p_cherenkov_data_copy,*error_polar_p_cherenkov_sim_copy,*error_polar_p_cherenkov_mc_same_path,*error_polar_p_cherenkov_bg_sim,*error_polar_nph_sim,*error_polar_p_nph_sim,*error_polar_p_nph_good_sim,*error_polar_p_nph_true_sim,*error_polar_nph_data,*error_polar_p_nph_data,*error_polar_p_nph_good_data;
 
-TH1F *histo_error_spr_p_cherenkov_sim[14];
+TH1F *error_stat_p_cherenkov_sim,*error_stat_p_cherenkov_data,*error_stat_p_cherenkov_sim_correction ,*error_stat_p_cherenkov_data_correction,*error_stat_p_cherenkov_data_copy,*error_stat_p_cherenkov_sim_copy,*error_stat_p_cherenkov_mc_same_path,*error_stat_p_cherenkov_bg_sim,*error_stat_nph_sim,*error_stat_p_nph_sim,*error_stat_p_nph_good_sim,*error_stat_p_nph_true_sim,*error_stat_nph_data,*error_stat_p_nph_data,*error_stat_p_nph_good_data;
+
+TH1F *histo_error_polar_spr_p_cherenkov_sim[14], *histo_error_stat_spr_p_cherenkov_sim[14];
 
 
 
@@ -116,7 +118,8 @@ void proton_plots(
     vector<Double_t> timeCut(14);
     vector<Int_t> prtangle_vector(14);
     const Int_t n = 14;
-    Double_t error_y_spr_sim_org[n]={0};
+    Double_t error_all_y_spr_sim_org[n]={0};
+
     Double_t x[n], y_spr_data_sub[n], y_spr_sim_true[n], y_spr_sim_org[n], y_diff_true[n], y_diff_data[n], y_mean_diff_data[n], y_mean_diff_sim[n], y_mean_diff_true[n], y_diff_sim[n];
     Double_t y_cangle_data_sub[n], y_cangle_sim_org[n];
     Double_t y_cangle_sim_org_true[n];
@@ -143,66 +146,132 @@ void proton_plots(
     
     //TGraphErrors *graph_spr_sim;
     
-    //////////////////////////
-    // Error Calculation   ///
-    //////////////////////////
+    ///////////////////////////
+    // Error Calculations   ///
+    ///////////////////////////
+    
     for (Int_t e=0; e<=14; e++) {
-        histo_error_spr_p_cherenkov_sim[e] = new TH1F(Form("histo_error_spr_p_cherenkov_sim_%d",e),Form("histo_error_spr_p_cherenkov_sim_%d; SPR [mrad];entries [#]",e), 100,0,20);
+        histo_error_stat_spr_p_cherenkov_sim[e] = new TH1F(Form("histo_error_stat_spr_p_cherenkov_sim_%d",e),Form("histo_error_stat_spr_p_cherenkov_sim_%d; SPR [mrad];entries [#]",e), 100,6,14);
+    }
+    Int_t counter_error_stat=0;
+    for (int i=20; i<=150; i+=10) {
+        prtangle= i;
+        TString nid = Form("_%2.0d", i);
+        
+        for (int j=0; j<=100; j+=1) {
+
+            TString calc_error_stat_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%i_seed_%d_3lsph_proton_sim_spr.root", i, j);
+            cout<<"sim path for error calc p = " <<calc_error_stat_sim_p_path<<endl;
+            string path_calc_error_stat_sim_p = (string)calc_error_stat_sim_p_path;
+            cout<<"exists_test(path_calc_error_stat_sim_p)" <<exists_test(path_calc_error_stat_sim_p)<<endl;
+            if (!exists_test(path_calc_error_stat_sim_p)) continue;
+            error_stat_ffile_sim_p = TFile::Open(calc_error_stat_sim_p_path,"read");
+            
+            error_stat_p_cherenkov_sim=(TH1F*)error_stat_ffile_sim_p->Get("fHist");
+            error_stat_p_cherenkov_mc_same_path=(TH1F*)error_stat_ffile_sim_p->Get("fHist_same_path");
+            Double_t error_stat_cangle_MC_true =  error_stat_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_stat_p_cherenkov_mc_same_path->GetMaximumBin());
+            auto error_stat_resultPair= FitHisto_0( error_stat_p_cherenkov_sim , error_stat_cangle_MC_true, 0.06);
+            Double_t error_stat_cangle_error_stat_p_cherenkov_sim = error_stat_resultPair.first;
+            Double_t error_stat_spr_error_stat_p_cherenkov_sim = error_stat_resultPair.second;
+            cout<<"counter_error_stat = " <<counter_error_stat<<endl;
+            histo_error_stat_spr_p_cherenkov_sim[counter_error_stat]->Fill(error_stat_spr_error_stat_p_cherenkov_sim*1000.0);
+            
+            
+            delete error_stat_p_cherenkov_sim;
+            delete error_stat_p_cherenkov_mc_same_path;
+            //            delete error_stat_p_cherenkov_data;
+            //            delete error_stat_p_cherenkov_sim_correction;
+            //            delete error_stat_p_cherenkov_data_correction;
+            //            delete error_stat_p_cherenkov_data_copy;
+            //            delete error_stat_p_cherenkov_sim_copy;
+            //            delete error_stat_p_cherenkov_bg_sim;
+            //            delete error_stat_nph_sim;
+            //            delete error_stat_p_nph_sim;
+            //            delete error_stat_p_nph_good_sim;
+            //            delete error_stat_p_nph_true_sim;
+            //            delete error_stat_nph_data;
+            //            delete error_stat_p_nph_data;
+            //            delete error_stat_p_nph_good_data;
+            
+            ///////////////////
+            // Close files  ///
+            ///////////////////
+            delete error_stat_ffile_sim_p;
+        }
+        ++counter_error_stat;
+    }
+    //        for (Int_t e=0; e<=14; e++) {
+    //            TString ko = Form("_%2.0d", e);
+    //            prt_canvasAdd("r_test"+ko,800,400);
+    //            histo_error_stat_spr_p_cherenkov_sim[e]->Draw();
+    //        }
+
+    
+    
+    
+    for (Int_t e=0; e<=14; e++) {
+        histo_error_polar_spr_p_cherenkov_sim[e] = new TH1F(Form("histo_error_polar_spr_p_cherenkov_sim_%d",e),Form("histo_error_polar_spr_p_cherenkov_sim_%d; SPR [mrad];entries [#]",e), 100,6,14);
     }
     Int_t counter_error=0;
     for (int i=20; i<=150; i+=10) {
         prtangle= i;
         TString nid = Form("_%2.0d", i);
         
-        for (int j=-9; j<=9; j+=1) {
-            Double_t jj = (Float_t) i+j/10.0 ;
-            TString jj_string = Form("_theta_%.1f", jj);
-            TString calc_error_sim_p_path = "/Users/ahmed/perforamnce/spr_data_sim/error_polar/spr_polar_error"+jj_string+"_3lsph_proton_sim_spr.root";
-            //cout<<"sim path for error calc p = " <<calc_error_sim_p_path<<endl;
-            string path_calc_error_sim_p = (string)calc_error_sim_p_path;
-            cout<<"exists_test(path_calc_error_sim_p)" <<exists_test(path_calc_error_sim_p)<<endl;
-            if (!exists_test(path_calc_error_sim_p)) continue;
-            error_ffile_sim_p = TFile::Open(calc_error_sim_p_path,"read");
-            error_p_cherenkov_sim=(TH1F*)error_ffile_sim_p->Get("fHist");
-            error_p_cherenkov_mc_same_path=(TH1F*)error_ffile_sim_p->Get("fHist_same_path");
-            Double_t error_cangle_MC_true =  error_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_p_cherenkov_mc_same_path->GetMaximumBin());
-            auto error_resultPair= FitHisto_0( error_p_cherenkov_sim , error_cangle_MC_true, 0.06);
-            Double_t error_cangle_error_p_cherenkov_sim = error_resultPair.first;
-            Double_t error_spr_error_p_cherenkov_sim = error_resultPair.second;
+        //for (int j=-9; j<=9; j+=1) {
+        for (int j=-90; j<=90; j+=1) {
+            //Double_t jj = (Float_t) i+j/10.0 ;
+            //TString jj_string = Form("_theta_%.1f", jj);
+            //TString calc_error_polar_sim_p_path = "/Users/ahmed/perforamnce/spr_data_sim/error_polar/spr_polar_error"+jj_string+"_3lsph_proton_sim_spr.root";
+            // for big ~ 180 file per point
+            Double_t kk = (Float_t) i+j/100.0 ;
+            TString kk_string = Form("_theta_%.2f", kk);
+            TString calc_error_polar_sim_p_path = "/Users/ahmed/perforamnce/spr_data_sim/error_polar_more/spr_polar_error"+kk_string+"_3lsph_proton_sim_spr.root";
+
+            //cout<<"sim path for error calc p = " <<calc_error_polar_sim_p_path<<endl;
+            string path_calc_error_polar_sim_p = (string)calc_error_polar_sim_p_path;
+            cout<<"exists_test(path_calc_error_polar_sim_p)" <<exists_test(path_calc_error_polar_sim_p)<<endl;
+            if (!exists_test(path_calc_error_polar_sim_p)) continue;
+            error_polar_ffile_sim_p = TFile::Open(calc_error_polar_sim_p_path,"read");
+            error_polar_p_cherenkov_sim=(TH1F*)error_polar_ffile_sim_p->Get("fHist");
+            error_polar_p_cherenkov_mc_same_path=(TH1F*)error_polar_ffile_sim_p->Get("fHist_same_path");
+            Double_t error_polar_cangle_MC_true =  error_polar_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_polar_p_cherenkov_mc_same_path->GetMaximumBin());
+            auto error_polar_resultPair= FitHisto_0( error_polar_p_cherenkov_sim , error_polar_cangle_MC_true, 0.06);
+            Double_t error_polar_cangle_error_polar_p_cherenkov_sim = error_polar_resultPair.first;
+            Double_t error_polar_spr_error_polar_p_cherenkov_sim = error_polar_resultPair.second;
             cout<<"counter_error = " <<counter_error<<endl;
-            histo_error_spr_p_cherenkov_sim[counter_error]->Fill(error_spr_error_p_cherenkov_sim*1000.0);
+            histo_error_polar_spr_p_cherenkov_sim[counter_error]->Fill(error_polar_spr_error_polar_p_cherenkov_sim*1000.0);
             
-            delete error_p_cherenkov_sim;
-            delete error_p_cherenkov_mc_same_path;
-            //            delete error_p_cherenkov_data;
-            //            delete error_p_cherenkov_sim_correction;
-            //            delete error_p_cherenkov_data_correction;
-            //            delete error_p_cherenkov_data_copy;
-            //            delete error_p_cherenkov_sim_copy;
-            //            delete error_p_cherenkov_bg_sim;
-            //            delete error_nph_sim;
-            //            delete error_p_nph_sim;
-            //            delete error_p_nph_good_sim;
-            //            delete error_p_nph_true_sim;
-            //            delete error_nph_data;
-            //            delete error_p_nph_data;
-            //            delete error_p_nph_good_data;
+            delete error_polar_p_cherenkov_sim;
+            delete error_polar_p_cherenkov_mc_same_path;
+            //            delete error_polar_p_cherenkov_data;
+            //            delete error_polar_p_cherenkov_sim_correction;
+            //            delete error_polar_p_cherenkov_data_correction;
+            //            delete error_polar_p_cherenkov_data_copy;
+            //            delete error_polar_p_cherenkov_sim_copy;
+            //            delete error_polar_p_cherenkov_bg_sim;
+            //            delete error_polar_nph_sim;
+            //            delete error_polar_p_nph_sim;
+            //            delete error_polar_p_nph_good_sim;
+            //            delete error_polar_p_nph_true_sim;
+            //            delete error_polar_nph_data;
+            //            delete error_polar_p_nph_data;
+            //            delete error_polar_p_nph_good_data;
             
             ///////////////////
             // Close files  ///
             ///////////////////
-            delete error_ffile_sim_p;
+            delete error_polar_ffile_sim_p;
         }
         ++counter_error;
     }
     
     
-    //    for (Int_t e=1; e<=14; e++) {
-    //        TString ko = Form("_%2.0d", e);
-    //        prt_canvasAdd("r_test"+ko,800,400);
-    //        histo_error_spr_p_cherenkov_sim[e]->Draw();
-    //    }
-    
+    //        for (Int_t e=1; e<=14; e++) {
+    //            TString ko = Form("_%2.0d", e);
+    //            prt_canvasAdd("r_test"+ko,800,400);
+    //            histo_error_polar_spr_p_cherenkov_sim[e]->Draw();
+    //        }
+
     
     for (int i=20; i<=150; i+=10) {
         prtangle= i;
@@ -210,6 +279,7 @@ void proton_plots(
         // proton
         TString cherenkov_data_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wtb_%d_sph_p_data_spr.root", i);
         TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
+        //TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%i_seed_0_3lsph_proton_sim_spr.root", i);
         // pi
         //TString cherenkov_data_path = Form("/u/aali/work/%d_sph_pi_data_spr.root", i);
         //TString cherenkov_sim_path = Form("/u/aali/work/reco_pi_bar_3lsph_grease_theta_%d_sim_spr.root", i);
@@ -229,12 +299,15 @@ void proton_plots(
         gROOT->ForceStyle(kTRUE);
         ffile_sim  = new TFile(cherenkov_sim_path, "READ");
         ffile_data  = new TFile(cherenkov_data_path, "READ");
+    
+        
+        
         //////////////////////////
         // cherenkov histogram //
         //////////////////////////
-        p_cherenkov_sim=(TH1F*)ffile_sim->Get("fHist"); // changed from fHist
+        p_cherenkov_sim=(TH1F*)ffile_sim->Get("fHist");
         //p_cherenkov_sim->SetStats(0);
-        p_cherenkov_data=(TH1F*)ffile_data->Get("fHist"); // changed from fHist
+        p_cherenkov_data=(TH1F*)ffile_data->Get("fHist");
         p_cherenkov_data->SetStats(0);//kFALSE
         p_cherenkov_data_copy=(TH1F*)ffile_data->Get("fHist_copy");
         p_cherenkov_sim_copy=(TH1F*)ffile_sim->Get("fHist_copy");
@@ -587,28 +660,45 @@ void proton_plots(
             
             x[counter]=i;
             
-            Double_t mean_distribution, RMS_distribution;
+
             if (true){
                 prt_canvasAdd("r_polar_error"+nid,800,400);
-                histo_error_spr_p_cherenkov_sim[counter]->SetTitle(Form("SPR Error Polar angle %3.1f", prtangle));
-                histo_error_spr_p_cherenkov_sim[counter]->Draw();
-                mean_distribution = histo_error_spr_p_cherenkov_sim[counter]->GetMean();
-                RMS_distribution = histo_error_spr_p_cherenkov_sim[counter]->GetRMS();
+                histo_error_polar_spr_p_cherenkov_sim[counter]->SetTitle(Form("SPR Error Polar angle %3.1f", prtangle));
+                histo_error_polar_spr_p_cherenkov_sim[counter]->Draw();
+                Int_t entries_distribution = histo_error_polar_spr_p_cherenkov_sim[counter]->GetEntries();
+                Double_t mean_error_polar_distribution = histo_error_polar_spr_p_cherenkov_sim[counter]->GetMean();
+                Double_t RMS_error_polar_distribution = histo_error_polar_spr_p_cherenkov_sim[counter]->GetRMS();
                 TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
-                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_distribution));
-                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", RMS_distribution));
+                pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
+                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_polar_distribution));
+                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", RMS_error_polar_distribution));
                 pt_data_corrected->Draw();
                 prt_canvasGet("r_polar_error"+nid)->Update();
-                
+            }
+            
+            if (true){
+                prt_canvasAdd("r_stat_error"+nid,800,400);
+                histo_error_stat_spr_p_cherenkov_sim[counter]->SetTitle(Form("SPR Error stat angle %3.1f", prtangle));
+                histo_error_stat_spr_p_cherenkov_sim[counter]->Draw();
+                Int_t entries_distribution = histo_error_stat_spr_p_cherenkov_sim[counter]->GetEntries();
+                Double_t mean_error_stat_distribution = histo_error_stat_spr_p_cherenkov_sim[counter]->GetMean();
+                Double_t RMS_error_stat_distribution = histo_error_stat_spr_p_cherenkov_sim[counter]->GetRMS();
+                TPaveText *pt_data_corrected = new TPaveText(0.703008,0.685333,0.958647,0.946667, "NDC");
+                pt_data_corrected->AddText(Form("Entries =  %d [#]", entries_distribution));
+                pt_data_corrected->AddText(Form("#mu =  %1.3f [rad]", mean_error_stat_distribution));
+                pt_data_corrected->AddText(Form("#sigma =  %1.3f [mrad]", RMS_error_stat_distribution));
+                pt_data_corrected->Draw();
+                prt_canvasGet("r_stat_error"+nid)->Update();
             }
             
 
             
-            Double_t error_spr_sim_org= histo_error_spr_p_cherenkov_sim[counter]->GetRMS();
+            Double_t error_polar_spr_sim_org= histo_error_polar_spr_p_cherenkov_sim[counter]->GetRMS();
+            Double_t error_stat_spr_sim_org= histo_error_stat_spr_p_cherenkov_sim[counter]->GetRMS();
 
             
             y_spr_sim_org[counter]=spr_sim_org*1000.0;
-            error_y_spr_sim_org[counter]= sqrt (error_spr_sim_org*error_spr_sim_org) ;
+            error_all_y_spr_sim_org[counter]= sqrt (error_polar_spr_sim_org*error_polar_spr_sim_org + error_stat_spr_sim_org * error_stat_spr_sim_org ) ;
             
             
             y_spr_sim_true[counter]=spr_sim_true*1000.0;
@@ -1112,7 +1202,7 @@ void proton_plots(
         Double_t ex[dd] = {1,1,1,1,1,1,1,1,1,1};
         Double_t ey[dd] = {.8,.7,.6,.5,.4,.4,.5,.6,.7,.8};
         
-        TGraphErrors *graph_spr_sim = new TGraphErrors(n,x,y_spr_sim_org,ex,error_y_spr_sim_org);
+        TGraphErrors *graph_spr_sim = new TGraphErrors(n,x,y_spr_sim_org,ex,error_all_y_spr_sim_org);
         //TGraphErrors *graph_spr_sim = new TGraphErrors(n,x,y_spr_sim_org, 0, 0);
         
         //        TGraphErrors *graph_yield_DIRC_wo_cuts_sim = new TGraphErrors(n,x,y_yield_nph_sim,0, y_yield_nph_sim_error);
@@ -1621,7 +1711,7 @@ void proton_plots(
     
     
     //    for (Int_t e=0; e<=14; e++) {
-    //        delete histo_error_spr_p_cherenkov_sim[e];
+    //        delete histo_error_polar_spr_p_cherenkov_sim[e];
     //    }
     
     
@@ -1665,8 +1755,8 @@ void proton_plots(
      */
     
     
-    //error_ffile_sim_p.Close();
-    //error_ffile_sim_pi.Close();
+    //error_polar_ffile_sim_p.Close();
+    //error_polar_ffile_sim_pi.Close();
     ffile_sim->Close();
     ffile_data->Close();
     
