@@ -1217,68 +1217,67 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             }
             //======================================== dynamic cuts for sim and data
             if(fEvent->GetType()==1 || fEvent->GetType()==0) {
-                
                 Double_t cut1(0);
                 {   //time cuts
-                    if(prtangle==20) {
+                    if(prtangle>19.0 && prtangle<21.0) {
                         if(hitTime<9.0 || hitTime>25 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==25 ) {
+                    else if(prtangle>24.0 && prtangle<26.0 ) {
                         if(hitTime<9.5 || hitTime>30 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==30 ) {
+                    else if(prtangle>29.0 && prtangle<31.0 ) {
                         if(hitTime<9.5 || hitTime>35 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==35 ) {
+                    else if(prtangle>34.0 && prtangle<36.0 ) {
                         if(hitTime<9.5 || hitTime>35 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==40 ) {
+                    else if(prtangle>39.0 && prtangle<41.0 ) {
                         if(hitTime<10 || hitTime>40 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==45 ) {
+                    else if(prtangle>44.0 && prtangle<46.0 ) {
                         if(hitTime<10 || hitTime>43 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==50 ) {
+                    else if(prtangle>49.0 && prtangle<51.0 ) {
                         if(hitTime<10 || hitTime>50 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==55 ) {
+                    else if(prtangle>54.0 && prtangle<56.0 ) {
                         if(hitTime<10 || hitTime>50 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==60 ) {
+                    else if(prtangle>59.0 && prtangle<61.0 ) {
                         if(hitTime<10.5 || hitTime>50 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==65 ) {
+                    else if(prtangle>64.0 && prtangle<66.0 ) {
                         if(hitTime<11 || hitTime>50 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==70 ) {
+                    else if(prtangle>69.0 && prtangle<71.0 ) {
                         if(hitTime<11 || hitTime>50 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==75 ) {
+                    else if(prtangle>74.0 && prtangle<76.0 ) {
                         if(hitTime<11 || hitTime>50 ) continue;
                         reflected = kTRUE;
                     }
-                    else if(prtangle==80 ) {
+                    else if(prtangle>79.0 && prtangle<81.0 ) {
                         if(hitTime<11 || hitTime>50 ) continue;
                         reflected = kTRUE;
                     }
-                    else if (prtangle==85.0) {
+                    else if (prtangle>84.0 && prtangle<86.0 ) {
                         if(hitTime< 3.0 || hitTime>50.0 ) continue;
                         //if(hitTime< 13.5 && hitTime>10.0 ) continue;
                         if(hitTime<=12)   reflected = kFALSE;
                         if(hitTime>12) reflected = kTRUE;
                     }
-                    else if (prtangle==90) {
+                    else if (prtangle>89.0 && prtangle<91.0) {
                         if(hitTime< 3.0 || hitTime>50.0 ) continue;
                         //if(hitTime< 14.0 && hitTime>10.0 ) continue;
                         if(hitTime<=12)   reflected = kFALSE;
@@ -1934,12 +1933,12 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                             // use histograms
                             Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
                             Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
-                            sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
-                            sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
+                            //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
+                            //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
                             //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
                             // use standared
-                            //sum1 += TMath::Log(gF1->Eval(tangle)+noise);
-                            //sum2 += TMath::Log(gF2->Eval(tangle)+noise);
+                            sum1 += TMath::Log(gF1->Eval(tangle)+noise);
+                            sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                         }
 
                         if(fVerbose==3) {
