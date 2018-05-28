@@ -42,7 +42,9 @@ Double_t m_proton = 938.28;
 Double_t m_pi = 139.570;
 Double_t nano_value = 0.000000001; // 10e-9
 Double_t c = 299792458; // speed of light
-Double_t measured_d_tof2tof1_plot1_co= 28.507;
+//Double_t measured_d_tof2tof1_plot1_co= 28.507; //old
+Double_t measured_d_tof2tof1_plot1_co= 28.428;
+
 // calculation of protons and pions velocity based on the momentum
 Double_t v_proton = c* sqrt(1- (m_proton*m_proton) /(beam_momentum * beam_momentum+ m_proton*m_proton));
 Double_t v_pi = c* sqrt(1-( m_pi*m_pi) /(beam_momentum * beam_momentum+ m_pi*m_pi));
@@ -60,10 +62,11 @@ std::pair<Double_t, Double_t> FitHisto_0(TH1F *hiso_0_fit_option, Double_t cangl
 // file existance
 bool exists_test (const std::string& name);
 // histo style
-void HistoStyleMatch(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data_org);
-void HistoStyle_3colors(TH1F *histo1, TH1F *histo2, TH1F *histo3);
+void histo_style_match(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data_org);
+void histo_style_photon_yield(TH1F *histo1, TH1F *histo2, TH1F *histo3);
 void histo_style_cherenkov(TH1F *histo1, TH1F *histo2, TH1F *histo3, TH1F *histo4, TH1F *histo5);
 void histo_style_time_diff(TH1F *histo1, TH1F *histo2, TH1F *histo3, TH1F *histo4, TH1F *histo5);
+void histo_style_photon_time(TH1F *histo1, TH1F *histo2, TH1F *histo3, TH1F *histo4);
 
 // diff norm
 void DiffNorm(TH1F *p_diff_time_sim, TH1F *p_diff_time_data);
@@ -92,7 +95,8 @@ TH1F *histo_distribution_error_polar_p_yield_sim_wtc[14], *histo_distribution_er
 ////////////////////
 Bool_t bool_error=false;
 Bool_t bool_error_histo=false;
-Bool_t bool_partII=false;
+Bool_t bool_partII=true;
+Bool_t bool_partII_histo=true;
 Bool_t bool_partIII=false;
 void proton_plots(
                   Bool_t bool_part1=false,
@@ -432,7 +436,7 @@ void proton_plots(
         p_yield_wo_sim=(TH1F*)ffile_sim->Get("fnHits");
         p_yield_wt_sim=(TH1F*)ffile_sim->Get("fnHits_p");
         p_yield_wtc_sim=(TH1F*)ffile_sim->Get("fnHits_p_good");
-
+        
         p_yield_true_sim=(TH1F*)ffile_sim->Get("fnHits_true_sim");
         p_yield_wo_data=(TH1F*)ffile_data->Get("fnHits");
         p_yield_wt_data=(TH1F*)ffile_data->Get("fnHits_p");
@@ -440,8 +444,8 @@ void proton_plots(
         //dac_hits_data=(TH1F*)ffile_data->Get("nHist_dac");
         //dac_hits_sys_cus_data=(TH1F*)ffile_data->Get("nHist_dac_syscut_p");
         
-        HistoStyle_3colors(p_yield_wo_sim, p_yield_wt_sim, p_yield_wtc_sim);
-        HistoStyle_3colors(p_yield_wo_data, p_yield_wt_data, p_yield_wtc_data);
+        histo_style_photon_yield(p_yield_wo_sim, p_yield_wt_sim, p_yield_wtc_sim);
+        histo_style_photon_yield(p_yield_wo_data, p_yield_wt_data, p_yield_wtc_data);
         
         //        hs10 = new THStack("hs10","Stacked 1D histograms");
         //        hs10->Add(p_yield_wo_sim);
@@ -453,7 +457,7 @@ void proton_plots(
         //        hs10->GetXaxis()->SetTitle("#theta_{C} [rad]");
         //        hs10->GetYaxis()->SetTitle("entries [#]");
         //        prt_canvasGet("r_test_asdsda"+nid)->Update();
-
+        
         
         /////////////////////////
         // time diff histogram //
@@ -483,8 +487,8 @@ void proton_plots(
         histo_photon_ambiguity_wo_data=(TH1F*)ffile_data->Get("histo_photon_ambiguity_wo");
         histo_photon_ambiguity_wt_data=(TH1F*)ffile_data->Get("histo_photon_ambiguity_wt");
         histo_photon_ambiguity_wtc_data=(TH1F*)ffile_data->Get("histo_photon_ambiguity_wtc");
-        HistoStyle_3colors(histo_photon_ambiguity_wo_sim, histo_photon_ambiguity_wt_sim, histo_photon_ambiguity_wtc_sim);
-        HistoStyle_3colors(histo_photon_ambiguity_wo_data, histo_photon_ambiguity_wt_data, histo_photon_ambiguity_wtc_data);
+        histo_style_photon_yield(histo_photon_ambiguity_wo_sim, histo_photon_ambiguity_wt_sim, histo_photon_ambiguity_wtc_sim);
+        histo_style_photon_yield(histo_photon_ambiguity_wo_data, histo_photon_ambiguity_wt_data, histo_photon_ambiguity_wtc_data);
         /////////////
         // TOF PID //
         /////////////
@@ -503,7 +507,7 @@ void proton_plots(
                 //gStyle->SetOptFit(0);
                 //gStyle->SetOptStat(0);
                 DiffNorm(p_cherenkov_sim_org, p_cherenkov_data_org);
-                HistoStyleMatch(p_cherenkov_sim_org, p_cherenkov_data_org);
+                histo_style_match(p_cherenkov_sim_org, p_cherenkov_data_org);
                 TLegend *legend_ch_match= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
                 legend_ch_match->SetHeader("Cherenkov angle ambiguity distribution without #theta_{c} (proton)","C");
                 prt_canvasAdd("r_ch_match"+nid,800,400);
@@ -533,7 +537,7 @@ void proton_plots(
             if(bool_part1_2) {
                 prt_canvasAdd("r_corrected"+nid,800,400);
                 p_cherenkov_data_corrected->SetTitle(Form("Polar angle %3.1f (proton data)", prtangle));
-                HistoStyleMatch(p_cherenkov_data_org,p_cherenkov_data_corrected);
+                histo_style_match(p_cherenkov_data_org,p_cherenkov_data_corrected);
                 p_cherenkov_data_corrected->Draw();
                 p_cherenkov_data_org->Draw("same");
                 TLegend *legend_corrected= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
@@ -575,7 +579,7 @@ void proton_plots(
                 DiffNorm(p_cherenkov_sim_corrected, p_cherenkov_data_corrected);
                 prt_canvasAdd("r_corrected_match"+nid,800,400);
                 p_cherenkov_data_corrected->SetTitle(Form("Polar angle %3.1f (proton data)", prtangle));
-                HistoStyleMatch(p_cherenkov_sim_corrected,p_cherenkov_data_corrected);
+                histo_style_match(p_cherenkov_sim_corrected,p_cherenkov_data_corrected);
                 p_cherenkov_data_corrected->Draw();
                 p_cherenkov_sim_corrected->Draw("same");
                 TLegend *legend_corrected= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
@@ -603,7 +607,7 @@ void proton_plots(
                 prt_canvasGet("r_corrected_match"+nid)->Update();
             }
             
-
+            
             
         }
         ///////////////////
@@ -792,6 +796,7 @@ void proton_plots(
             x[counter]=i;
             if(bool_error){
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_polar_error_org"+nid,800,400);
                     histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR distibution as a result of polar angle variation between +/- 1˚ without correction @ angle %3.1f ", prtangle));
                     histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->Draw();
@@ -806,6 +811,7 @@ void proton_plots(
                     prt_canvasGet("r_spr_polar_error_org"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_stat_error_org"+nid,800,400);
                     histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR distibution as a result of using several statistical samples without correction @ angle %3.1f", prtangle));
                     histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->Draw();
@@ -820,6 +826,7 @@ void proton_plots(
                     prt_canvasGet("r_spr_stat_error_org"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_fit_range_error_org"+nid,800,400);
                     histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR distibution as a result of changing fitting range without correction @ angle %3.1f", prtangle));
                     histo_distribution_error_fit_range_spr_p_cherenkov_sim_org[counter]->Draw();
@@ -835,6 +842,7 @@ void proton_plots(
                 }
                 ////////////////////////////
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_polar_error_corrected"+nid,800,400);
                     histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR distibution as a result of polar angle variation between +/- 1˚ with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->Draw();
@@ -849,6 +857,7 @@ void proton_plots(
                     prt_canvasGet("r_spr_polar_error_corrected"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_stat_error_corrected"+nid,800,400);
                     histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR distibution as a result of using several statistical samples with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->Draw();
@@ -863,6 +872,7 @@ void proton_plots(
                     prt_canvasGet("r_spr_stat_error_corrected"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_fit_range_error_corrected"+nid,800,400);
                     histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR distibution as a result of changing fitting range with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->Draw();
@@ -878,6 +888,7 @@ void proton_plots(
                 }
                 // cangle
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_polar_error_org"+nid,800,400);
                     histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->SetTitle(Form("#theta_{c} distibution as a result of polar angle variation between +/- 1˚ without correction @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->Draw();
@@ -892,6 +903,7 @@ void proton_plots(
                     prt_canvasGet("r_cangle_polar_error_org"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_stat_error_org"+nid,800,400);
                     histo_distribution_error_stat_cangle_p_cherenkov_sim_org[counter]->SetTitle(Form("#theta_{c} distibution as a result of using several statistical samples without correction @ angle %3.1f", prtangle));
                     histo_distribution_error_stat_cangle_p_cherenkov_sim_org[counter]->Draw();
@@ -906,6 +918,7 @@ void proton_plots(
                     prt_canvasGet("r_cangle_stat_error_org"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_fit_range_error_org"+nid,800,400);
                     histo_distribution_error_fit_range_cangle_p_cherenkov_sim_org[counter]->SetTitle(Form("#theta_{c} distibution as a result of changing fitting range without correction @ angle %3.1f", prtangle));
                     histo_distribution_error_fit_range_cangle_p_cherenkov_sim_org[counter]->Draw();
@@ -921,7 +934,8 @@ void proton_plots(
                 }
                 ////////////////////////////
                 if (bool_error_histo){
-                    prt_canvasAdd("r_cangle_polar_erro_correctedr"+nid,800,400);
+                    gStyle->SetOptStat(0);
+                    prt_canvasAdd("r_cangle_polar_error_corrected"+nid,800,400);
                     histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->SetTitle(Form("#theta_{c} distibution as a result of polar angle variation between +/- 1˚ with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->GetEntries();
@@ -935,6 +949,7 @@ void proton_plots(
                     prt_canvasGet("r_cangle_polar_error_corrected"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_stat_error_corrected"+nid,800,400);
                     histo_distribution_error_stat_cangle_p_cherenkov_sim_corrected[counter]->SetTitle(Form("#theta_{c} distibution as a result of using several statistical samples with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_stat_cangle_p_cherenkov_sim_corrected[counter]->Draw();
@@ -949,6 +964,7 @@ void proton_plots(
                     prt_canvasGet("r_cangle_stat_error_corrected"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_fit_range_error_corrected"+nid,800,400);
                     histo_distribution_error_fit_range_cangle_p_cherenkov_sim_corrected[counter]->SetTitle(Form("#theta_{c} distibution as a result of changing fitting range with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_fit_range_cangle_p_cherenkov_sim_corrected[counter]->Draw();
@@ -964,6 +980,7 @@ void proton_plots(
                 }
                 // yield
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_polar_wo"+nid,800,400);
                     histo_distribution_error_polar_p_yield_sim_wo[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 1˚ without cuts @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_p_yield_sim_wo[counter]->Draw();
@@ -978,6 +995,7 @@ void proton_plots(
                     prt_canvasGet("r_yield_polar_wo"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_polar_wt"+nid,800,400);
                     histo_distribution_error_polar_p_yield_sim_wt[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 1˚ after time cut @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_p_yield_sim_wt[counter]->Draw();
@@ -992,6 +1010,7 @@ void proton_plots(
                     prt_canvasGet("r_yield_polar_wt"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_polar_wtc"+nid,800,400);
                     histo_distribution_error_polar_p_yield_sim_wtc[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 1˚ after #theta_{c} & time cuts @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_p_yield_sim_wtc[counter]->Draw();
@@ -1007,6 +1026,7 @@ void proton_plots(
                 }
                 //// stat
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_stat_wo"+nid,800,400);
                     histo_distribution_error_stat_p_yield_sim_wo[counter]->SetTitle(Form("photon yield distibution as a result of using several statistical samples without cuts @ angle %3.1f", prtangle));
                     histo_distribution_error_stat_p_yield_sim_wo[counter]->Draw();
@@ -1021,6 +1041,7 @@ void proton_plots(
                     prt_canvasGet("r_yield_stat_wo"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_stat_wt"+nid,800,400);
                     histo_distribution_error_stat_p_yield_sim_wt[counter]->SetTitle(Form("photon yield distibution as a result of using several statistical samples after time cut @ angle %3.1f", prtangle));
                     histo_distribution_error_stat_p_yield_sim_wt[counter]->Draw();
@@ -1035,6 +1056,7 @@ void proton_plots(
                     prt_canvasGet("r_yield_stat_wt"+nid)->Update();
                 }
                 if (bool_error_histo){
+                    gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_stat_wtc"+nid,800,400);
                     histo_distribution_error_stat_p_yield_sim_wtc[counter]->SetTitle(Form("photon yield distibution as a result of using several statistical samples after #theta_{c} & time cuts @ angle %3.1f", prtangle));
                     histo_distribution_error_stat_p_yield_sim_wtc[counter]->Draw();
@@ -1174,7 +1196,8 @@ void proton_plots(
             hs4->Add(p_photon_time_data_calc);
             hs5->Add(p_photon_time_sim);
             hs5->Add(p_photon_time_data);
-
+            histo_style_photon_time(p_photon_time_sim,p_photon_time_data, p_photon_time_sim_calc, p_photon_time_data_calc);
+            
             //hs6->Add(dac_hits_data);
             //hs6->Add(dac_hits_sys_cus_data);
             hs7->Add(p_cherenkov_bg_sim);
@@ -1223,7 +1246,7 @@ void proton_plots(
             ///////////////
             // TOF PID  ///
             ///////////////
-            if (bool_partII) {
+            if (bool_partII_histo) {
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 prt_canvasAdd("r_tof_pid"+nid,800,400);
@@ -1274,7 +1297,7 @@ void proton_plots(
             /////////////////////////////////
             //  ch MC truth B and Signal  ///
             /////////////////////////////////
-            if(bool_partII) {
+            if(bool_partII_histo) {
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 gPad->UseCurrentStyle();
@@ -1334,7 +1357,7 @@ void proton_plots(
             //////////////////////////////
             //  MC BG, Data, Data -BG  ///
             //////////////////////////////
-            if(bool_partII) {
+            if(bool_partII_histo) {
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 gPad->UseCurrentStyle();
@@ -1368,7 +1391,7 @@ void proton_plots(
             ///////////////////////////////////////////
             //  diff MC BG, diff Data, diffData -BG  //
             ///////////////////////////////////////////
-            if (true) { // done
+            if (bool_partII_histo) { // done
                 gStyle->SetOptFit(0);
                 gStyle->SetOptStat(0);
                 TLegend *legend_diff_bg_sub= new TLegend( 0.121554, 0.716578, 0.457393, 0.879679);
@@ -1402,7 +1425,7 @@ void proton_plots(
                 line_sigm_diff_l->Draw();
                 prt_canvasGet("r_time_diff"+nid)->Update();
             }
-            if (bool_partII) {
+            if (bool_partII_histo) {
                 TLegend *legend_photon_time_calc= new TLegend(0.556391, 0.712, 0.890977, 0.874667);
                 legend_photon_time_calc->SetHeader("Calculated time match (proton)", "C");
                 legend_photon_time_calc->AddEntry(p_photon_time_sim_calc,"Sim","f");
@@ -1414,7 +1437,7 @@ void proton_plots(
                 hs4->GetYaxis()->SetTitle("entries [#]");
                 legend_photon_time_calc->Draw();
             }
-            if (bool_partII) {
+            if (bool_partII_histo) {
                 TLegend *legend_photon_time=  new TLegend(0.556391, 0.712, 0.890977, 0.874667);
                 legend_photon_time->SetHeader("Measured time match (proton)","C");
                 legend_photon_time->AddEntry(p_photon_time_sim,"Sim","f");
@@ -1429,7 +1452,7 @@ void proton_plots(
             /////////////////////////
             // Draw photon yield  ///
             /////////////////////////
-            if (true) {
+            if (bool_partII_histo) {
                 TLegend * legend_yield_sim= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_yield_sim->SetHeader("Sim | DIRC photon solutions (proton)","C");
                 prt_canvasAdd("r_fnHits_sim"+nid,800,400);
@@ -1444,7 +1467,7 @@ void proton_plots(
                 hs2->GetXaxis()->SetTitle("number of photon solutions per track [#]");
                 legend_yield_sim->Draw();
             }
-            if (true) {
+            if (bool_partII_histo) {
                 TLegend * legend_yield_data= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_yield_data->SetHeader("Data | DIRC photon solutions (proton)","C");
                 prt_canvasAdd("r_fnHits_data"+nid,800,400);
@@ -1460,7 +1483,7 @@ void proton_plots(
                 hs6->GetXaxis()->SetTitle("number of photon solutions per track [#]");
                 legend_yield_data->Draw();
             }
-            if (bool_partII) {
+            if (bool_partII_histo) {
                 TLegend * legend_ambiguity_data= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_ambiguity_data->SetHeader("Data | Number of photon solutions (proton)","C");
                 prt_canvasAdd("r_ambiguity_data"+nid,800,400);
@@ -1474,7 +1497,7 @@ void proton_plots(
                 hs8->GetXaxis()->SetTitle("number of photon solutions  [#]");
                 legend_ambiguity_data->Draw();
             }
-            if (bool_partII) {
+            if (bool_partII_histo) {
                 TLegend * legend_ambiguity_sim= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
                 legend_ambiguity_sim->SetHeader("Sim | Number of photon solutions (proton)","C");
                 prt_canvasAdd("r_ambiguity_sim"+nid,800,400);
@@ -1490,7 +1513,7 @@ void proton_plots(
             }
             
             
-            if (bool_partII) {
+            if (bool_partII_histo) {
                 TLegend * legend_lut_ambiguity= new TLegend(0.135338, 0.653333,  0.454887,   0.872  );
                 //legend_lut_ambiguity->SetHeader("Number of LUT photon solutions for each pixel","C");
                 prt_canvasAdd("r_lut_ambiguity"+nid,800,400);
@@ -2005,30 +2028,30 @@ void proton_plots(
     std::cout<<"############"<< " no problem **** " <<std::endl;
     
     
-//    // histo
-//    delete p_cherenkov_sim_org;
-//    delete p_cherenkov_data_org;
-//    delete p_cherenkov_sim_corrected;
-//    delete p_cherenkov_data_corrected;
-//    delete p_cherenkov_data_copy;
-//    delete p_cherenkov_sim_copy;
-//    delete p_cherenkov_mc_same_path;
-//    delete p_cherenkov_bg_sim;
-//    delete p_yield_wo_sim;
-//    delete p_yield_wt_sim;
-//    delete p_yield_wtc_sim;
-//    delete p_yield_true_sim;
-//    delete p_yield_wo_data;
-//    delete p_yield_wt_data;
-//    delete p_yield_wtc_data;
-//    delete p_diff_time_sim;
-//    delete p_diff_time_mctruth;
-//    delete p_diff_time_bg_sim;
-//    delete p_diff_time_data;
-//    delete p_photon_time_sim;
-//    delete p_photon_time_data;
-//    delete p_photon_time_sim_calc;
-//    delete p_photon_time_data_calc;
+    //    // histo
+    //    delete p_cherenkov_sim_org;
+    //    delete p_cherenkov_data_org;
+    //    delete p_cherenkov_sim_corrected;
+    //    delete p_cherenkov_data_corrected;
+    //    delete p_cherenkov_data_copy;
+    //    delete p_cherenkov_sim_copy;
+    //    delete p_cherenkov_mc_same_path;
+    //    delete p_cherenkov_bg_sim;
+    //    delete p_yield_wo_sim;
+    //    delete p_yield_wt_sim;
+    //    delete p_yield_wtc_sim;
+    //    delete p_yield_true_sim;
+    //    delete p_yield_wo_data;
+    //    delete p_yield_wt_data;
+    //    delete p_yield_wtc_data;
+    //    delete p_diff_time_sim;
+    //    delete p_diff_time_mctruth;
+    //    delete p_diff_time_bg_sim;
+    //    delete p_diff_time_data;
+    //    delete p_photon_time_sim;
+    //    delete p_photon_time_data;
+    //    delete p_photon_time_sim_calc;
+    //    delete p_photon_time_data_calc;
     
     
     /*
@@ -2221,6 +2244,59 @@ void histo_style_time_diff(TH1F *histo1, TH1F *histo2, TH1F *histo3, TH1F *histo
 
 
 
+void histo_style_photon_time(TH1F *histo1, TH1F *histo2, TH1F *histo3, TH1F *histo4){
+    //sim
+    histo1->SetLineColor(kBlue);
+    histo1->SetLineStyle(1);
+    histo1->GetXaxis()->SetTitle("t_{measured} [ns]");
+    histo1->GetYaxis()->SetTitle("entries [#]");
+    histo1->GetXaxis()->SetTitleSize(0.05);
+    histo1->GetYaxis()->SetTitleSize(0.05);
+    histo1->GetXaxis()->SetTitleOffset(0.9);
+    histo1->GetYaxis()->SetTitleOffset(1.0);
+    histo1->SetFillColor(kBlue);
+    histo1->SetFillStyle(3003);
+    //data
+    histo2->SetLineColor(kRed);
+    histo2->SetLineStyle(1);
+    histo2->GetXaxis()->SetTitle("t_{measured} [ns]");
+    histo2->GetYaxis()->SetTitle("entries [#]");
+    histo2->GetXaxis()->SetTitleSize(0.05);
+    histo2->GetYaxis()->SetTitleSize(0.05);
+    histo2->GetXaxis()->SetTitleOffset(0.9);
+    histo2->GetYaxis()->SetTitleOffset(1.0);
+    histo2->SetFillColor(kRed);
+    histo2->SetFillStyle(3001);
+    histo2->SetMarkerStyle(21);
+    histo2->SetMarkerColor(kRed);
+    histo2->SetMarkerSize(0.5);
+    // calc sim
+    histo3->SetLineColor(kBlue);
+    histo3->SetLineStyle(1);
+    histo3->GetXaxis()->SetTitle("t_{calc} [ns]");
+    histo3->GetYaxis()->SetTitle("entries [#]");
+    histo3->GetXaxis()->SetTitleSize(0.05);
+    histo3->GetYaxis()->SetTitleSize(0.05);
+    histo3->GetXaxis()->SetTitleOffset(0.9);
+    histo3->GetYaxis()->SetTitleOffset(1.0);
+    histo3->SetFillColor(kBlue);
+    histo3->SetFillStyle(3003);
+    // calc data
+    histo4->SetLineColor(kRed);
+    histo4->SetLineStyle(1);
+    histo4->GetXaxis()->SetTitle("t_{calc} [ns]");
+    histo4->GetYaxis()->SetTitle("entries [#]");
+    histo4->GetXaxis()->SetTitleSize(0.05);
+    histo4->GetYaxis()->SetTitleSize(0.05);
+    histo4->GetXaxis()->SetTitleOffset(0.9);
+    histo4->GetYaxis()->SetTitleOffset(1.0);
+    histo4->SetFillColor(kRed);
+    histo4->SetFillStyle(3001);
+    histo4->SetMarkerStyle(21);
+    histo4->SetMarkerColor(kRed);
+    histo4->SetMarkerSize(0.5);
+}
+
 void DiffNorm(TH1F *p_diff_time_sim, TH1F *p_diff_time_data) {
     
     /////////////////////////////
@@ -2282,7 +2358,7 @@ void DiffNorm(TH1F *p_diff_time_sim, TH1F *p_diff_time_data) {
     //
 }
 
-void HistoStyleMatch(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data_org) {
+void histo_style_match(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data_org) {
     p_cherenkov_sim_org->SetName("MC signal");
     p_cherenkov_sim_org->SetLineColor(kMagenta);
     p_cherenkov_sim_org->SetLineStyle(1);
@@ -2309,7 +2385,7 @@ void HistoStyleMatch(TH1F *p_cherenkov_sim_org, TH1F *p_cherenkov_data_org) {
     p_cherenkov_data_org->SetMarkerColor(kBlack);
 }
 
-void HistoStyle_3colors(TH1F *histo1, TH1F *histo2, TH1F *histo3){
+void histo_style_photon_yield(TH1F *histo1, TH1F *histo2, TH1F *histo3){
     
     histo1->SetLineColor(kRed);
     histo1->SetLineStyle(1);
