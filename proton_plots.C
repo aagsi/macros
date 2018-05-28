@@ -93,8 +93,8 @@ TH1F *histo_distribution_error_polar_p_yield_sim_wtc[14], *histo_distribution_er
 ////////////////////
 // function   //////
 ////////////////////
-Bool_t bool_error=false;
-Bool_t bool_error_histo=false;
+Bool_t bool_error=true;
+Bool_t bool_error_histo=true;
 Bool_t bool_partII=true;
 Bool_t bool_partII_histo=true;
 Bool_t bool_partIII=false;
@@ -134,7 +134,7 @@ void proton_plots(
     
     Double_t x[n], y_spr_data_sub[n], y_spr_sim_true[n], y_spr_sim_org[n],y_spr_sim_corrected[n],  y_diff_true[n], y_diff_data[n], y_mean_diff_data[n], y_mean_diff_sim[n], y_mean_diff_true[n], y_diff_sim[n];
     Double_t y_cangle_data_sub[n], y_cangle_sim_org[n];
-    Double_t y_cangle_sim_org_true[n];
+    Double_t y_cangle_sim_true[n];
     Double_t y_yield_wo_sim[n], y_yield_wt_sim[n], y_yield_wtc_sim[n],  y_yield_true_sim[n], y_yield_wo_data[n], y_yield_wt_data[n], y_yield_wtc_data[n], y_yield_dac_hits_sys_cus_data[n], y_cangle_data_corrected[n], y_spr_data_org[n], y_cangle_data_org[n], y_spr_data_corrected[n], y_spr_data_corrected_error[n], y_cangle_sim_corrected[n];
     
     int counter =0 ;
@@ -345,8 +345,7 @@ void proton_plots(
                 histo_distribution_error_polar_p_yield_sim_wo[counter_error_polar]->Fill(mean_error_polar_yield_wo_sim);
                 histo_distribution_error_polar_p_yield_sim_wt[counter_error_polar]->Fill(mean_error_polar_yield_wt_sim);
                 histo_distribution_error_polar_p_yield_sim_wtc[counter_error_polar]->Fill(mean_error_polar_yield_wtc_sim);
-                
-                
+
                 Double_t error_polar_cangle_MC_true =  error_polar_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_polar_p_cherenkov_mc_same_path->GetMaximumBin());
                 auto error_polar_resultPair= FitHisto_0( error_polar_p_cherenkov_sim_org , error_polar_cangle_MC_true, 0.06);
                 Double_t error_polar_cangle_error_polar_p_cherenkov_sim_org = error_polar_resultPair.first;
@@ -429,14 +428,12 @@ void proton_plots(
         p_cherenkov_data_corrected=(TH1F*)ffile_data->Get("fHist_correction");
         p_cherenkov_sim_corrected=(TH1F*)ffile_sim->Get("fHist_correction");
         
-        
         ////////////////////////////
         // photon yield histogram //
         ////////////////////////////
         p_yield_wo_sim=(TH1F*)ffile_sim->Get("fnHits");
         p_yield_wt_sim=(TH1F*)ffile_sim->Get("fnHits_p");
         p_yield_wtc_sim=(TH1F*)ffile_sim->Get("fnHits_p_good");
-        
         p_yield_true_sim=(TH1F*)ffile_sim->Get("fnHits_true_sim");
         p_yield_wo_data=(TH1F*)ffile_data->Get("fnHits");
         p_yield_wt_data=(TH1F*)ffile_data->Get("fnHits_p");
@@ -1070,6 +1067,9 @@ void proton_plots(
                     pt_data_corrected->Draw();
                     prt_canvasGet("r_yield_stat_wtc"+nid)->Update();
                 }
+                ////////////////////////////////////////////
+                //  extract sigma from histo distribution //
+                ////////////////////////////////////////////
                 // SPR
                 Double_t error_polar_spr_sim_org= histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->GetRMS();
                 Double_t error_stat_spr_sim_org= histo_distribution_error_stat_spr_p_cherenkov_sim_org[counter]->GetRMS();
@@ -1078,7 +1078,6 @@ void proton_plots(
                 Double_t error_polar_spr_sim_corrected= histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
                 Double_t error_stat_spr_sim_corrected= histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
                 Double_t error_fit_range_spr_sim_corrected= histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
-                
                 // cangle
                 Double_t error_polar_cangle_sim_org= histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->GetRMS();
                 Double_t error_stat_cangle_sim_org= histo_distribution_error_stat_cangle_p_cherenkov_sim_org[counter]->GetRMS();
@@ -1087,7 +1086,6 @@ void proton_plots(
                 Double_t error_polar_cangle_sim_corrected= histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->GetRMS();
                 Double_t error_stat_cangle_sim_corrected= histo_distribution_error_stat_cangle_p_cherenkov_sim_corrected[counter]->GetRMS();
                 Double_t error_fit_range_cangle_sim_corrected= histo_distribution_error_fit_range_cangle_p_cherenkov_sim_corrected[counter]->GetRMS();
-                
                 // Yield
                 Double_t error_polar_p_yield_sim_wo= histo_distribution_error_polar_p_yield_sim_wo[counter]->GetRMS();
                 Double_t error_stat_p_yield_sim_wo= histo_distribution_error_stat_p_yield_sim_wo[counter]->GetRMS();
@@ -1097,8 +1095,9 @@ void proton_plots(
                 /////////
                 Double_t error_polar_p_yield_sim_wtc= histo_distribution_error_polar_p_yield_sim_wtc[counter]->GetRMS();
                 Double_t error_stat_p_yield_sim_wtc= histo_distribution_error_stat_p_yield_sim_wtc[counter]->GetRMS();
-                
-                /////////////////////////////
+                //////////////////////
+                //  Error equations //
+                //////////////////////
                 // spr
                 error_all_y_spr_sim_org[counter]= sqrt (error_polar_spr_sim_org*error_polar_spr_sim_org + error_stat_spr_sim_org * error_stat_spr_sim_org + error_fit_range_spr_sim_org * error_fit_range_spr_sim_org ) ;
                 error_all_y_spr_sim_corrected[counter]= sqrt (error_polar_spr_sim_corrected*error_polar_spr_sim_corrected + error_stat_spr_sim_corrected * error_stat_spr_sim_corrected + error_fit_range_spr_sim_corrected * error_fit_range_spr_sim_corrected ) ;
@@ -1110,20 +1109,41 @@ void proton_plots(
                 error_all_y_yield_wt_sim_corrected[counter]=sqrt(error_polar_p_yield_sim_wt*error_polar_p_yield_sim_wt + error_stat_p_yield_sim_wo *error_stat_p_yield_sim_wt);
                 error_all_y_yield_wtc_sim_corrected[counter]=sqrt(error_polar_p_yield_sim_wtc*error_polar_p_yield_sim_wtc + error_stat_p_yield_sim_wo *error_stat_p_yield_sim_wtc);
             }
+            /////////////////////////
+            //  Fill graphs arrays //
+            /////////////////////////
+            //SPR
+            // error calculated
             y_spr_sim_org[counter]=spr_sim_org*1000.0;
             y_spr_sim_corrected[counter]=spr_sim_corrected*1000.0;
+            // error based on sim
+            y_spr_data_org[counter]=spr_data_org*1000.0;
+            y_spr_data_corrected[counter]=spr_data_corrected*1000.0;
+            // no error calculations yiet
+            y_spr_sim_true[counter]=spr_sim_true*1000.0;
+            y_spr_data_sub[counter]=spr_data_sub*1000.0;
+            // yield
+            //One method: return mean of the histogram
+            // error calculated
+            y_yield_wo_sim[counter]=p_yield_wo_sim->GetMean();
+            y_yield_wt_sim[counter]=p_yield_wt_sim->GetMean();
+            y_yield_wtc_sim[counter]=p_yield_wtc_sim->GetMean();
+            y_yield_true_sim[counter]=p_yield_true_sim->GetMean();
+            // error based on sim
+            y_yield_wo_data[counter]=p_yield_wo_data->GetMean();
+            y_yield_wt_data[counter]=p_yield_wt_data->GetMean();
+            y_yield_wtc_data[counter]=p_yield_wtc_data->GetMean();
+            // cangle
+            // error calculated
             y_cangle_sim_org[counter]=cangle_sim_org;
             y_cangle_sim_corrected[counter]=cangle_sim_corrected;
-            
-            y_spr_sim_true[counter]=spr_sim_true*1000.0;
-            y_spr_data_org[counter]=spr_data_org*1000.0;
-            y_spr_data_sub[counter]=spr_data_sub*1000.0;
-            y_spr_data_corrected[counter]=spr_data_corrected*1000.0;
-            
-            y_cangle_sim_org_true[counter]=cangle_sim_true;
+            // error based on sim
             y_cangle_data_org[counter]=cangle_data_org;
-            y_cangle_data_sub[counter]=cangle_data_sub;
             y_cangle_data_corrected[counter]=cangle_data_corrected;
+            // no error calculations yiet
+            y_cangle_sim_true[counter]=cangle_sim_true;
+            y_cangle_data_sub[counter]=cangle_data_sub;
+
             y_diff_true[counter]=sigma_p_diff_time_mctruth*5;
             y_diff_data[counter]=sigma_p_diff_time_data*5;
             y_diff_sim[counter]=sigma_p_diff_time_sim*5;
@@ -1133,23 +1153,10 @@ void proton_plots(
             
             calc_mom->SetPoint(counter,i,calc_p_tof2tof1_plot1_co);
             calc_tof1tof2_distance->SetPoint(counter,i,distance_tof2tof1_plot1_co);
-            
-            
+
             std::cout<<"############  counter = "<< counter <<std::endl;
             std::cout<<"############  x[counter] = "<< x[counter] <<std::endl;
             std::cout<<"############  y_spr_data_org[counter] = "<< y_spr_data_org[counter] <<std::endl;
-            
-            
-            //method: return mean of the histogram
-            
-            y_yield_wo_sim[counter]=p_yield_wo_sim->GetMean();
-            y_yield_wt_sim[counter]=p_yield_wt_sim->GetMean();
-            y_yield_wtc_sim[counter]=p_yield_wtc_sim->GetMean();
-            y_yield_true_sim[counter]=p_yield_true_sim->GetMean();
-            y_yield_wo_data[counter]=p_yield_wo_data->GetMean();
-            y_yield_wt_data[counter]=p_yield_wt_data->GetMean();
-            y_yield_wtc_data[counter]=p_yield_wtc_data->GetMean();
-            
             
             counter++;
             
@@ -1569,7 +1576,7 @@ void proton_plots(
         
         graph_cangle_data_sub = new TGraph(n,x,y_cangle_data_sub);
         graph_cangle_sim_org = new TGraph(n,x,y_cangle_sim_org);
-        graph_cangle_sim_true = new TGraph(n,x,y_cangle_sim_org_true);
+        graph_cangle_sim_true = new TGraph(n,x,y_cangle_sim_true);
         graph_cangle_sim_corrected = new TGraph(n,x,y_cangle_sim_corrected);
         
         
@@ -2421,7 +2428,6 @@ void histo_style_photon_yield(TH1F *histo1, TH1F *histo2, TH1F *histo3){
     //histo3->SetFillStyle(3002);
 }
 
-
 std::pair<Double_t, Double_t> FitHisto_m(TH1F *hiso_m_fit_option, Double_t cangle_true, Double_t fit_range)
 {
     TF1 *fFit_hiso_m_fit_option = new TF1("fFit_hiso_m_fit_option","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +x*[3]+[4]",0.35,0.9);
@@ -2435,8 +2441,6 @@ std::pair<Double_t, Double_t> FitHisto_m(TH1F *hiso_m_fit_option, Double_t cangl
     Double_t spr_FitHisto_m = fFit_hiso_m_fit_option->GetParameter(2);
     return std::make_pair(cangle_FitHisto_m, spr_FitHisto_m);
 }
-
-
 
 std::pair<Double_t, Double_t> FitHisto_0(TH1F *hiso_0_fit_option, Double_t cangle_true, Double_t fit_range)
 {
