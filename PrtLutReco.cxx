@@ -633,6 +633,22 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             prtangle = fEvent->GetAngle(); //changed 2017
             // here
             std::cout<<"@@@@@@@@@@@@@@@@@@@"<<" prtangle= "<<prtangle<<std::endl;
+            // 5 sigma of true path Cherenkov and time diff. devided by 5
+            if( prtangle==20){chAngleCut=0.038775/5.0*chAngleCut; timeRes=1.862127/5.0*timeRes;}
+            if( prtangle==30){chAngleCut=0.041868/5.0*chAngleCut; timeRes=1.910943/5.0*timeRes;}
+            if( prtangle==40){chAngleCut=0.042588/5.0*chAngleCut; timeRes=1.878375/5.0*timeRes;}
+            if( prtangle==50){chAngleCut=0.041037/5.0*chAngleCut; timeRes=1.895868/5.0*timeRes;}
+            if( prtangle==60){chAngleCut=0.045299/5.0*chAngleCut; timeRes=1.894080/5.0*timeRes;}
+            if( prtangle==70){chAngleCut=0.046581/5.0*chAngleCut; timeRes=1.966618/5.0*timeRes;}
+            if( prtangle==80){chAngleCut=0.045421/5.0*chAngleCut; timeRes=2.132993/5.0*timeRes;}
+            if( prtangle==90){chAngleCut=0.054653/5.0*chAngleCut; timeRes=1.823477/5.0*timeRes;}
+            if( prtangle==100){chAngleCut=0.047778/5.0*chAngleCut; timeRes=1.402801/5.0*timeRes;}
+            if( prtangle==110){chAngleCut=0.046473/5.0*chAngleCut; timeRes=1.383924/5.0*timeRes;}
+            if( prtangle==120){chAngleCut=0.044891/5.0*chAngleCut; timeRes=1.385515/5.0*timeRes;}
+            if( prtangle==130){chAngleCut=0.043477/5.0*chAngleCut; timeRes=1.412302/5.0*timeRes;}
+            if( prtangle==140){chAngleCut=0.041921/5.0*chAngleCut; timeRes=1.437529/5.0*timeRes;}
+            if( prtangle==150){chAngleCut=0.042944/5.0*chAngleCut; timeRes=1.529106/5.0*timeRes;}
+            
             studyId = fEvent->GetGeometry();
             if(studyId==152 || studyId==153 || studyId==161 || studyId==162 || studyId==171 || studyId==172 || studyId==173 || studyId==175 || studyId==176 || studyId==177 || studyId==178) {
                 radiator=2;
@@ -1914,8 +1930,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         
                         solution_number++;
                         if(gPDF ==1) fHistCh[ch]->Fill(tangle ,weight); // good after time cut
-                        
-                        if(0.7<tangle && tangle<0.9) {
+
+                        if(0.6<tangle && tangle<1.0) {
                             if(fabs(tangle-recoAngle)<chAngleCut) {
                                 isGoodHit=true; //default 0.04 rad = 40 mrad
                                 ++photon_ambiguity_counter_wtc;
@@ -1926,20 +1942,25 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         }
                         //if(tofPid==211 &&fabs(tangle-fAnglePi)> chAngleCut) continue;
                         //if(tofPid==2212 &&fabs(tangle-fAngleP)> chAngleCut) continue;
-                        if(method_type == 3 && tangle>0.6 && tangle<1.0){
+                        if(method_type == 3 && tangle>0.6 && tangle<1.0 && gPDF ==2){
                             // use graphs
                             //sum1 += TMath::Log(fHistCh_graph_p[ch]->Eval(tangle)); // use graphs
                             //sum2 += TMath::Log(fHistCh_graph_pi[ch]->Eval(tangle)); // use graphs
                             // use histograms
                             Int_t kp = fHistCh_read_p[ch]->GetXaxis()->FindBin(tangle);
                             Int_t kpi = fHistCh_read_pi[ch]->GetXaxis()->FindBin(tangle);
-                            //sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
-                            //sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
+                            sum1 += TMath::Log(fHistCh_read_p[ch]->GetBinContent(kp));
+                            sum2 += TMath::Log(fHistCh_read_pi[ch]->GetBinContent(kpi));
                             //std::cout<<"No Problem  separation  " <<kp<<" "<<kp<<std::endl;
+                        }
+                        
+                        
+                        if(method_type == 3 && tangle>0.4 && tangle<0.9 && gPDF ==3){
                             // use standared
                             sum1 += TMath::Log(gF1->Eval(tangle)+noise);
                             sum2 += TMath::Log(gF2->Eval(tangle)+noise);
                         }
+                        
 
                         if(fVerbose==3) {
                             TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
@@ -2895,33 +2916,5 @@ Int_t PrtLutReco::FindPdg(Double_t mom, Double_t cangle) {
     }
     return pdg[minid];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
