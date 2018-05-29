@@ -81,43 +81,29 @@ nevents=5000
 #./prtdirc -s 2 -i "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
 #./prtdirc -s 2 -i "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
 
-##############################
-# Eror Calc. for Delta t cut #
-##############################
+##############################################
+# Eror Calc. for Delta t cut and theta c cut #
+##############################################
+# Run batch_tccuts_error_sim.sh
 
-#t=$1
-#recoAngle_p=$2
-#recoAngle_pi=$3
-#k=$4
+t=$1
+recoAngle_p=$2
+recoAngle_pi=$3
+k=$4
 
-#./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1
-#./prtdirc -a $t -l 3 -x "pi+" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1
+./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1
+./prtdirc -a $t -l 3 -x "pi+" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1
 
+# Reco Step t cut
+./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/tcut_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr $k -chcut 5.0 -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
+./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/tcut_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr $k -chcut 5.0 -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
 
-# Reco Step 2
-#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/tcut_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr $k -chcut 5.0 -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
-#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/tcut_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr $k -chcut 5.0 -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
+# Reco Step theta c cut
+./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/ccut_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut $k -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
+./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/ccut_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut $k -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
 
-##############################
-# Eror Calc. for Delta t cut #
-##############################
-
-#t=$1
-#recoAngle_p=$2
-#recoAngle_pi=$3
-#k=$4
-
-
-# Reco Step 2
-#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/ccut_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut $k -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
-#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/ccut_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut $k -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
-
-
-
-
-
+##########################################
 #X step= 67 mm
 #Y step= 14.7 mm
-
 
 #hadd "${DIRs}/theta_${t}_3lsph_all_sim.root" "${DIRs}/theta_${t}_3lsph_proton_sim.root" "${DIRs}/theta_${t}_3lsph_pi_sim.root"

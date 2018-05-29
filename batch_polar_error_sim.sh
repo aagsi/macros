@@ -31,8 +31,8 @@ recoAngle_pi[13]=0.824832
 
 COUNTER=0
 MAX=150
-for ((i=20; i <= MAX ; i+=5)) ; do
-for df in $(seq -0.9 0.01 0.9)
+for ((i=20; i <= MAX ; i+=10)) ; do
+for df in $(seq -0.5 0.01 0.5)
 do
 
 
@@ -43,7 +43,7 @@ total=`echo $i + $df | bc`
 
 echo $total ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
 
-#sbatch $total ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
+#sbatch sim $total ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
 
 done
 COUNTER=$[$COUNTER +1]
