@@ -11,173 +11,109 @@
 # Execute application code
 
 
-#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/root-6.08.06/bin/thisroot.sh
-#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin/geant4.sh
-
-#export LD_LIBRARY_PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/lib:$LD_LIBRARY_PATH
-#export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin:$PATH
-#export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/prttools/bin:$PATH
-
 source /cvmfs/fairroot.gsi.de/fairsoft/may16_root5/bin/thisroot.sh
-#source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/root-6.08.06/bin/thisroot.sh
 source /lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin/geant4.sh
 export LD_LIBRARY_PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/lib:$LD_LIBRARY_PATH
 export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/install/multi_thread_geant4/install/bin:$PATH
 export PATH=/lustre/nyx/panda/aali/prtdrc_2017/final_2017/prttools/bin:$PATH
 
-t=$1
-k=$2
 
 DIRs="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/sim/332"
 DIRl="/lustre/nyx/panda/aali/prtdrc_2017/final_2017/workspace/testbeam/lut"
 
-
-# new cuts:
-#p
-recoAngle20_proton=0.817927
-recoAngle30_proton=0.816989
-recoAngle40_proton=0.816539
-recoAngle50_proton=0.815916
-recoAngle60_proton=0.814639
-recoAngle70_proton=0.813995
-recoAngle80_proton=0.813616
-recoAngle90_proton=0.813517
-recoAngle100_proton=0.813906
-recoAngle110_proton=0.814171
-recoAngle120_proton=0.814349
-recoAngle130_proton=0.815740
-recoAngle140_proton=0.816496
-recoAngle150_proton=0.816786
-
-timeCut20_proton=1.862127
-timeCut30_proton=1.910943
-timeCut40_proton=1.878375
-timeCut50_proton=1.895868
-timeCut60_proton=1.894080
-timeCut70_proton=1.966618
-timeCut80_proton=2.132993
-timeCut90_proton=1.823477
-timeCut100_proton=1.402801
-timeCut110_proton=1.383924
-timeCut120_proton=1.385515
-timeCut130_proton=1.412302
-timeCut140_proton=1.437529
-timeCut150_proton=1.529106
-
-chAngleCut20_proton=0.038775
-chAngleCut30_proton=0.041868
-chAngleCut40_proton=0.042588
-chAngleCut50_proton=0.041037
-chAngleCut60_proton=0.045299
-chAngleCut70_proton=0.046581
-chAngleCut80_proton=0.045421
-chAngleCut90_proton=0.054653
-chAngleCut100_proton=0.047778
-chAngleCut110_proton=0.046473
-chAngleCut120_proton=0.044891
-chAngleCut130_proton=0.043477
-chAngleCut140_proton=0.041921
-chAngleCut150_proton=0.042944
-##########################
-
-#pi
-recoAngle20_pi=0.825962
-recoAngle30_pi=0.824957
-recoAngle40_pi=0.824360
-recoAngle50_pi=0.824033
-recoAngle60_pi=0.822690
-recoAngle70_pi=0.822330
-recoAngle80_pi=0.821902
-recoAngle90_pi=0.822180
-recoAngle100_pi=0.822104
-recoAngle110_pi=0.822211
-recoAngle120_pi=0.822613
-recoAngle130_pi=0.823945
-recoAngle140_pi=0.824355
-recoAngle150_pi=0.824832
-
-timeCut20_pi=1.862249
-timeCut30_pi=1.898656
-timeCut40_pi=1.863541
-timeCut50_pi=1.868133
-timeCut60_pi=1.878101
-timeCut70_pi=1.942607
-timeCut80_pi=2.100297
-timeCut90_pi=1.815946
-timeCut100_pi=1.399277
-timeCut110_pi=1.376950
-timeCut120_pi=1.381105
-timeCut130_pi=1.400709
-timeCut140_pi=1.437260
-timeCut150_pi=1.524456
-
-chAngleCut20_pi=0.038741
-chAngleCut30_pi=0.040075
-chAngleCut40_pi=0.040655
-chAngleCut50_pi=0.041165
-chAngleCut60_pi=0.045630
-chAngleCut70_pi=0.046156
-chAngleCut80_pi=0.045905
-chAngleCut90_pi=0.053783
-chAngleCut100_pi=0.046921
-chAngleCut110_pi=0.044334
-chAngleCut120_pi=0.044868
-chAngleCut130_pi=0.042434
-chAngleCut140_pi=0.040151
-chAngleCut150_pi=0.040652
-
-
-
-
 cd /lustre/nyx/panda/aali/prtdrc_2017/final_2017/prtdirc/build
 nevents=5000
-
 
 #####################
 # Normal Simulations#
 #####################
 # Run batch_sim.sh
+#t=$1
+#recoAngle_p=$2
+#recoAngle_pi=$3
 
 # step(1) simulation 
 #./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/check_theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1
 #./prtdirc -a $t -l 3 -x "pi+" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/check_theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1
 
-./prtdirc -s 2 -i "${DIRs}/check_theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_check_theta_${t}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle "$recoAngle${t}_pi"  -recop 0 -recopi 1 -openchcorr 2
-./prtdirc -s 2 -i "${DIRs}/check_theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_check_theta_${t}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle "$recoAngle${t}_proton"  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/check_theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_check_theta_${t}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/check_theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_check_theta_${t}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
 
 
 #./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/forPDF_theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1 -r 890136
 #./prtdirc -a $t -l 3 -x "pi+"    -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/forPDF_theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1 -r 890136
 
-# i did not run this part
-#./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/smallForAna_theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1 -r 0
-#./prtdirc -a $t -l 3 -x "pi+"    -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/smallForAna_theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1 -r 0
+
 
 #######################################
 # Eror Calc. for Polar angle variation#
 #######################################
 # Run batch_polar_error_sim.sh
 
+#t=$1
+#recoAngle_p=$2
+#recoAngle_pi=$3
+
 # polar angle variation simulation (step 1)
 #./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/polar_error_theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1 -r 0
 #./prtdirc -a $t -l 3 -x "pi+"    -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/polar_error_theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1 -r 0
 
 # polar angle variation  Reco. step 2
-#./prtdirc -s 2 -i "${DIRs}/polar_error_theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_polar_error_theta_${t}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr "$timeCut${k}_proton" -chcut "$chAngleCut${k}_proton" -recoangle "$recoAngle${k}_pi"  -recop 0 -recopi 1 -openchcorr 2
-#./prtdirc -s 2 -i "${DIRs}/polar_error_theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_polar_error_theta_${t}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr "$timeCut${k}_proton" -chcut "$chAngleCut${k}_proton" -recoangle "$recoAngle${k}_proton"  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/polar_error_theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_polar_error_theta_${t}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/polar_error_theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/spr_polar_error_theta_${t}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
+
 
 ##########################################
 # Eror Calc. for sample MC seed variation#
 ##########################################
 # Run batch_stat_error_sim.sh
 
+#t=$1
+#recoAngle_p=$2
+#recoAngle_pi=$3
+#k=$4
+
 #Sim Step 1
-#./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e 1000 -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1 -r $k
-#./prtdirc -a $t -l 3 -x "pi+"    -p 7 -w 0 -g 2017 -e 1000 -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1 -r $k
+#./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -tr 0 -b 1 -r $k
+#./prtdirc -a $t -l 3 -x "pi+"    -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gsx 67 -gsy 14.7 -gx 89.85 -gz 447 -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root" -tr 0 -b 1 -r $k
 
 # Reco Step 2
-#./prtdirc -s 2 -i "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr "$timeCut${t}_proton" -chcut "$chAngleCut${t}_proton" -recoangle "$recoAngle${t}_pi"  -recop 0 -recopi 1 -openchcorr 2
-#./prtdirc -s 2 -i "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr "$timeCut${t}_proton" -chcut "$chAngleCut${t}_proton" -recoangle "$recoAngle${t}_proton"  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/statistics_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut 5.0 -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
+
+##############################
+# Eror Calc. for Delta t cut #
+##############################
+
+#t=$1
+#recoAngle_p=$2
+#recoAngle_pi=$3
+#k=$4
+
+#./prtdirc -a $t -l 3 -x "proton" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_proton_sim.root" -r 0 -tr 0 -b 1
+#./prtdirc -a $t -l 3 -x "pi+" -p 7 -w 0 -g 2017 -e $nevents -h 1 -c 2017 -gz 447 -gx 89.85 -gsx 70 -gsy 0 -o "${DIRs}/theta_${t}_3lsph_pi_sim.root" -r 0 -tr 0 -b 1
+
+
+# Reco Step 2
+#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/tcut_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr $k -chcut 5.0 -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/tcut_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr $k -chcut 5.0 -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
+
+##############################
+# Eror Calc. for Delta t cut #
+##############################
+
+#t=$1
+#recoAngle_p=$2
+#recoAngle_pi=$3
+#k=$4
+
+
+# Reco Step 2
+#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_proton_sim.root" -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/ccut_error_theta_${t}_seed_${k}_3lsph_proton_sim.root" -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut $k -recoangle $recoAngle_p  -recop 1 -recopi 0 -openchcorr 2
+#./prtdirc -s 2 -i "${DIRs}/theta_${t}_3lsph_pi_sim.root"     -u "${DIRl}/lut_opt_332_2018_cs_avr.root" -o "${DIRs}/ccut_error_theta_${t}_seed_${k}_3lsph_pi_sim.root"     -e 0 -v 2 -gpdf 0 -tr 5.0 -chcut $k -recoangle $recoAngle_pi  -recop 0 -recopi 1 -openchcorr 2
+
+
+
 
 
 #X step= 67 mm
