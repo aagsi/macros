@@ -41,9 +41,9 @@ total=`echo $i + $df | bc`
 
 #echo sbatch sim $total $i
 
-echo $total ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
+#echo $total ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
 
-#sbatch sim $total ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
+sbatch sim $total ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
 
 done
 COUNTER=$[$COUNTER +1]

@@ -35,8 +35,8 @@ COUNTER=0
 for t in $(seq 20 10 150)
 do
 
-echo $t ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
-#  sbatch sim $t ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
+#echo $t ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
+  sbatch sim $t ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]}
 
 
 COUNTER=$[$COUNTER +1]

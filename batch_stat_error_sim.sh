@@ -36,9 +36,9 @@ for ((i=20; i <= MAX ; i+=10)) ; do
 for df in $(seq 0 1 100)
 do
 
-echo $i ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]} $df
+#echo $i ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]} $df
 
-#sbatch sim $i ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]} $df
+sbatch sim $i ${recoAngle_proton[$COUNTER]} ${recoAngle_pi[$COUNTER]} $df
 
 done
 COUNTER=$[$COUNTER +1]
