@@ -95,8 +95,8 @@ TH1F *histo_distribution_error_polar_p_yield_sim_wtc[14], *histo_distribution_er
 ////////////////////
 // function   //////
 ////////////////////
-Bool_t bool_error=true;
-Bool_t bool_error_histo=true;
+Bool_t bool_error=false;
+Bool_t bool_error_histo=false;
 Bool_t bool_partII=true;
 Bool_t bool_partII_histo=true;
 Bool_t bool_partIII=true;
@@ -105,21 +105,8 @@ void proton_plots(
                   Bool_t bool_part1_1=false,
                   Bool_t bool_part1_2=false,
                   Bool_t bool_part1_3=false,
-                  Bool_t bool_part1_4=false,
-                  
-                  Bool_t bool_part2=false,
-                  Bool_t bool_part2_1=false,
-                  Bool_t bool_part2_2=false,
-                  Bool_t bool_part2_3=false,
-                  Bool_t bool_part2_4=false,
-                  Bool_t bool_part2_5=false,
-                  Bool_t bool_part2_6=false,
-                  Bool_t bool_part2_7=false,
-                  
-                  Bool_t bool_part3=false,
-                  Bool_t bool_part3_1=false,
-                  Bool_t bool_part3_2=false,
-                  Bool_t bool_part3_3=false)
+                  Bool_t bool_part1_4=false
+                  )
 {
     vector<Double_t> chAngleCut(14);
     vector<Double_t> recoAngle(14);
@@ -389,8 +376,8 @@ void proton_plots(
         TString nid = Form("_%2.0d", i);
         // proton
         TString cherenkov_data_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wtb_%d_sph_p_data_spr.root", i);
-        TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
-        //TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%d_seed_0_3lsph_proton_sim_spr.root", i);
+        //TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
+        TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%d_seed_0_3lsph_proton_sim_spr.root", i);
         //TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/check/spr_check_theta_%d_3lsph_proton_sim_spr.root", i);
         
         // pi
@@ -590,9 +577,6 @@ void proton_plots(
                 line_ch_pi_v->Draw();
                 prt_canvasGet("r_corrected_match"+nid)->Update();
             }
-            
-            
-            
         }
         ///////////////////
         ///// part II /////
@@ -1836,11 +1820,9 @@ void proton_plots(
     delete p_photon_time_sim_calc;
     delete p_photon_time_data_calc;
     
-    
     //    delete calc_mom;
-    //    delete calc_e_mom ;
+    //    delete calc_e_mom;
     //    delete calc_e_tof1tof2_distance;
-    
     
     ffile_sim->Close();
     ffile_data->Close();
