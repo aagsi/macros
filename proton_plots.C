@@ -219,7 +219,7 @@ void proton_plots(
             // Error t and c cuts     ////
             //////////////////////////////
             
-            for (int j=400; j<=600; j+=5) {
+            for (int j=400; j<=600; j+=5) { // 4 to 6 sigma of the true path inside prisme
                 Double_t jj = (Float_t) j/100.0 ;
                 TString jj_string = Form("_seed_%.2f", jj);
                 TString calc_error_tcut_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_tcut/tcut_error_theta_%d"+jj_string+"_3lsph_proton_sim_spr.root", i); // seed is just typo in the files name
@@ -275,7 +275,7 @@ void proton_plots(
             // Error fit range      ///
             ///////////////////////////
             
-            for (int j=5; j<=7; j+=1) { // changable
+            for (int j=5; j<=7; j+=1) { // changable | 0.05 to 0.07 rad around the MaximumBin of the true path inside prism
                 TString calc_error_fit_range_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
                 cout<<"sim path for error calc p = " <<calc_error_fit_range_sim_p_path<<endl;
                 string path_calc_error_fit_range_sim_p = (string)calc_error_fit_range_sim_p_path;
@@ -304,6 +304,7 @@ void proton_plots(
                 ///////////////////
                 // Close files  ///
                 ///////////////////
+                
                 delete ffile_error_fit_range_sim_p;
             }
             
@@ -312,7 +313,7 @@ void proton_plots(
             // Error statistics     ///
             ///////////////////////////
             
-            for (int j=0; j<=100; j+=1) {
+            for (int j=0; j<=100; j+=1) { // 100 sample
                 TString calc_error_stat_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%i_seed_%d_3lsph_proton_sim_spr.root", i, j);
                 cout<<"sim path for error calc p = " <<calc_error_stat_sim_p_path<<endl;
                 string path_calc_error_stat_sim_p = (string)calc_error_stat_sim_p_path;
@@ -359,8 +360,7 @@ void proton_plots(
             // Error Polar angle    ///
             ///////////////////////////
             
-            for (int j=-10; j<=10; j+=1) {
-                // for big ~ 180 file per point
+            for (int j=-10; j<=10; j+=1) { // +/- 0.1 deg variation in polar angle
                 Double_t kk = (Float_t) i+j/100.0 ;
                 TString kk_string = Form("_theta_%.2f", kk);
                 cout<<"######## ###### ####### ####### kk_string" <<kk_string<<endl;
@@ -1200,7 +1200,7 @@ void proton_plots(
                 mg_error_contributions_spr_data_corrected->Add(g_fit_range_error_spr_data_corrected);
                 
                 TLegend *leg_error_contributions_spr_data_corrected = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
-                leg_error_contributions_spr_data_corrected->SetHeader("SPR Error contributions | Data with corrections (proton)","C");
+                leg_error_contributions_spr_data_corrected->SetHeader("SPR Error contributions (proton)","C");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_stat_error_spr_data_corrected, "Statistical error ", "lp");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_polar_error_spr_data_corrected, "Polar angle variation error", "lp");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_tcut_error_spr_data_corrected, "Time cut error", "lp");
@@ -1588,6 +1588,7 @@ void proton_plots(
             c1->cd();
         }
         ++counter_error;
+
     }
     
     //                for (Int_t e=1; e<=13; e++) {
@@ -1898,6 +1899,8 @@ void proton_plots(
     //    delete calc_e_tof1tof2_distance;
     ffile_sim->Close();
     ffile_data->Close();
+
+    
     std::cout<<"#################################################################"<<std::endl;
     std::cout<<"############ P cherenkov angle= "<< fAngleP <<std::endl;
     std::cout<<"############ Pi cherenkov angle= "<< fAnglePi <<std::endl;
