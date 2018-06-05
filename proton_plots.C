@@ -32,6 +32,7 @@
 #include "TVirtualFitter.h"
 #define PI 3.14159265
 #include <tuple>
+#include "TImage.h"
 
 TCanvas *c1 = new TCanvas("c1","c1",300,200);
 ////////////////
@@ -95,12 +96,17 @@ TH1F *histo_distribution_error_polar_p_yield_sim_wt[14], *histo_distribution_err
 TH1F *histo_distribution_error_polar_p_yield_sim_wtc[14], *histo_distribution_error_stat_p_yield_sim_wtc[14], *histo_distribution_error_fit_range_p_yield_sim_wtc[14];
 //Histo distribution t and c cuts error
 TH1F *histo_distribution_error_tcut_spr_p_cherenkov_sim_org[14], *histo_distribution_error_tcut_spr_p_cherenkov_sim_corrected[14], *histo_distribution_error_tcut_spr_p_cherenkov_mc_same_path[14], * histo_distribution_error_tcut_p_yield_sim_wt[14], *histo_distribution_error_tcut_p_yield_sim_wtc[14], *histo_distribution_error_ccut_p_yield_sim_wtc[14], *histo_distribution_error_tcut_cangle_p_cherenkov_sim_org[14], * histo_distribution_error_tcut_cangle_p_cherenkov_sim_corrected[14];
+
+
+
+// candel
+//TH2I * histo_distribution_error_polar_candel[14];
 ////////////////////
 // function   //////
 ////////////////////
 Bool_t bool_error=true;
 Bool_t bool_error_histo=false;
-Bool_t bool_partII=true;
+Bool_t bool_partII=false;
 Bool_t bool_partII_histo=false;
 Bool_t bool_partIII=false;
 void proton_plots(
@@ -136,7 +142,7 @@ void proton_plots(
     TH1F *p_yield_wo_data, *p_yield_wt_data, *p_yield_wtc_data, *dac_hits_data, *dac_hits_sys_cus_data;
     TH1F *hist_ambiguity_lut_sim, *histo_photon_ambiguity_wo_sim, *histo_photon_ambiguity_wt_sim, *histo_photon_ambiguity_wtc_sim;
     TH1F *hist_ambiguity_lut_data, *histo_photon_ambiguity_wo_data, *histo_photon_ambiguity_wt_data, *histo_photon_ambiguity_wtc_data;
-    THStack *hs, *hs2, *hs3, *hs4, *hs5, *hs6, *hs7, *hs8, *hs9, *hs10;
+    THStack *hs, *hs2, *hs3, *hs4, *hs5, *hs6, *hs7, *hs8, *hs9, *hs10,*hs_polar_yield,* hs_stat_yield, *hs_tcut_yield, *hs_ccut_yield ;
     std::cout<<"############"<< " no problem 0 " <<std::endl;
     TGraph *calc_mom = new TGraph();
     TGraph *calc_e_mom = new TGraph();
@@ -200,6 +206,9 @@ void proton_plots(
             histo_distribution_error_polar_p_yield_sim_wt[e] = new TH1F(Form("histo_distribution_error_polar_p_yield_sim_wt_%d",e),Form("histo_distribution_error_polar_p_yield_sim_wt_%d; Yield [#];entries [#]",e), 500,0,100);
             histo_distribution_error_polar_p_yield_sim_wo[e] = new TH1F(Form("histo_distribution_error_polar_p_yield_sim_wo_%d",e),Form("histo_distribution_error_polar_p_yield_sim_wo_%d; Yield [#];entries [#]",e), 500,0,100);
             histo_style_photon_yield(histo_distribution_error_polar_p_yield_sim_wo[e], histo_distribution_error_polar_p_yield_sim_wt[e],histo_distribution_error_polar_p_yield_sim_wtc[e]);
+            
+            
+            //histo_distribution_error_polar_candel[e] = new TH2I(Form("histo_distribution_error_polar_candel%d",e),Form("histo_distribution_error_polar_candel%d; SPR [mrad]; #theta_{c} [mrad]",e),1,6,14,1,0.8,0.85);
         }
     }
     
@@ -207,18 +216,21 @@ void proton_plots(
     // Polar Angle Loop     ////
     ////////////////////////////
     Int_t counter_error=0;
-    for (int i=20; i<=150; i+=10) {
+    Int_t counter_plots_polar=0;
+    Int_t counter_plots_stat=0;
+    Int_t counter_plots_fit_range=0;
+    Int_t counter_plots_tcut=0;
+    for (int i=20; i<=20; i+=10) {
         prtangle= i;
         TString nid = Form("_%2.0d", i);
+        TString nid_title = Form("%2.0d", i);
         ///////////////////////////
         // Error Boolian angle  ///
         ///////////////////////////
         if(bool_error){
-            
             //////////////////////////////
             // Error t and c cuts     ////
             //////////////////////////////
-            
             for (int j=400; j<=600; j+=5) { // 4 to 6 sigma of the true path inside prisme
                 Double_t jj = (Float_t) j/100.0 ;
                 TString jj_string = Form("_seed_%.2f", jj);
@@ -256,26 +268,75 @@ void proton_plots(
                 histo_distribution_error_tcut_spr_p_cherenkov_sim_corrected[counter_error]->Fill(error_tcut_spr_error_tcut_p_cherenkov_sim_corrected*1000.0);
                 histo_distribution_error_tcut_cangle_p_cherenkov_sim_org[counter_error]->Fill(error_tcut_cangle_error_tcut_p_cherenkov_sim_org);
                 histo_distribution_error_tcut_cangle_p_cherenkov_sim_corrected[counter_error]->Fill(error_tcut_cangle_error_tcut_p_cherenkov_sim_corrected);
-                
-                delete error_tcut_p_cherenkov_sim_org;
-                delete error_tcut_p_cherenkov_mc_same_path;
-                delete error_tcut_p_cherenkov_sim_corrected;
-                delete error_tcut_yield_wt_sim;
-                delete error_tcut_yield_wtc_sim;
-                delete error_ccut_yield_wtc_sim;
+
+                if (true) {
+                    gStyle->SetOptFit(1);
+                    TString kk_s = Form(" %2.2f sigma", jj);
+                    std::cout<<"#########################"<< " kk_s " << kk_s << "######### counter_plots_tcut "<<counter_plots_tcut<<std::endl;
+                    
+                    TCanvas *canvas_array_tcut_1 = new TCanvas(Form("canvas_array_tcut_1_%d",counter_plots_tcut),Form("canvas_array_tcut_1_%d",counter_plots_tcut),800,500);
+                    //error_tcut_p_cherenkov_sim_corrected->Settcuts(0);
+                    error_tcut_p_cherenkov_sim_corrected-> SetTitle(Form("#Delta t_{diff} cut "+kk_s+"| Polar angle"+nid_title+" | sim | Ambiguity dist. corrected | (proton) ") );
+                    error_tcut_p_cherenkov_sim_corrected->Draw();
+                    TImage *img_canvas_array_tcut_1 = TImage::Create();
+                    img_canvas_array_tcut_1->FromPad(canvas_array_tcut_1);
+                    img_canvas_array_tcut_1->WriteImage(Form("r_error_cherenkov_tcut_corrected_%d.png", counter_plots_tcut) );
+                    delete canvas_array_tcut_1;
+                    delete img_canvas_array_tcut_1;
+                    
+                    TCanvas *canvas_array_tcut_2 = new TCanvas(Form("canvas_array_tcut_2_%d",counter_plots_tcut),Form("canvas_array_tcut_2_%d",counter_plots_tcut),800,500);
+                    error_tcut_p_cherenkov_sim_org-> SetTitle(Form("#Delta t_{diff} cut "+kk_s+"| Polar angle"+nid_title+" | sim | Ambiguity dist. wo correction | (proton) ") );
+                    error_tcut_p_cherenkov_sim_org->Draw();
+                    TImage *img_canvas_array_tcut_2 = TImage::Create();
+                    img_canvas_array_tcut_2->FromPad(canvas_array_tcut_2);
+                    img_canvas_array_tcut_2->WriteImage(Form("r_error_cherenkov_tcut_org_%d.png", counter_plots_tcut) );
+                    delete canvas_array_tcut_2;
+                    delete img_canvas_array_tcut_2;
+                    
+                    TCanvas *canvas_array_tcut_3 = new TCanvas(Form("canvas_array_tcut_3_%d",counter_plots_tcut),Form("canvas_array_tcut_3_%d",counter_plots_tcut),800,500);
+                    histo_style_photon_yield(error_ccut_yield_wtc_sim, error_tcut_yield_wt_sim, error_tcut_yield_wtc_sim);
+                    TLegend * legend_yield_sim_tcut= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
+                    legend_yield_sim_tcut->SetHeader("Sim | DIRC photon solutions (proton)","C");
+                    legend_yield_sim_tcut->AddEntry(error_tcut_yield_wt_sim,"With time cut ","l");
+                    legend_yield_sim_tcut->AddEntry(error_tcut_yield_wtc_sim,"With #theta_{C} and time cuts","l");
+                    
+                    hs_tcut_yield = new THStack("hs","Stacked 1D histograms");
+                    hs_tcut_yield->Add(error_tcut_yield_wt_sim);
+                    hs_tcut_yield->Add(error_tcut_yield_wtc_sim);
+                    hs_tcut_yield->SetTitle(Form("#Delta t_{diff} cut "+kk_s+"| Polar angle"+nid_title+" | sim | DIRC photon solutions| (proton) ") );
+                    hs_tcut_yield->Draw("nostack");
+                    hs_tcut_yield->GetYaxis()->SetTitle("entries [#]");
+                    hs_tcut_yield->GetXaxis()->SetTitle("number of photon solutions per track [#]");
+                    legend_yield_sim_tcut->Draw();
+                    
+                    TImage *img_canvas_array_tcut_3 = TImage::Create();
+                    img_canvas_array_tcut_3->FromPad(canvas_array_tcut_3);
+                    img_canvas_array_tcut_3->WriteImage(Form("r_error_yield_tcut_%d.png", counter_plots_tcut) );
+                    delete canvas_array_tcut_3;
+                    delete img_canvas_array_tcut_3;
+                    /// ccut
+                    TCanvas *canvas_array_ccut_4 = new TCanvas(Form("canvas_array_ccut_4_%d",counter_plots_tcut),Form("canvas_array_ccut_4_%d",counter_plots_tcut),800,500);
+                    error_ccut_yield_wtc_sim-> SetTitle(Form("#Delta#theta_{c} cut "+kk_s+"| Polar angle"+nid_title+" | sim | Ambiguity dist. wo correction | (proton) ") );
+                    error_ccut_yield_wtc_sim->Draw();
+                    TImage *img_canvas_array_ccut_4 = TImage::Create();
+                    img_canvas_array_ccut_4->FromPad(canvas_array_ccut_4);
+                    img_canvas_array_ccut_4->WriteImage(Form("r_error_yield_ccut_%d.png", counter_plots_tcut) );
+                    delete canvas_array_ccut_4;
+                    delete img_canvas_array_ccut_4;
+                }
+
                 ///////////////////
                 // Close files  ///
                 ///////////////////
                 delete ffile_error_tcut_sim_p;
                 delete ffile_error_ccut_sim_p;
+                ++counter_plots_tcut;
             }
-            
-            
+
             ///////////////////////////
             // Error fit range      ///
             ///////////////////////////
-            
-            for (int j=5; j<=7; j+=1) { // changable | 0.05 to 0.07 rad around the MaximumBin of the true path inside prism
+            for (int j=500; j<=700; j+=1) { // changable | 0.05 to 0.07 rad around the MaximumBin of the true path inside prism
                 TString calc_error_fit_range_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
                 cout<<"sim path for error calc p = " <<calc_error_fit_range_sim_p_path<<endl;
                 string path_calc_error_fit_range_sim_p = (string)calc_error_fit_range_sim_p_path;
@@ -286,7 +347,7 @@ void proton_plots(
                 error_fit_range_p_cherenkov_sim_corrected=(TH1F*)ffile_error_fit_range_sim_p->Get("fHist_correction");
                 error_fit_range_p_cherenkov_mc_same_path=(TH1F*)ffile_error_fit_range_sim_p->Get("fHist_same_path");
                 Double_t error_fit_range_cangle_MC_true =  error_fit_range_p_cherenkov_mc_same_path->GetXaxis()->GetBinCenter(error_fit_range_p_cherenkov_mc_same_path->GetMaximumBin());
-                Double_t fit_range_value= j /100.0; // changable
+                Double_t fit_range_value= j /10000.0; // changable
                 auto error_fit_range_resultPair_org= FitHisto_0( error_fit_range_p_cherenkov_sim_org , error_fit_range_cangle_MC_true, fit_range_value);
                 Double_t error_fit_range_cangle_error_fit_range_p_cherenkov_sim_org = error_fit_range_resultPair_org.first;
                 Double_t error_fit_range_spr_error_fit_range_p_cherenkov_sim_org = error_fit_range_resultPair_org.second;
@@ -298,21 +359,41 @@ void proton_plots(
                 histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter_error]->Fill(error_fit_range_spr_error_fit_range_p_cherenkov_sim_corrected*1000.0);
                 histo_distribution_error_fit_range_cangle_p_cherenkov_sim_org[counter_error]->Fill(error_fit_range_cangle_error_fit_range_p_cherenkov_sim_org);
                 histo_distribution_error_fit_range_cangle_p_cherenkov_sim_corrected[counter_error]->Fill(error_fit_range_cangle_error_fit_range_p_cherenkov_sim_corrected);
-                delete error_fit_range_p_cherenkov_sim_org;
-                delete error_fit_range_p_cherenkov_mc_same_path;
-                delete error_fit_range_p_cherenkov_sim_corrected;
+                if (false) {
+                    gStyle->SetOptFit(1);
+                    TString kk_s = Form("+/- %1.3f", fit_range_value);
+                    TCanvas *canvas_array_fit_range_1 = new TCanvas(Form("canvas_array_fit_range_1_%d",counter_plots_fit_range),Form("canvas_array_fit_range_1_%d",counter_plots_fit_range),800,500);
+                    //error_fit_range_p_cherenkov_sim_corrected->Setfit_ranges(0);
+                    error_fit_range_p_cherenkov_sim_corrected-> SetTitle(Form("fit rang"+kk_s+"rad around the MaximumBin true MC | Polar angle"+nid_title+" | sim | Ambiguity dist. corrected | (proton) ") );
+                    error_fit_range_p_cherenkov_sim_corrected->SetTitleSize(1.0);
+                    error_fit_range_p_cherenkov_sim_corrected->Draw();
+                    TImage *img_canvas_array_fit_range_1 = TImage::Create();
+                    img_canvas_array_fit_range_1->FromPad(canvas_array_fit_range_1);
+                    img_canvas_array_fit_range_1->WriteImage(Form("r_error_cherenkov_fit_range_corrected_%d.png", counter_plots_fit_range) );
+                    delete canvas_array_fit_range_1;
+                    delete img_canvas_array_fit_range_1;
+                    
+                    TCanvas *canvas_array_fit_range_2 = new TCanvas(Form("canvas_array_fit_range_2_%d",counter_plots_fit_range),Form("canvas_array_fit_range_2_%d",counter_plots_fit_range),800,500);
+                    error_fit_range_p_cherenkov_sim_org-> SetTitle(Form("fit rang"+kk_s+" around the MaximumBin true MC | Polar angle"+nid_title+" | sim | Ambiguity dist. wo correction | (proton) ") );
+                    error_fit_range_p_cherenkov_sim_org->SetTitleSize(1.0);
+                    error_fit_range_p_cherenkov_sim_org->Draw();
+                    TImage *img_canvas_array_fit_range_2 = TImage::Create();
+                    img_canvas_array_fit_range_2->FromPad(canvas_array_fit_range_2);
+                    img_canvas_array_fit_range_2->WriteImage(Form("r_error_cherenkov_fit_range_org_%d.png", counter_plots_fit_range) );
+                    delete canvas_array_fit_range_2;
+                    delete img_canvas_array_fit_range_2;
+                }
                 ///////////////////
                 // Close files  ///
                 ///////////////////
-                
                 delete ffile_error_fit_range_sim_p;
+                ++counter_plots_fit_range;
             }
             
             
             ///////////////////////////
             // Error statistics     ///
             ///////////////////////////
-            
             for (int j=0; j<=100; j+=1) { // 100 sample
                 TString calc_error_stat_sim_p_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_stat/statistics_error_theta_%i_seed_%d_3lsph_proton_sim_spr.root", i, j);
                 cout<<"sim path for error calc p = " <<calc_error_stat_sim_p_path<<endl;
@@ -343,27 +424,62 @@ void proton_plots(
                 histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter_error]->Fill(error_stat_spr_error_stat_p_cherenkov_sim_corrected*1000.0);
                 histo_distribution_error_stat_cangle_p_cherenkov_sim_org[counter_error]->Fill(error_stat_cangle_error_stat_p_cherenkov_sim_org);
                 histo_distribution_error_stat_cangle_p_cherenkov_sim_corrected[counter_error]->Fill(error_stat_cangle_error_stat_p_cherenkov_sim_corrected);
-                delete error_stat_p_cherenkov_sim_org;
-                delete error_stat_p_cherenkov_mc_same_path;
-                delete error_stat_p_cherenkov_sim_corrected;
-                delete error_stat_yield_wo_sim;
-                delete error_stat_yield_wt_sim;
-                delete error_stat_yield_wtc_sim;
+                if (false) {
+                    gStyle->SetOptFit(1);
+                    TString kk_s = Form(" seed %d", j);
+                    TCanvas *canvas_array_stat_1 = new TCanvas(Form("canvas_array_stat_1_%d",counter_plots_stat),Form("canvas_array_stat_1_%d",counter_plots_stat),800,500);
+                    //error_stat_p_cherenkov_sim_corrected->SetStats(0);
+                    error_stat_p_cherenkov_sim_corrected-> SetTitle(Form("Statistical sample "+kk_s+"| Polar angle"+nid_title+" | sim | Cherenkov ambiguity distribution corrected | (proton) ") );
+                    error_stat_p_cherenkov_sim_corrected->Draw();
+                    TImage *img_canvas_array_stat_1 = TImage::Create();
+                    img_canvas_array_stat_1->FromPad(canvas_array_stat_1);
+                    img_canvas_array_stat_1->WriteImage(Form("r_error_cherenkov_stat_corrected_%d.png", counter_plots_stat) );
+                    delete canvas_array_stat_1;
+                    delete img_canvas_array_stat_1;
+                    TCanvas *canvas_array_stat_2 = new TCanvas(Form("canvas_array_stat_2_%d",counter_plots_stat),Form("canvas_array_stat_2_%d",counter_plots_stat),800,500);
+                    error_stat_p_cherenkov_sim_org-> SetTitle(Form("Statistical sample"+kk_s+"| Polar angle"+nid_title+" | sim | Cherenkov ambiguity distribution wo correction | (proton) ") );
+                    error_stat_p_cherenkov_sim_org->Draw();
+                    TImage *img_canvas_array_stat_2 = TImage::Create();
+                    img_canvas_array_stat_2->FromPad(canvas_array_stat_2);
+                    img_canvas_array_stat_2->WriteImage(Form("r_error_cherenkov_stat_org_%d.png", counter_plots_stat) );
+                    delete canvas_array_stat_2;
+                    delete img_canvas_array_stat_2;
+                    TCanvas *canvas_array_stat_3 = new TCanvas(Form("canvas_array_stat_3_%d",counter_plots_stat),Form("canvas_array_stat_3_%d",counter_plots_stat),800,500);
+                    histo_style_photon_yield(error_stat_yield_wo_sim, error_stat_yield_wt_sim, error_stat_yield_wtc_sim);
+                    TLegend * legend_yield_sim_stat= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
+                    legend_yield_sim_stat->SetHeader("Sim | DIRC photon solutions (proton)","C");
+                    legend_yield_sim_stat->AddEntry(error_stat_yield_wo_sim,"Without cuts  ","l");
+                    legend_yield_sim_stat->AddEntry(error_stat_yield_wt_sim,"With time cut ","l");
+                    legend_yield_sim_stat->AddEntry(error_stat_yield_wtc_sim,"With #theta_{C} and time cuts","l");
+                    hs_stat_yield = new THStack("hs","Stacked 1D histograms");
+                    hs_stat_yield->Add(error_stat_yield_wo_sim);
+                    hs_stat_yield->Add(error_stat_yield_wt_sim);
+                    hs_stat_yield->Add(error_stat_yield_wtc_sim);
+                    hs_stat_yield->SetTitle(Form("Statistical sample "+kk_s+"| Polar angle"+nid_title+" | sim |  DIRC photon solutions| (proton) ") );
+                    hs_stat_yield->Draw("nostack");
+                    hs_stat_yield->GetYaxis()->SetTitle("entries [#]");
+                    hs_stat_yield->GetXaxis()->SetTitle("number of photon solutions per track [#]");
+                    legend_yield_sim_stat->Draw();
+                    TImage *img_canvas_array_stat_3 = TImage::Create();
+                    img_canvas_array_stat_3->FromPad(canvas_array_stat_3);
+                    img_canvas_array_stat_3->WriteImage(Form("r_error_yield_stat_%d.png", counter_plots_stat) );
+                    delete canvas_array_stat_3;
+                    delete img_canvas_array_stat_3;
+                    
+                }
                 ///////////////////
                 // Close files  ///
                 ///////////////////
                 delete ffile_error_stat_sim_p;
+                ++counter_plots_stat;
             }
-            
             
             ///////////////////////////
             // Error Polar angle    ///
             ///////////////////////////
-            
             for (int j=-10; j<=10; j+=1) { // +/- 0.1 deg variation in polar angle
                 Double_t kk = (Float_t) i+j/100.0 ;
                 TString kk_string = Form("_theta_%.2f", kk);
-                cout<<"######## ###### ####### ####### kk_string" <<kk_string<<endl;
                 TString calc_error_polar_sim_p_path = "/Users/ahmed/perforamnce/spr_data_sim/error_polar/spr_polar_error"+kk_string+"_3lsph_proton_sim_spr.root";
                 cout<<"sim path for error calc p = " <<calc_error_polar_sim_p_path<<endl;
                 string path_calc_error_polar_sim_p = (string)calc_error_polar_sim_p_path;
@@ -393,21 +509,58 @@ void proton_plots(
                 histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter_error]->Fill(error_polar_spr_error_polar_p_cherenkov_sim_corrected*1000.0);
                 histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter_error]->Fill(error_polar_cangle_error_polar_p_cherenkov_sim_org);
                 histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter_error]->Fill(error_polar_cangle_error_polar_p_cherenkov_sim_corrected);
-                delete error_polar_p_cherenkov_sim_org;
-                delete error_polar_p_cherenkov_mc_same_path;
-                delete error_polar_p_cherenkov_sim_corrected;
-                delete error_polar_yield_wo_sim;
-                delete error_polar_yield_wt_sim;
-                delete error_polar_yield_wtc_sim;
+                //histo_distribution_error_polar_candel[counter_error]->Fill(error_polar_spr_error_polar_p_cherenkov_sim_org*1000.0, error_polar_cangle_error_polar_p_cherenkov_sim_org);
+                
+                if (false) {
+                    gStyle->SetOptFit(1);
+                    TString kk_s = Form(" #theta %.2f", kk);
+                    TCanvas *canvas_array_polar_1 = new TCanvas(Form("canvas_array_polar_1_%d",counter_plots_polar),Form("canvas_array_polar_1_%d",counter_plots_polar),800,500);
+                    //error_polar_p_cherenkov_sim_corrected->SetStats(0);
+                    error_polar_p_cherenkov_sim_corrected-> SetTitle(Form("Polar angle variation |"+kk_s+" | sim | Cherenkov ambiguity distribution corrected | (proton) ") );
+                    error_polar_p_cherenkov_sim_corrected->Draw();
+                    TImage *img_canvas_array_polar_1 = TImage::Create();
+                    img_canvas_array_polar_1->FromPad(canvas_array_polar_1);
+                    img_canvas_array_polar_1->WriteImage(Form("r_error_cherenkov_polar_corrected_%d.png", counter_plots_polar) );
+                    delete canvas_array_polar_1;
+                    delete img_canvas_array_polar_1;
+                    TCanvas *canvas_array_polar_2 = new TCanvas(Form("canvas_array_polar_2_%d",counter_plots_polar),Form("canvas_array_polar_2_%d",counter_plots_polar),800,500);
+                    error_polar_p_cherenkov_sim_org-> SetTitle(Form("Polar angle variation |"+kk_s+" | sim | Cherenkov ambiguity distribution wo correction | (proton) ") );
+                    error_polar_p_cherenkov_sim_org->Draw();
+                    TImage *img_canvas_array_polar_2 = TImage::Create();
+                    img_canvas_array_polar_2->FromPad(canvas_array_polar_2);
+                    img_canvas_array_polar_2->WriteImage(Form("r_error_cherenkov_polar_org_%d.png", counter_plots_polar) );
+                    delete canvas_array_polar_2;
+                    delete img_canvas_array_polar_2;
+                    TCanvas *canvas_array_polar_3 = new TCanvas(Form("canvas_array_polar_3_%d",counter_plots_polar),Form("canvas_array_polar_3_%d",counter_plots_polar),800,500);
+                    histo_style_photon_yield(error_polar_yield_wo_sim, error_polar_yield_wt_sim, error_polar_yield_wtc_sim);
+                    TLegend * legend_yield_sim_polar= new TLegend(0.552632, 0.606952,  0.992481,   0.903743  );
+                    legend_yield_sim_polar->SetHeader("Sim | DIRC photon solutions (proton)","C");
+                    legend_yield_sim_polar->AddEntry(error_polar_yield_wo_sim,"Without cuts  ","l");
+                    legend_yield_sim_polar->AddEntry(error_polar_yield_wt_sim,"With time cut ","l");
+                    legend_yield_sim_polar->AddEntry(error_polar_yield_wtc_sim,"With #theta_{C} and time cuts","l");
+                    hs_polar_yield = new THStack("hs","Stacked 1D histograms");
+                    hs_polar_yield->Add(error_polar_yield_wo_sim);
+                    hs_polar_yield->Add(error_polar_yield_wt_sim);
+                    hs_polar_yield->Add(error_polar_yield_wtc_sim);
+                    hs_polar_yield->SetTitle(Form("Polar angle variation |"+kk_s+" | sim | DIRC photon solutions| (proton) ") );
+                    hs_polar_yield->Draw("nostack");
+                    hs_polar_yield->GetYaxis()->SetTitle("entries [#]");
+                    hs_polar_yield->GetXaxis()->SetTitle("number of photon solutions per track [#]");
+                    legend_yield_sim_polar->Draw();
+                    TImage *img_canvas_array_polar_3 = TImage::Create();
+                    img_canvas_array_polar_3->FromPad(canvas_array_polar_3);
+                    img_canvas_array_polar_3->WriteImage(Form("r_error_yield_polar_%d.png", counter_plots_polar) );
+                    delete canvas_array_polar_3;
+                    delete img_canvas_array_polar_3;
+                }
+                
                 ///////////////////
                 // Close files  ///
                 ///////////////////
                 delete ffile_error_polar_sim_p;
+                ++counter_plots_polar;
             }
-            
         }
-        
-
         
         ///////////////////////////
         // Analysis             ///
@@ -1215,6 +1368,7 @@ void proton_plots(
                 gPad->Update();
                 
                 
+                
             }
             /////////////////////////
             //  Fill graphs arrays //
@@ -1588,14 +1742,14 @@ void proton_plots(
             c1->cd();
         }
         ++counter_error;
-
+        
     }
     
-    //                for (Int_t e=1; e<=13; e++) {
-    //                    TString ko = Form("_%d", e);
-    //                    prt_canvasAdd("r_test_polar"+ko,800,400);
-    //                    histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[e]->Draw();
-    //                }
+    //    for (Int_t e=1; e<=13; e++) {
+    //        TString ko = Form("_%d", e);
+    //        prt_canvasAdd("r_test_polar"+ko,800,400);
+    //        histo_distribution_error_polar_candel[e]->Draw("candle3");
+    //    }
     
     ///////////////////
     ///// part III ////
@@ -1899,7 +2053,7 @@ void proton_plots(
     //    delete calc_e_tof1tof2_distance;
     ffile_sim->Close();
     ffile_data->Close();
-
+    
     
     std::cout<<"#################################################################"<<std::endl;
     std::cout<<"############ P cherenkov angle= "<< fAngleP <<std::endl;
