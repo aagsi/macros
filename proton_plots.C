@@ -169,8 +169,6 @@ void proton_plots(
     
     TGraphErrors *g_stat_error_yield_data_wo[14];
     TGraphErrors *g_polar_error_yield_data_wo[14];
-    TGraphErrors *g_tcut_error_yield_data_wo[14];
-    TGraphErrors *g_fit_range_error_yield_data_wo[14];
     
     TGraphErrors *g_stat_error_yield_data_wt[14];
     TGraphErrors *g_polar_error_yield_data_wt[14];
@@ -1377,9 +1375,9 @@ void proton_plots(
                 two_graph_error_contribution_color(g_stat_error_yield_data_wo[counter],g_polar_error_yield_data_wo[counter] );
 
                 g_stat_error_yield_data_wt[counter]= new TGraphErrors();
-                g_stat_error_yield_data_wt[counter]= new TGraphErrors();
+                g_polar_error_yield_data_wt[counter]= new TGraphErrors();
                 g_tcut_error_yield_data_wt[counter]= new TGraphErrors();
-                three_graph_error_contribution_color(g_stat_error_yield_data_wt[counter],g_stat_error_yield_data_wt[counter], g_tcut_error_yield_data_wt[counter] );
+                three_graph_error_contribution_color(g_stat_error_yield_data_wt[counter], g_polar_error_yield_data_wt[counter], g_tcut_error_yield_data_wt[counter] );
 
                 g_stat_error_yield_data_wtc[counter]= new TGraphErrors();
                 g_polar_error_yield_data_wtc[counter]= new TGraphErrors();
@@ -1392,23 +1390,67 @@ void proton_plots(
                 g_polar_error_spr_data_corrected[counter] = new TGraphErrors();
                 g_tcut_error_spr_data_corrected[counter] = new TGraphErrors();
                 g_fit_range_error_spr_data_corrected[counter] = new TGraphErrors();
-                
                 four_graph_error_contribution_color(g_stat_error_spr_data_corrected[counter], g_polar_error_spr_data_corrected[counter],g_tcut_error_spr_data_corrected[counter],g_fit_range_error_spr_data_corrected[counter] );
                 
-                int counterPlus_0 = i-2;
-                int counterPlus_1 = i-1;
-                int counterPlus_2 = i+0;
-                int counterPlus_3 = i+1;
+//                int counterPlus_0 = i-2;
+//                int counterPlus_1 = i-1;
+//                int counterPlus_2 = i+0;
+//                int counterPlus_3 = i+1;
+                
+                int counterPlus_0 = i;
+                int counterPlus_1 = i;
+                int counterPlus_2 = i;
+                int counterPlus_3 = i;
+                
+
                 
                 g_stat_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_0 ,error_stat_spr_sim_corrected_mean);
                 g_polar_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_1 ,error_polar_spr_sim_corrected_mean);
-                g_tcut_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_2 ,error_stat_spr_sim_corrected_mean);
-                g_fit_range_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_3 ,error_polar_spr_sim_corrected_mean);
+                g_tcut_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_2 ,error_tcut_spr_sim_corrected_mean);
+                g_fit_range_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_3 ,error_fit_range_spr_sim_corrected_mean);
                 
+                g_stat_error_spr_data_org[counter]->SetPoint(0,counterPlus_0,error_stat_spr_sim_org_mean);
+                g_polar_error_spr_data_org[counter]->SetPoint(0,counterPlus_1,error_polar_spr_sim_org_mean);
+                g_tcut_error_spr_data_org[counter]->SetPoint(0,counterPlus_2,error_tcut_spr_sim_org_mean);
+                g_fit_range_error_spr_data_org[counter]->SetPoint(0,counterPlus_3,error_fit_range_spr_sim_org_mean);
+                
+                g_stat_error_yield_data_wo[counter]->SetPoint(0,counterPlus_0,error_stat_p_yield_sim_wo_mean);
+                g_polar_error_yield_data_wo[counter]->SetPoint(0,counterPlus_1,error_polar_p_yield_sim_wo_mean);
+                
+                g_stat_error_yield_data_wt[counter]->SetPoint(0,counterPlus_0, error_stat_p_yield_sim_wt_mean);
+                g_polar_error_yield_data_wt[counter]->SetPoint(0,counterPlus_1, error_polar_p_yield_sim_wt_mean);
+                g_tcut_error_yield_data_wt[counter]->SetPoint(0,counterPlus_2, error_tcut_p_yield_sim_wt_mean);
+                
+                g_stat_error_yield_data_wtc[counter]->SetPoint(0,counterPlus_0, error_stat_p_yield_sim_wtc_mean);
+                g_polar_error_yield_data_wtc[counter]->SetPoint(0,counterPlus_1, error_polar_p_yield_sim_wtc_mean);
+                g_tcut_error_yield_data_wtc[counter]->SetPoint(0,counterPlus_2, error_tcut_p_yield_sim_wtc_mean);
+                g_ccut_error_yield_data_wtc[counter]->SetPoint(0,counterPlus_3, error_ccut_p_yield_sim_wtc_mean);
+                
+
+                
+
+                ///////////////
                 g_stat_error_spr_data_corrected[counter]->SetPointError(0, 0, error_stat_spr_sim_corrected);
                 g_polar_error_spr_data_corrected[counter]->SetPointError(0, 0, error_polar_spr_sim_corrected);
                 g_tcut_error_spr_data_corrected[counter]->SetPointError(0, 0, error_tcut_spr_sim_corrected);
                 g_fit_range_error_spr_data_corrected[counter]->SetPointError(0, 0, error_fit_range_spr_sim_corrected);
+                
+                g_stat_error_spr_data_org[counter]->SetPointError(0,0,error_stat_spr_sim_org);
+                g_polar_error_spr_data_org[counter]->SetPointError(0,0,error_polar_spr_sim_org);
+                g_tcut_error_spr_data_org[counter]->SetPointError(0,0,error_tcut_spr_sim_org);
+                g_fit_range_error_spr_data_org[counter]->SetPointError(0,0,error_fit_range_spr_sim_org);
+                
+                g_stat_error_yield_data_wo[counter]->SetPointError(0,0,error_stat_p_yield_sim_wo);
+                g_polar_error_yield_data_wo[counter]->SetPointError(0,0,error_polar_p_yield_sim_wo);
+                
+                g_stat_error_yield_data_wt[counter]->SetPointError(0,0, error_stat_p_yield_sim_wt);
+                g_polar_error_yield_data_wt[counter]->SetPointError(0,0, error_polar_p_yield_sim_wt);
+                g_tcut_error_yield_data_wt[counter]->SetPointError(0,0, error_tcut_p_yield_sim_wt);
+                
+                g_stat_error_yield_data_wtc[counter]->SetPointError(0,0, error_stat_p_yield_sim_wtc);
+                g_polar_error_yield_data_wtc[counter]->SetPointError(0,0, error_polar_p_yield_sim_wtc);
+                g_tcut_error_yield_data_wtc[counter]->SetPointError(0,0, error_tcut_p_yield_sim_wtc);
+                g_ccut_error_yield_data_wtc[counter]->SetPointError(0,0, error_ccut_p_yield_sim_wtc);
                 
             }
             /////////////////////////
@@ -1797,30 +1839,108 @@ void proton_plots(
         //////////////////////////
         // Error contributions ///
         //////////////////////////
+        TMultiGraph *mg_error_contributions_spr_data_org_all = new TMultiGraph();
         TMultiGraph *mg_error_contributions_spr_data_corrected_all = new TMultiGraph();
+        TMultiGraph *mg_error_contributions_yield_data_wo_all = new TMultiGraph();
+        TMultiGraph *mg_error_contributions_yield_data_wt_all = new TMultiGraph();
+        TMultiGraph *mg_error_contributions_yield_data_wtc_all = new TMultiGraph();
+
+        TLegend *leg_error_contributions_spr_data_org = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
         TLegend *leg_error_contributions_spr_data_corrected = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
+        TLegend *leg_error_yield_wo = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
+        TLegend *leg_error_yield_wt = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
+        TLegend *leg_error_yield_wtc = new TLegend( 0.607769, 0.614973, 0.887218 ,0.868984);
         for (int num=0; num<counter; num++) {
+            
             mg_error_contributions_spr_data_corrected_all->Add(g_stat_error_spr_data_corrected[num]);
             mg_error_contributions_spr_data_corrected_all->Add(g_polar_error_spr_data_corrected[num]);
             mg_error_contributions_spr_data_corrected_all->Add(g_tcut_error_spr_data_corrected[num]);
             mg_error_contributions_spr_data_corrected_all->Add(g_fit_range_error_spr_data_corrected[num]);
+            
+            mg_error_contributions_spr_data_org_all->Add(g_stat_error_spr_data_org[num]);
+            mg_error_contributions_spr_data_org_all->Add(g_polar_error_spr_data_org[num]);
+            mg_error_contributions_spr_data_org_all->Add(g_tcut_error_spr_data_org[num]);
+            mg_error_contributions_spr_data_org_all->Add(g_fit_range_error_spr_data_org[num]);
+            
+            mg_error_contributions_yield_data_wo_all->Add(g_stat_error_yield_data_wo[num]);
+            mg_error_contributions_yield_data_wo_all->Add(g_polar_error_yield_data_wo[num]);
+            
+            mg_error_contributions_yield_data_wt_all->Add(g_stat_error_yield_data_wt[num]);
+            mg_error_contributions_yield_data_wt_all->Add(g_polar_error_yield_data_wt[num]);
+            mg_error_contributions_yield_data_wt_all->Add(g_tcut_error_yield_data_wt[num]);
+            
+            mg_error_contributions_yield_data_wtc_all->Add(g_stat_error_yield_data_wtc[num]);
+            mg_error_contributions_yield_data_wtc_all->Add(g_polar_error_yield_data_wtc[num]);
+            mg_error_contributions_yield_data_wtc_all->Add(g_tcut_error_yield_data_wtc[num]);
+            mg_error_contributions_yield_data_wtc_all->Add(g_ccut_error_yield_data_wtc[num]);
+
             if (num == 0) {
                 
-                leg_error_contributions_spr_data_corrected->SetHeader("SPR Error contributions (proton)","C");
+                leg_error_contributions_spr_data_org->SetHeader("without MCP by MCP #theta_{c} correction (proton)","C");
+                leg_error_contributions_spr_data_org->AddEntry(g_stat_error_spr_data_corrected[num], "Statistical error ", "lp");
+                leg_error_contributions_spr_data_org->AddEntry(g_polar_error_spr_data_corrected[num], "Polar angle variation error", "lp");
+                leg_error_contributions_spr_data_org->AddEntry(g_tcut_error_spr_data_corrected[num], "Time cut error", "lp");
+                leg_error_contributions_spr_data_org->AddEntry(g_fit_range_error_spr_data_corrected[num], "Fit range error", "lp");
+                
+                leg_error_contributions_spr_data_corrected->SetHeader("with MCP by MCP #theta_{c} correction (proton)","C");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_stat_error_spr_data_corrected[num], "Statistical error ", "lp");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_polar_error_spr_data_corrected[num], "Polar angle variation error", "lp");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_tcut_error_spr_data_corrected[num], "Time cut error", "lp");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_fit_range_error_spr_data_corrected[num], "Fit range error", "lp");
+                
+                leg_error_yield_wo->SetHeader("Without #Delta t_{diff} and #theta_{c} cuts (proton)","C");
+                leg_error_yield_wo->AddEntry(g_stat_error_yield_data_wo[num], "Statistical error ", "lp");
+                leg_error_yield_wo->AddEntry(g_polar_error_yield_data_wo[num], "Polar angle variation error", "lp");
+                
+                leg_error_yield_wt->SetHeader("After #Delta t_{diff} cuts (proton)","C");
+                leg_error_yield_wt->AddEntry(g_stat_error_yield_data_wt[num], "Statistical error ", "lp");
+                leg_error_yield_wt->AddEntry(g_polar_error_yield_data_wt[num], "Polar angle variation error", "lp");
+                leg_error_yield_wt->AddEntry(g_tcut_error_yield_data_wt[num], "Time cut error", "lp");
+                
+                leg_error_yield_wtc->SetHeader("After #Delta t_{diff} and #theta_{c} cuts (proton)","C");
+                leg_error_yield_wtc->AddEntry(g_stat_error_yield_data_wtc[num], "Statistical error ", "lp");
+                leg_error_yield_wtc->AddEntry(g_polar_error_yield_data_wtc[num], "Polar angle variation error", "lp");
+                leg_error_yield_wtc->AddEntry(g_tcut_error_yield_data_wtc[num], "Time cut error", "lp");
+                leg_error_yield_wtc->AddEntry(g_ccut_error_yield_data_wtc[num], "#theta_{c} cut error", "lp");
             }
         }
         prt_canvasAdd("r_error_contributions_spr_data_corrected_all",800,400);
-        mg_error_contributions_spr_data_corrected_all->SetTitle(" spr ;#theta [degree]; SPR [rad]");
+        mg_error_contributions_spr_data_corrected_all->SetTitle(" SPR Error contributions; #theta [degree]; SPR [rad]");
         mg_error_contributions_spr_data_corrected_all->Draw("APL");
         leg_error_contributions_spr_data_corrected->Draw();
         //mg_error_contributions_spr_data_corrected_all->GetHistogram()->GetYaxis()->SetRangeUser(0,20);
         gPad->Modified();
         gPad->Update();
+        //////
         
+        prt_canvasAdd("r_error_contributions_spr_data_org_all",800,400);
+        mg_error_contributions_spr_data_org_all->SetTitle(" SPR Error contributions; #theta [degree]; SPR [rad]");
+        mg_error_contributions_spr_data_org_all->Draw("APL");
+        leg_error_contributions_spr_data_org->Draw();
+        //mg_error_contributions_spr_data_org_all->GetHistogram()->GetYaxis()->SetRangeUser(0,20);
+        gPad->Modified();
+        gPad->Update();
+        
+        prt_canvasAdd("r_error_contributions_yield_data_wo_all",800,400);
+        mg_error_contributions_yield_data_wo_all->SetTitle("Photon Yield Error contributions; #theta [degree]; Solutions [#]");
+        mg_error_contributions_yield_data_wo_all->Draw("APL");
+        leg_error_yield_wo->Draw();
+        gPad->Modified();
+        gPad->Update();
+        
+        prt_canvasAdd("r_error_contributions_yield_data_wt_all",800,400);
+        mg_error_contributions_yield_data_wt_all->SetTitle("Photon Yield Error contributions; #theta [degree]; Solutions [#]");
+        mg_error_contributions_yield_data_wt_all->Draw("APL");
+        leg_error_yield_wt->Draw();
+        gPad->Modified();
+        gPad->Update();
+        
+        prt_canvasAdd("r_error_contributions_yield_data_wtc_all",800,400);
+        mg_error_contributions_yield_data_wtc_all->SetTitle("Photon Yield Error contributions; #theta [degree]; Solutions [#]");
+        mg_error_contributions_yield_data_wtc_all->Draw("APL");
+        leg_error_yield_wtc->Draw();
+        gPad->Modified();
+        gPad->Update();
     }
     
 
@@ -1984,7 +2104,7 @@ void proton_plots(
             prt_canvasAdd("r_yield_1",800,400);
             mg_yield_1->Add(graph_yield_DIRC_wo_sim);
             mg_yield_1->Add(graph_yield_DIRC_wo_data);
-            mg_yield_1->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_1->SetTitle("photon yield ;#theta [degree]; Solutions [#]");
             mg_yield_1->Draw("APL");
             mg_yield_1->GetHistogram()->GetYaxis()->SetRangeUser(0,120);
             leg_yield1->Draw();
@@ -1997,7 +2117,7 @@ void proton_plots(
             prt_canvasAdd("r_yield_2",800,400);
             mg_yield_2->Add(graph_yield_DIRC_wt_sim);
             mg_yield_2->Add(graph_yield_DIRC_wt_data);
-            mg_yield_2->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_2->SetTitle("photon yield ;#theta [degree]; Solutions [#]");
             mg_yield_2->Draw("APL");
             mg_yield_2->GetHistogram()->GetYaxis()->SetRangeUser(0,120);
             leg_yield2->Draw();
@@ -2010,7 +2130,7 @@ void proton_plots(
             prt_canvasAdd("r_yield_3",800,400);
             mg_yield_3->Add(graph_yield_DIRC_wtc_sim);
             mg_yield_3->Add(graph_yield_DIRC_wtc_data);
-            mg_yield_3->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_3->SetTitle("photon yield ;#theta [degree]; Solutions [#]");
             mg_yield_3->Draw("APL");
             mg_yield_3->GetHistogram()->GetYaxis()->SetRangeUser(0,120);
             leg_yield3->Draw();
@@ -2025,7 +2145,7 @@ void proton_plots(
             mg_yield_4->Add(graph_yield_DIRC_wo_data);
             mg_yield_4->Add(graph_yield_DIRC_wt_data);
             mg_yield_4->Add(graph_yield_DIRC_wtc_data);
-            mg_yield_4->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_4->SetTitle("photon yield ;#theta [degree]; Solutions [#]");
             mg_yield_4->Draw("APL");
             mg_yield_4->GetHistogram()->GetYaxis()->SetRangeUser(0,120);
             leg_yield4->Draw();
@@ -2040,7 +2160,7 @@ void proton_plots(
             mg_yield_5->Add(graph_yield_DIRC_wo_sim);
             mg_yield_5->Add(graph_yield_DIRC_wt_sim);
             mg_yield_5->Add(graph_yield_DIRC_wtc_sim);
-            mg_yield_5->SetTitle("photon yield ;#theta [degree]; count [#]");
+            mg_yield_5->SetTitle("photon yield ;#theta [degree]; Solutions [#]");
             mg_yield_5->Draw("APL");
             mg_yield_5->GetHistogram()->GetYaxis()->SetRangeUser(0,120);
             leg_yield5->Draw();
@@ -2514,68 +2634,53 @@ void graph_style_photon_mom_distance(TGraph * graph1){
     graph1->SetLineWidth(1);
 }
 
-
 void four_graph_error_contribution_color(TGraphErrors * graph1, TGraphErrors * graph2, TGraphErrors * graph3, TGraphErrors * graph4){
     graph1->SetMarkerColor(kBlack);
-    graph1->SetMarkerStyle(29);
+    graph1->SetMarkerStyle(30);
     graph1->SetLineColor(kBlack);
-    graph1->SetLineStyle(kBlack);
     graph1->SetLineWidth(1);
     
     graph2->SetMarkerColor(kRed);
-    graph2->SetMarkerStyle(21);
+    graph2->SetMarkerStyle(46);
     graph2->SetLineColor(kRed);
-    graph2->SetLineStyle(kRed);
     graph2->SetLineWidth(1);
     
-    graph3->SetMarkerColor(kMagenta);
-    graph3->SetMarkerStyle(22);
-    graph3->SetLineColor(kMagenta);
-    graph3->SetLineStyle(kMagenta);
+    graph3->SetMarkerColor(kBlue);
+    graph3->SetMarkerStyle(26);
+    graph3->SetLineColor(kBlue);
     graph3->SetLineWidth(1);
     
-    graph4->SetMarkerColor(kBlue);
+    graph4->SetMarkerColor(kMagenta);
     graph4->SetMarkerStyle(24);
-    graph4->SetLineColor(kBlue);
-    graph4->SetLineStyle(kBlue);
+    graph4->SetLineColor(kMagenta);
     graph4->SetLineWidth(1);
-    
 }
 void three_graph_error_contribution_color(TGraphErrors * graph1, TGraphErrors * graph2, TGraphErrors * graph3){
     graph1->SetMarkerColor(kBlack);
-    graph1->SetMarkerStyle(29);
+    graph1->SetMarkerStyle(30);
     graph1->SetLineColor(kBlack);
-    graph1->SetLineStyle(kBlack);
     graph1->SetLineWidth(1);
     
     graph2->SetMarkerColor(kRed);
-    graph2->SetMarkerStyle(21);
+    graph2->SetMarkerStyle(46);
     graph2->SetLineColor(kRed);
-    graph2->SetLineStyle(kRed);
     graph2->SetLineWidth(1);
     
-    graph3->SetMarkerColor(kMagenta);
-    graph3->SetMarkerStyle(22);
-    graph3->SetLineColor(kMagenta);
-    graph3->SetLineStyle(kMagenta);
+    graph3->SetMarkerColor(kBlue);
+    graph3->SetMarkerStyle(26);
+    graph3->SetLineColor(kBlue);
     graph3->SetLineWidth(1);
-    
-    
 }
 
 void two_graph_error_contribution_color(TGraphErrors * graph1, TGraphErrors * graph2){
     graph1->SetMarkerColor(kBlack);
-    graph1->SetMarkerStyle(29);
+    graph1->SetMarkerStyle(30);
     graph1->SetLineColor(kBlack);
-    graph1->SetLineStyle(kBlack);
     graph1->SetLineWidth(1);
     
     graph2->SetMarkerColor(kRed);
-    graph2->SetMarkerStyle(21);
+    graph2->SetMarkerStyle(46);
     graph2->SetLineColor(kRed);
-    graph2->SetLineStyle(kRed);
     graph2->SetLineWidth(1);
-
-    
 }
 
