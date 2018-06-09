@@ -33,6 +33,8 @@
 #define PI 3.14159265
 #include <tuple>
 #include "TImage.h"
+#include "TGraphAsymmErrors.h"
+
 
 
 
@@ -71,6 +73,10 @@ void graph_style_photon_yield_three_dashed(TGraphErrors *graph1, TGraphErrors *g
 void graph_style_photon_yield_three(TGraphErrors *graph1, TGraphErrors *graph2,  TGraphErrors *graph3 );
 void graph_style_photon_mom_distance(TGraph * graph1);
 void four_graph_error_contribution_color(TGraphErrors * graph1, TGraphErrors * graph2, TGraphErrors * graph3, TGraphErrors * graph4);
+void four_graph_error_contribution_color_v2(TGraphErrors * graph1, TGraphAsymmErrors * graph2, TGraphErrors * graph3, TGraphErrors * graph4);
+
+
+
 void three_graph_error_contribution_color(TGraphErrors * graph1, TGraphErrors * graph2, TGraphErrors * graph3);
 void two_graph_error_contribution_color(TGraphErrors * graph1, TGraphErrors * graph2);
 
@@ -116,7 +122,7 @@ Bool_t bool_partII=true;
 
 Bool_t bool_detaled_error_0=false;
 Bool_t bool_detaled_error_1=false;
-Bool_t bool_detaled_error_2=false;
+Bool_t bool_detaled_error_2=true;
 
 Bool_t bool_partII_histo=false;
 Bool_t bool_partIII=false;
@@ -161,9 +167,8 @@ void proton_plots(
     TGraph *calc_tof1tof2_distance = new TGraph();
     TGraph *calc_e_tof1tof2_distance = new TGraph();
     
-    
     TGraphErrors *g_stat_error_spr_data_corrected[14];
-    TGraphErrors *g_polar_error_spr_data_corrected[14];
+    TGraphAsymmErrors *g_polar_error_spr_data_corrected[14];
     TGraphErrors *g_tcut_error_spr_data_corrected[14];
     TGraphErrors *g_fit_range_error_spr_data_corrected[14];
     
@@ -184,9 +189,6 @@ void proton_plots(
     TGraphErrors *g_polar_error_yield_data_wtc[14];
     TGraphErrors *g_tcut_error_yield_data_wtc[14];
     TGraphErrors *g_ccut_error_yield_data_wtc[14];
-    
-    
-    
     
     /////////////////////////
     // Error Histograms   ///
@@ -275,10 +277,10 @@ void proton_plots(
         ///////////////////////////
         
         if(bool_error){
-
-            //////////////////////////////
-            // Error Cherenkov Binning ///
-            //////////////////////////////
+            if(false){
+                //////////////////////////////
+                // Error Cherenkov Binning ///
+                //////////////////////////////
                 TString ch_binning_path = Form("/Users/ahmed/perforamnce/spr_data_sim/error_binning/spr_binning_%d_3lsph_proton_sim_spr.root", i);
                 cout<<"ch_binning_path= " <<ch_binning_path<<endl;
                 string path_ch_binning = (string)ch_binning_path;
@@ -293,40 +295,41 @@ void proton_plots(
                 Int_t nent = ch.GetEntries();
                 std::cout<<"# entries  "<< nent <<std::endl;
                 std::cout<<"# inFile  "<< ch_binning_path <<std::endl;
-            
-            for (int binning=80; binning<=150; binning+=5) { //binning from 80 to 150
-                histo_cherenkov_binning_org = new TH1F("histo_cherenkov_binning_org",  "chrenkov angle;#theta_{C} [rad];entries [#]", binning,0.6,1);
-                histo_cherenkov_binning_corrected = new TH1F("histo_cherenkov_binning_corrected",  "chrenkov angle;#theta_{C} [rad];entries [#]", binning,0.6,1);
-                histo_style_match(histo_cherenkov_binning_org, histo_cherenkov_binning_corrected);
-                for (Int_t l = 0; l < nent; l++) {
-                    ch.GetEvent(l);
-                    histo_cherenkov_binning_corrected->Fill(corrected_ch);
-                    histo_cherenkov_binning_org->Fill(non_corrected_ch);
-                    //cout<< "########### ####### ######## corrected_ch"<<corrected_ch << " $$$$$$$ non_corrected_ch" <<non_corrected_ch << endl;
+                
+                for (int binning=80; binning<=150; binning+=5) { //binning from 80 to 150
+                    histo_cherenkov_binning_org = new TH1F("histo_cherenkov_binning_org",  "chrenkov angle;#theta_{C} [rad];entries [#]", binning,0.6,1);
+                    histo_cherenkov_binning_corrected = new TH1F("histo_cherenkov_binning_corrected",  "chrenkov angle;#theta_{C} [rad];entries [#]", binning,0.6,1);
+                    histo_style_match(histo_cherenkov_binning_org, histo_cherenkov_binning_corrected);
+                    for (Int_t l = 0; l < nent; l++) {
+                        ch.GetEvent(l);
+                        histo_cherenkov_binning_corrected->Fill(corrected_ch);
+                        histo_cherenkov_binning_org->Fill(non_corrected_ch);
+                        //cout<< "########### ####### ######## corrected_ch"<<corrected_ch << " $$$$$$$ non_corrected_ch" <<non_corrected_ch << endl;
+                    }
+                    
+                    //                TString nid_binning = Form("_%2.0d_binning_%d", i,binning );
+                    //                prt_canvasAdd("r_binning"+nid_binning,800,400);
+                    //                histo_cherenkov_binning_corrected->Draw();
+                    //                histo_cherenkov_binning_org->Draw("same");
+                    
+                    Double_t error_MaximumBin_corrected =  histo_cherenkov_binning_corrected->GetXaxis()->GetBinCenter(histo_cherenkov_binning_corrected->GetMaximumBin());
+                    Double_t error_MaximumBin_org =  histo_cherenkov_binning_org->GetXaxis()->GetBinCenter(histo_cherenkov_binning_org->GetMaximumBin());
+                    
+                    auto error_binning_resultPair_corrected= FitHisto_0( histo_cherenkov_binning_corrected , error_MaximumBin_corrected, 0.06);
+                    Double_t error_binning_cangle_corrected = error_binning_resultPair_corrected.first;
+                    Double_t error_binning_spr_corrected = error_binning_resultPair_corrected.second;
+                    
+                    auto error_binning_resultPair_org= FitHisto_0( histo_cherenkov_binning_org , error_MaximumBin_org, 0.06);
+                    Double_t error_binning_cangle_org = error_binning_resultPair_org.first;
+                    Double_t error_binning_spr_org = error_binning_resultPair_org.second;
+                    
+                    histo_distribution_error_binning_spr_sim_org[counter_error]->Fill(error_binning_spr_org*1000.0);
+                    histo_distribution_error_binning_spr_sim_corrected[counter_error]->Fill(error_binning_spr_corrected*1000.0);
+                    histo_distribution_error_binning_cangle_sim_org[counter_error]->Fill(error_binning_cangle_org);
+                    histo_distribution_error_binning_cangle_sim_corrected[counter_error]->Fill(error_binning_cangle_corrected);
+                    
+                    c1->cd();
                 }
-                
-                //                TString nid_binning = Form("_%2.0d_binning_%d", i,binning );
-                //                prt_canvasAdd("r_binning"+nid_binning,800,400);
-                //                histo_cherenkov_binning_corrected->Draw();
-                //                histo_cherenkov_binning_org->Draw("same");
-
-                Double_t error_MaximumBin_corrected =  histo_cherenkov_binning_corrected->GetXaxis()->GetBinCenter(histo_cherenkov_binning_corrected->GetMaximumBin());
-                Double_t error_MaximumBin_org =  histo_cherenkov_binning_org->GetXaxis()->GetBinCenter(histo_cherenkov_binning_org->GetMaximumBin());
-                
-                auto error_binning_resultPair_corrected= FitHisto_0( histo_cherenkov_binning_corrected , error_MaximumBin_corrected, 0.06);
-                Double_t error_binning_cangle_corrected = error_binning_resultPair_corrected.first;
-                Double_t error_binning_spr_corrected = error_binning_resultPair_corrected.second;
-                
-                auto error_binning_resultPair_org= FitHisto_0( histo_cherenkov_binning_org , error_MaximumBin_org, 0.06);
-                Double_t error_binning_cangle_org = error_binning_resultPair_org.first;
-                Double_t error_binning_spr_org = error_binning_resultPair_org.second;
-                
-                histo_distribution_error_binning_spr_sim_org[counter_error]->Fill(error_binning_spr_org*1000.0);
-                histo_distribution_error_binning_spr_sim_corrected[counter_error]->Fill(error_binning_spr_corrected*1000.0);
-                histo_distribution_error_binning_cangle_sim_org[counter_error]->Fill(error_binning_cangle_org);
-                histo_distribution_error_binning_cangle_sim_corrected[counter_error]->Fill(error_binning_cangle_corrected);
-                
-                c1->cd();
             }
             
             //////////////////////////////
@@ -614,13 +617,15 @@ void proton_plots(
                 if (bool_detaled_error_0) {
                     gStyle->SetOptFit(1);
                     TString kk_s = Form(" #theta %.2f", kk);
+                    TString kk_s2 = Form("%.2f", kk);
                     TCanvas *canvas_array_polar_1 = new TCanvas(Form("canvas_array_polar_1_%d",counter_plots_polar),Form("canvas_array_polar_1_%d",counter_plots_polar),800,500);
                     //error_polar_p_cherenkov_sim_corrected->SetStats(0);
                     error_polar_p_cherenkov_sim_corrected-> SetTitle(Form("Polar angle variation |"+kk_s+" | sim | Cherenkov ambiguity distribution corrected | (proton) ") );
                     error_polar_p_cherenkov_sim_corrected->Draw();
                     TImage *img_canvas_array_polar_1 = TImage::Create();
                     img_canvas_array_polar_1->FromPad(canvas_array_polar_1);
-                    img_canvas_array_polar_1->WriteImage(Form("r_error_cherenkov_polar_corrected_%d.png", counter_plots_polar) );
+                    //img_canvas_array_polar_1->WriteImage(Form("r_error_cherenkov_polar_corrected_%d.png", counter_plots_polar) );
+                    img_canvas_array_polar_1->WriteImage("r_error_cherenkov_polar_corrected_%d"+kk_s2+".png");
                     delete canvas_array_polar_1;
                     delete img_canvas_array_polar_1;
                     TCanvas *canvas_array_polar_2 = new TCanvas(Form("canvas_array_polar_2_%d",counter_plots_polar),Form("canvas_array_polar_2_%d",counter_plots_polar),800,500);
@@ -665,7 +670,6 @@ void proton_plots(
         ///////////////////////////
         // Analysis             ///
         ///////////////////////////
-        
         // proton
         TString cherenkov_data_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wtb_%d_sph_p_data_spr.root", i);
         //TString cherenkov_sim_path = Form("/Users/ahmed/perforamnce/spr_data_sim/spr_wt_%d_sph_p_sim_spr.root", i);
@@ -1029,7 +1033,7 @@ void proton_plots(
             if(bool_error){
                 
                 // binning
-                if (true){
+                if (false){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_binning_error_corrected"+nid,800,400);
                     histo_distribution_error_binning_cangle_sim_corrected[counter]->SetTitle(Form("cangle distibution as a result of binning variation between 80 - 150 degree without correction @ angle %3.1f ", prtangle));
@@ -1045,7 +1049,7 @@ void proton_plots(
                     prt_canvasGet("r_cangle_binning_error_corrected"+nid)->Update();
                 }
                 
-                if (true){
+                if (false){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_binning_error_org"+nid,800,400);
                     histo_distribution_error_binning_cangle_sim_org[counter]->SetTitle(Form("cangle distibution as a result of binning variation between 80 - 150 degree without correction @ angle %3.1f ", prtangle));
@@ -1061,7 +1065,7 @@ void proton_plots(
                     prt_canvasGet("r_cangle_binning_error_org"+nid)->Update();
                 }
                 //////
-                if (true){
+                if (false){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_binning_error_corrected"+nid,800,400);
                     histo_distribution_error_binning_spr_sim_corrected[counter]->SetTitle(Form("SPR distibution as a result of binning variation between 80 - 150 degree without correction @ angle %3.1f ", prtangle));
@@ -1077,7 +1081,7 @@ void proton_plots(
                     prt_canvasGet("r_spr_binning_error_corrected"+nid)->Update();
                 }
                 
-                if (true){
+                if (false){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_binning_error_org"+nid,800,400);
                     histo_distribution_error_binning_spr_sim_org[counter]->SetTitle(Form("SPR distibution as a result of binning variation between 80 - 150 degree without correction @ angle %3.1f ", prtangle));
@@ -1097,7 +1101,7 @@ void proton_plots(
                 if (bool_detaled_error_1){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_polar_error_org"+nid,800,400);
-                    histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR distibution as a result of polar angle variation between +/- 0.5 degree without correction @ angle %3.1f ", prtangle));
+                    histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->SetTitle(Form("SPR distibution as a result of polar angle variation between +/- 0.1 degree without correction @ angle %3.1f ", prtangle));
                     histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->GetEntries();
                     Double_t mean_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_org[counter]->GetMean();
@@ -1140,10 +1144,10 @@ void proton_plots(
                     prt_canvasGet("r_spr_fit_range_error_org"+nid)->Update();
                 }
                 ////////////////////////////
-                if (bool_detaled_error_1){
+                if (true){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_spr_polar_error_corrected"+nid,800,400);
-                    histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR distibution as a result of polar angle variation between +/- 0.5 degree with correction @ angle %3.1f", prtangle));
+                    histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->SetTitle(Form("SPR distibution as a result of polar angle variation between +/- 0.1 degree with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetEntries();
                     Double_t mean_error_polar_distribution = histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetMean();
@@ -1189,7 +1193,7 @@ void proton_plots(
                 if (bool_detaled_error_1){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_polar_error_org"+nid,800,400);
-                    histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->SetTitle(Form("#theta_{c} distibution as a result of polar angle variation between +/- 0.5 degree without correction @ angle %3.1f", prtangle));
+                    histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->SetTitle(Form("#theta_{c} distibution as a result of polar angle variation between +/- 0.1 degree without correction @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->GetEntries();
                     Double_t mean_error_polar_distribution = histo_distribution_error_polar_cangle_p_cherenkov_sim_org[counter]->GetMean();
@@ -1235,7 +1239,7 @@ void proton_plots(
                 if (bool_detaled_error_1){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_cangle_polar_error_corrected"+nid,800,400);
-                    histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->SetTitle(Form("#theta_{c} distibution as a result of polar angle variation between +/- 0.5 degree with correction @ angle %3.1f", prtangle));
+                    histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->SetTitle(Form("#theta_{c} distibution as a result of polar angle variation between +/- 0.1 degree with correction @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->GetEntries();
                     Double_t mean_error_polar_distribution = histo_distribution_error_polar_cangle_p_cherenkov_sim_corrected[counter]->GetMean();
@@ -1281,7 +1285,7 @@ void proton_plots(
                 if (bool_detaled_error_1){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_polar_wo"+nid,800,400);
-                    histo_distribution_error_polar_p_yield_sim_wo[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 0.5 degree without cuts @ angle %3.1f", prtangle));
+                    histo_distribution_error_polar_p_yield_sim_wo[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 0.1 degree without cuts @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_p_yield_sim_wo[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_p_yield_sim_wo[counter]->GetEntries();
                     Double_t mean_error_polar_distribution = histo_distribution_error_polar_p_yield_sim_wo[counter]->GetMean();
@@ -1296,7 +1300,7 @@ void proton_plots(
                 if (bool_detaled_error_1){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_polar_wt"+nid,800,400);
-                    histo_distribution_error_polar_p_yield_sim_wt[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 0.5 degree after time cut @ angle %3.1f", prtangle));
+                    histo_distribution_error_polar_p_yield_sim_wt[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 0.1 degree after time cut @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_p_yield_sim_wt[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_p_yield_sim_wt[counter]->GetEntries();
                     Double_t mean_error_polar_distribution = histo_distribution_error_polar_p_yield_sim_wt[counter]->GetMean();
@@ -1311,7 +1315,7 @@ void proton_plots(
                 if (bool_detaled_error_1){
                     gStyle->SetOptStat(0);
                     prt_canvasAdd("r_yield_polar_wtc"+nid,800,400);
-                    histo_distribution_error_polar_p_yield_sim_wtc[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 0.5 degree after #theta_{c} & time cuts @ angle %3.1f", prtangle));
+                    histo_distribution_error_polar_p_yield_sim_wtc[counter]->SetTitle(Form("photon yield distibution as a result of polar angle variation between +/- 0.1 degree after #theta_{c} & time cuts @ angle %3.1f", prtangle));
                     histo_distribution_error_polar_p_yield_sim_wtc[counter]->Draw();
                     Int_t entries_distribution = histo_distribution_error_polar_p_yield_sim_wtc[counter]->GetEntries();
                     Double_t mean_error_polar_distribution = histo_distribution_error_polar_p_yield_sim_wtc[counter]->GetMean();
@@ -1416,7 +1420,7 @@ void proton_plots(
                 Double_t error_polar_spr_sim_corrected= histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
                 Double_t error_stat_spr_sim_corrected= histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
                 Double_t error_fit_range_spr_sim_corrected= histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
-                
+
                 Double_t error_polar_spr_sim_corrected_mean= histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetMean();
                 Double_t error_stat_spr_sim_corrected_mean= histo_distribution_error_stat_spr_p_cherenkov_sim_corrected[counter]->GetMean();
                 Double_t error_fit_range_spr_sim_corrected_mean= histo_distribution_error_fit_range_spr_p_cherenkov_sim_corrected[counter]->GetMean();
@@ -1460,7 +1464,7 @@ void proton_plots(
                 // tcut
                 Double_t error_tcut_spr_sim_org = histo_distribution_error_tcut_spr_p_cherenkov_sim_org[counter]->GetRMS();
                 Double_t error_tcut_spr_sim_corrected = histo_distribution_error_tcut_spr_p_cherenkov_sim_corrected[counter]->GetRMS();
-                
+
                 Double_t error_tcut_spr_sim_org_mean = histo_distribution_error_tcut_spr_p_cherenkov_sim_org[counter]->GetMean();
                 Double_t error_tcut_spr_sim_corrected_mean = histo_distribution_error_tcut_spr_p_cherenkov_sim_corrected[counter]->GetMean();
                 /////////
@@ -1496,6 +1500,11 @@ void proton_plots(
                 error_all_y_yield_wtc_sim_corrected[counter]=sqrt(error_polar_p_yield_sim_wtc*error_polar_p_yield_sim_wtc + error_stat_p_yield_sim_wtc *error_stat_p_yield_sim_wtc+ error_tcut_p_yield_sim_wtc* error_tcut_p_yield_sim_wtc + error_ccut_p_yield_sim_wtc*error_ccut_p_yield_sim_wtc);
                 
                 
+                Double_t error_polar_spr_sim_low_corrected= error_polar_spr_sim_corrected_mean- histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetBinCenter(histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->FindFirstBinAbove(0,1));
+                Double_t error_polar_spr_sim_high_corrected= histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->GetBinCenter(histo_distribution_error_polar_spr_p_cherenkov_sim_corrected[counter]->FindLastBinAbove(0,1))-error_polar_spr_sim_corrected_mean;
+                
+                cout<< "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<"error_polar_spr_sim_low_corrected= "<< error_polar_spr_sim_low_corrected << "   error_polar_spr_sim_high_corrected  ="<<error_polar_spr_sim_high_corrected<< endl;
+                
                 g_stat_error_spr_data_org[counter]= new TGraphErrors();
                 g_polar_error_spr_data_org[counter]= new TGraphErrors();
                 g_tcut_error_spr_data_org[counter]= new TGraphErrors();
@@ -1519,23 +1528,23 @@ void proton_plots(
                 
                 //////////////////////////////
                 g_stat_error_spr_data_corrected[counter]= new TGraphErrors();
-                g_polar_error_spr_data_corrected[counter] = new TGraphErrors();
+                g_polar_error_spr_data_corrected[counter] = new TGraphAsymmErrors();
                 g_tcut_error_spr_data_corrected[counter] = new TGraphErrors();
                 g_fit_range_error_spr_data_corrected[counter] = new TGraphErrors();
-                four_graph_error_contribution_color(g_stat_error_spr_data_corrected[counter], g_polar_error_spr_data_corrected[counter],g_tcut_error_spr_data_corrected[counter],g_fit_range_error_spr_data_corrected[counter] );
+                four_graph_error_contribution_color_v2(g_stat_error_spr_data_corrected[counter], g_polar_error_spr_data_corrected[counter],g_tcut_error_spr_data_corrected[counter],g_fit_range_error_spr_data_corrected[counter] );
                 
-                //int counterPlus_0 = i-2;
-                //int counterPlus_1 = i-1;
-                //int counterPlus_2 = i+0;
-                //int counterPlus_3 = i+1;
+                int counterPlus_0 = i-2;
+                int counterPlus_1 = i-1;
+                int counterPlus_2 = i+0;
+                int counterPlus_3 = i+1;
                 
-                int counterPlus_0 = i;
-                int counterPlus_1 = i;
-                int counterPlus_2 = i;
-                int counterPlus_3 = i;
+//                int counterPlus_0 = i;
+//                int counterPlus_1 = i;
+//                int counterPlus_2 = i;
+//                int counterPlus_3 = i;
                 
                 g_stat_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_0 ,error_stat_spr_sim_corrected_mean);
-                g_polar_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_1 ,error_polar_spr_sim_corrected_mean);
+                g_polar_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_1 ,error_polar_spr_sim_corrected_mean); // remove
                 g_tcut_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_2 ,error_tcut_spr_sim_corrected_mean);
                 g_fit_range_error_spr_data_corrected[counter]->SetPoint(0,counterPlus_3 ,error_fit_range_spr_sim_corrected_mean);
                 
@@ -1558,7 +1567,9 @@ void proton_plots(
                 
                 ///////////////
                 g_stat_error_spr_data_corrected[counter]->SetPointError(0, 0, error_stat_spr_sim_corrected);
-                g_polar_error_spr_data_corrected[counter]->SetPointError(0, 0, error_polar_spr_sim_corrected);
+                //g_polar_error_spr_data_corrected[counter]->SetPointError(0, 0, error_polar_spr_sim_corrected);
+                 g_polar_error_spr_data_corrected[counter]->SetPointError(0, 0,0, error_polar_spr_sim_low_corrected,error_polar_spr_sim_high_corrected);
+                
                 g_tcut_error_spr_data_corrected[counter]->SetPointError(0, 0, error_tcut_spr_sim_corrected);
                 g_fit_range_error_spr_data_corrected[counter]->SetPointError(0, 0, error_fit_range_spr_sim_corrected);
                 
@@ -2009,10 +2020,10 @@ void proton_plots(
             if (num == 0) {
                 
                 leg_error_contributions_spr_data_org->SetHeader("without MCP by MCP #theta_{c} correction (proton)","C");
-                leg_error_contributions_spr_data_org->AddEntry(g_stat_error_spr_data_corrected[num], "Statistical error ", "lp");
-                leg_error_contributions_spr_data_org->AddEntry(g_polar_error_spr_data_corrected[num], "Polar angle variation error", "lp");
-                leg_error_contributions_spr_data_org->AddEntry(g_tcut_error_spr_data_corrected[num], "Time cut error", "lp");
-                leg_error_contributions_spr_data_org->AddEntry(g_fit_range_error_spr_data_corrected[num], "Fit range error", "lp");
+                leg_error_contributions_spr_data_org->AddEntry(g_stat_error_spr_data_org[num], "Statistical error ", "lp");
+                leg_error_contributions_spr_data_org->AddEntry(g_polar_error_spr_data_org[num], "Polar angle variation error", "lp");
+                leg_error_contributions_spr_data_org->AddEntry(g_tcut_error_spr_data_org[num], "Time cut error", "lp");
+                leg_error_contributions_spr_data_org->AddEntry(g_fit_range_error_spr_data_org[num], "Fit range error", "lp");
                 
                 leg_error_contributions_spr_data_corrected->SetHeader("with MCP by MCP #theta_{c} correction (proton)","C");
                 leg_error_contributions_spr_data_corrected->AddEntry(g_stat_error_spr_data_corrected[num], "Statistical error ", "lp");
@@ -2767,6 +2778,28 @@ void graph_style_photon_mom_distance(TGraph * graph1){
     graph1->SetLineColor(kBlack);
     graph1->SetLineStyle(kBlack);
     graph1->SetLineWidth(1);
+}
+void four_graph_error_contribution_color_v2(TGraphErrors * graph1, TGraphAsymmErrors * graph2, TGraphErrors * graph3, TGraphErrors * graph4){
+    graph1->SetMarkerColor(kBlack);
+    graph1->SetMarkerStyle(30);
+    graph1->SetLineColor(kBlack);
+    graph1->SetLineWidth(1);
+    
+    graph2->SetMarkerColor(kRed);
+    graph2->SetMarkerStyle(46);
+    graph2->SetLineColor(kRed);
+    graph2->SetLineWidth(1);
+    
+    graph3->SetMarkerColor(kBlue);
+    graph3->SetMarkerStyle(26);
+    graph3->SetLineColor(kBlue);
+    graph3->SetLineWidth(1);
+    
+    graph4->SetMarkerColor(kMagenta);
+    graph4->SetMarkerStyle(24);
+    graph4->SetLineColor(kMagenta);
+    graph4->SetLineWidth(1);
+    
 }
 
 void four_graph_error_contribution_color(TGraphErrors * graph1, TGraphErrors * graph2, TGraphErrors * graph3, TGraphErrors * graph4){
