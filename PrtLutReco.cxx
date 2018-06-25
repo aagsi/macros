@@ -98,6 +98,8 @@ Double_t integral_data[960], integral_data_pi[960], scale_p[960], scale_pi[960] 
 Double_t xmin_data = 0.6;
 Double_t xmax_data = 1.0;
 
+Double_t corrected_ch(0), non_corrected_ch(0);
+
 /*
  // LE
  TH1F * htof1_le =       new TH1F("htof1_le","",400, -500, 500);
@@ -600,8 +602,9 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
     tree.Branch("solution_number_approach_selection",&end,"solution_number_approach_selection/I");
     tree.Branch("solution_number",&end,"solution_number/I");
     tree.Branch("nsEvents",&nsEvents,"nsEvents/I");
-    
-    
+    tree.Branch("corrected_ch",&corrected_ch,"corrected_ch/D");
+    tree.Branch("non_corrected_ch",&non_corrected_ch,"non_corrected_ch/D"); 
+
     test1 = PrtManager::Instance()->GetTest1();
     test2 = PrtManager::Instance()->GetTest2();
     test3 = PrtManager::Instance()->GetTest3();
@@ -1621,6 +1624,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                     
                     if(tangle >minChangle && tangle < maxChangle && tangle < 1.85) {
                         fHist->Fill(tangle ,weight);
+			non_corrected_ch = tangle;
                         if(openChCorr== 1){//openChCorr== 1
                             if( prtangle==20 && fEvent->GetType()==0) {
                                 if(mcpid==0) tangle += -0.000249856;
@@ -1921,6 +1925,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                         }
                         fHist_correction->Fill(tangle ,weight);
                         fHist_copy->Fill(tangle ,weight);
+			corrected_ch = tangle;
+			//tree.Fill();
                         if(samepath) fHist_same_path->Fill(tangle ,weight);
                         if(!samepath) fHist_bg->Fill(tangle ,weight);
                         if(tofPid==2212 && ((recoP==1 && recoPi==0) || fEvent->GetType()==1)) fHistMcp[mcpid]->Fill(tangle ,weight); // proton canditate
@@ -2058,7 +2064,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                 //std::cout<<"@@@@@@@@@@@@@ theta "<<theta <<std::endl;
                 par3 = fEvent->GetTest1();
                 //std::cout<<"@@@@@@@@@@@@@ par3 "<<par3 <<std::endl;
-                tree.Fill();
+                tree.Fill(); // alarma
                 //std::cout<<"no problem 3 1"<<std::endl;
             }
             //std::cout<<"no problem 3 2"<<std::endl;
@@ -2084,7 +2090,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         //theta = 60.0; // here
         par3 = fEvent->GetTest1();
         if(fVerbose) std::cout<<Form("SPR=%2.2F N=%2.2f",spr,nph)<<std::endl;
-        tree.Fill();
+        tree.Fill(); // alarma 2
     } else {
         TString nid = Form("_%2.0f", prtangle);
         if(fVerbose<2) gROOT->SetBatch(1);
@@ -2154,7 +2160,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
         prt_canvasSave(2,0);
         //prt_waitPrimitive("r_lhood","w");
         if(fVerbose) gROOT->SetBatch(0);
-        tree.Fill();
+        tree.Fill(); // alarma
     }
     std::cout<<"solution_number_approach_selection= "<<solution_number_approach_selection<<std::endl;
     std::cout<<"solution_number= "<<solution_number<<std::endl;
