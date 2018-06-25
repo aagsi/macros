@@ -666,7 +666,7 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
             //beam_corr = 0.002; // 125 deg s160
             if(fEvent->GetType()==0 && test1==99) {
                 
-                // 332 study ID beam correction
+		// 332 study ID beam correction
                 if (prtangle==20){test1=0.0/1000  ;test2= -6.5/1000 ;}
                 if (prtangle==30){test1=1.0/1000 ;test2= -6.0/1000 ;}
                 if (prtangle==40){test1=-1.0/1000  ;test2= 5.5/1000 ;}
@@ -681,6 +681,8 @@ void PrtLutReco::Run(Int_t start, Int_t end) {
                 if (prtangle==130){test1=0.0/1000  ;test2=1.0/1000 ;}
                 if (prtangle==140){test1=0.0/1000 ;test2=-1.0/1000 ;}
                 if (prtangle==150){test1=0.0/1000 ;test2=7.0/1000 ;}
+
+
                 
                 momInBar.RotateY(TMath::Pi()-prtangle*rad-0);// 0  test1
                 momInBar.RotateX(0);//0 test2
