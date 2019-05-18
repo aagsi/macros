@@ -16,7 +16,7 @@
 //10m_l3_20_f_final.root
 //10m_l3_180_f_0bar_final.root
 //10m_l3_180_f_inbar_final.root
-void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20_rot_final.root"){ //10m_l3_20_f_rot_final.root") { 10m_l3_20_f_final.root
+void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20_rot_final.root"){ //1m_l3_20_rot_final.root // test_lut_pathid.root
     gStyle->SetOptStat(0);
     
     TH1F*  hist_phs_time = new TH1F("hist_phs_time",";time [ns];entries [#]", 250,0,50);
@@ -63,7 +63,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     
     TH2F* hist_time_angle_ch[12][64], *hist_time_angle_ch2[12][64], *hist_time_angle_ch3[12][64];
     
-    TH2F*  hist2_dir_xy[12][64], *hist_dir_xy_test[12][64], *hist_dir_xy_occu[12][64],*hist_dir_xy_occu_final[12][64], *hist_dir_xy_angle[12][64], *hist_dir_xy_time[12][64], *hist_dir_xy_time_time[12][64];
+    TH2F*  hist2_dir_xy[12][64], *hist_dir_xy_test[12][64], *hist_dir_xy_occu[12][64],*hist_dir_xy_occu_final[12][64],*hist_dir_xy_occu_final2[12][64], *hist_dir_xy_angle[12][64], *hist_dir_xy_time[12][64], *hist_dir_xy_time_time[12][64];
     
     
     
@@ -81,6 +81,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             hist_dir_xy_test[m][p] = new TH2F(Form("hist_dir_xy_test_ch_%d_%d",m,p),Form("hist_dir_xy_test_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
             hist_dir_xy_occu[m][p] = new TH2F(Form("hist_dir_xy_occu_ch_%d_%d",m,p),Form("hist_dir_xy_occu_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
             hist_dir_xy_occu_final[m][p] = new TH2F(Form("hist_dir_xy_occu_final_ch_%d_%d",m,p),Form("hist_dir_xy_occu_final_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
+            hist_dir_xy_occu_final2[m][p] = new TH2F(Form("hist_dir_xy_occu_final2_ch_%d_%d",m,p),Form("hist_dir_xy_occu_final2_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
             
             hist_dir_xy_angle[m][p] = new TH2F(Form("hist_dir_xy_angle_ch_%d_%d",m,p),Form("hist_dir_xy_angle_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
             
@@ -105,26 +106,31 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     
     
     
-    //    TFile *fFileNew = TFile::Open( "test_lut.root", "RECREATE");
-    //    TClonesArray *fLutNew;
-    //    TTree *fTreeNew = new TTree("prtlut","Look-up table for DIRC. Averaged");
-    //    fLutNew = new TClonesArray("PrtLutNode");
-    //    fTreeNew->Branch("LUT",&fLutNew,256000,2);
-    //
-    //    Int_t Nnodes = 5000;
-    //    TClonesArray &fLutaNew = *fLutNew;
-    //    for (Long64_t n=0; n<Nnodes; n++) {
-    //        new((fLutaNew)[n]) PrtLutNode(-1);
-    //    }
+    TFile *fFileNew = TFile::Open( "test_lut.root", "RECREATE");
+    TClonesArray *fLutNew;
+    TTree *fTreeNew = new TTree("prtlut","Look-up table for DIRC. Averaged");
+    fLutNew = new TClonesArray("PrtLutNode");
+    fTreeNew->Branch("LUT",&fLutNew,256000,2);
+    
+    Int_t Nnodes = 5000;
+    TClonesArray &fLutaNew = *fLutNew;
+    for (Long64_t n=0; n<Nnodes; n++) {
+        new((fLutaNew)[n]) PrtLutNode(-1);
+    }
     
     
     Int_t kt2(-1), ka2(-1);
     Double_t  average_bin(0),average_bin_time(0), content_hist_dir_xy(0), content_hist_dir_xy_test(0), content_hist_dir_xy_time(0);
+    Double_t pathid(-1);
     
+    std::vector<TVector3> vArray[500];
+    std::vector<Double_t> tArray[500];
+    std::vector<Double_t> pArray;
     
-    //            std::vector<TVector3> vArray[100];
-    //            std::vector<Double_t> tArray[100];
-    //            std::vector<Double_t> pArray;
+    TVector3  sum;
+    Double_t sumt;
+    
+    TVector3 v1;
     
     std::vector<TVector3> vec_dir[12][64];
     
@@ -166,7 +172,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         mcpid = i/100;   // old
         pixid = i%100; // old
         
-        
+        //if (!(mcpid==5 && pixid==5)) continue;
         nEntries=0;
         for(Int_t m=0; m<12; m++) {
             for(Int_t p=0; p<64; p++) {
@@ -176,6 +182,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         
         for(int u=0; u<size; u++) { // size
             evtime = node->GetTime(u);
+            //pathid = node->GetPathId(u);
             //hPTime[mcpid][pixid]->Fill(evtime);
             prt_hdigi[mcpid]->Fill(pixid%8, pixid/8);
             //cout<<"mcpid "<<mcpid<<" pixid "<<pixid<<endl;
@@ -256,51 +263,6 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             
             
             
-            bool newid = true;
-            
-            for(Int_t e=0; e<vec_dir[mcpid][pixid].size(); e++) {
-                
-                Double_t p1 = vec_dir[mcpid][pixid][e].X()-dir_x ;
-                Double_t p2 = vec_dir[mcpid][pixid][e].Y()-dir_y ;
-                
-                p1 *=p1;
-                p2 *=p2;
-                Double_t result=p1+p2;
-                Double_t distance = sqrt(result);
-                
-                if( distance < R ){
-                    newid= false;
-                }
-            }
-            
-            if(newid) {
-                
-                el[mcpid][pixid][vec_dir[mcpid][pixid].size()] = new TEllipse(dir_y,dir_x,R,R);
-                vec_dir[mcpid][pixid].push_back(dird);
-            }
-            
-            //pathid=mcpidm*10000+dird*1000+vec_dir.size()
-            
-            
-            
-            
-            //
-            //                    bool newid = true;
-            //                    for(int j=0; j<pArray.size(); j++){
-            //                        if(pathid == pArray[j]){
-            //                            vArray[j].push_back(dird);
-            //                            tArray[j].push_back(evtime);
-            //                            newid= false;
-            //                        }
-            //                    }
-            //                    if(newid) {
-            //                        vArray[pArray.size()].push_back(dird);
-            //                        tArray[pArray.size()].push_back(evtime);
-            //                        pArray.push_back(pathid);
-            //                    }
-            
-            
-            
             
             
             //if (!(mcpid==5 && pixid==5)) continue;
@@ -314,7 +276,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             
             content_hist_dir_xy=hist2_dir_xy[mcpid][pixid]->GetBinContent(ka2,kt2);
             
-            //if (content_hist_dir_xy< 30) continue;
+            // if (content_hist_dir_xy< 1) continue;
             
             content_hist_dir_xy_test=hist_dir_xy_test[mcpid][pixid]->GetBinContent(ka2,kt2);
             content_hist_dir_xy_time=hist_dir_xy_time[mcpid][pixid]->GetBinContent(ka2,kt2);
@@ -344,16 +306,14 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             //hist_dir_x->Fill(dird.X(),angle);
             //hist_dir_y->Fill(dird.Y(),angle);
             
-            //((PrtLutNode*)( fLutNew->At(i)))->AddEntry(node->GetDetectorId(), dird, 0,0,average_bin_time,node->GetHitPos(u), node->GetHitPosGlobal(u), node->GetDigiPos());
+            
+            //((PrtLutNode*)( fLutNew->At(i)))->AddEntry(node->GetDetectorId(), node->GetEntry(u).Unit(), pathid,0,node->GetTime(u),node->GetHitPos(u), node->GetHitPosGlobal(u), node->GetDigiPos());
+            // not ((PrtLutNode*)( fLutNew->At(i)))->AddEntry(node->GetDetectorId(), dird, 0,0,average_bin_time,node->GetHitPos(u), node->GetHitPosGlobal(u), node->GetDigiPos());
             
             hist_dir_xy_occu_final[mcpid][pixid]->Fill(dird.Y(), dird.X());
             
             
-            
-            
-            
-            
-            
+            /*
             if (nEntries>1) continue;
             //if (mcpid==5 && pixid==5) cout<<"##### mcpid=   "<<mcpid<<"  pixid= "<< pixid <<"  nEntries= "<<nEntries<<endl;
             //if (mcpid==6 && pixid==6) cout<<"##### mcpid=   "<<mcpid<<"  pixid= "<< pixid <<"  nEntries= "<<nEntries<<endl;
@@ -370,67 +330,175 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             hist_dir_z->Fill(dir_z,angle);
             hist_pos_phs_x_angle->Fill(pos_x,angle);
             hist_pos_phs_y_angle->Fill(pos_y,angle);
+             
+             */
             
             
+            
+            
+            //////////////////
+            /////Check  ID ///
+            //////////////////
+            
+            bool newid = true;
+            
+            // loop over existed circle
+            // calcluate distance between new (dir_x, dir_y) and circles center
+            // if the destance smaller than reduis of one circle, flag it as false newid, register the point with taken pathid and exit check loop
+            
+            bool registered = false;
+            pathid= -1;
+            cout<<"#########################  Check the Solution  "<<pathid<<endl;
+            for(Int_t e=0; e<vec_dir[mcpid][pixid].size(); e++) {
+                Double_t p1 = vec_dir[mcpid][pixid][e].X()-dir_x ;
+                Double_t p2 = vec_dir[mcpid][pixid][e].Y()-dir_y ;
+                p1 *=p1;
+                p2 *=p2;
+                Double_t result=p1+p2;
+                Double_t distance = sqrt(result);
+                if( distance < R ){
+                    newid= false;
+                    pathid=mcpid*1000000+pixid*10000+e;
+                    cout<<"#################  The Solution in a band = "<<pathid<<endl;
+                    for(int j=0; j<pArray.size(); j++){
+                        if(pathid == pArray[j]){
+                            vArray[j].push_back(dird);
+                            tArray[j].push_back(evtime);
+                            //cout<<"########  used pArray[j]= "<<pArray[j]<< " stor dir and t indix J = "<<j<<endl;
+                            registered = true;
+                            cout<<"########  The Solution registered on the band = "<<pathid<<endl;
+                        }
+                    }
+                    if (registered) cout<<"#####  Exit Check Loop= "<<pathid<<endl;
+                    if (registered)break;
+                }
+            }
+            
+            // if the point new, creat a new circle for it
+            // add the circle to a list
+            // register the point with new pathid
+            if(newid) {
+                
+                el[mcpid][pixid][vec_dir[mcpid][pixid].size()] = new TEllipse(dir_y,dir_x,R,R);
+                vec_dir[mcpid][pixid].push_back(dird); //add the circle to a list
+                pathid=mcpid*1000000+pixid*10000+vec_dir[mcpid][pixid].size();
+                //cout<<"@@@@@@@@@@@  2nd pathid = "<<pathid<<endl;
+                vArray[pArray.size()].push_back(dird);
+                tArray[pArray.size()].push_back(evtime);
+                pArray.push_back(pathid);
+                cout<<"#########################   New Solution  "<<pathid<<"  "<<pArray[pArray.size()]<<endl;
+                //cout<<"@@@@@@@@@@@@  new pArray[j] = "<<pArray[pArray.size()-1]<< " stor dir and t indix J = "<<pArray.size()<<endl;
+            }
         }
         
+        /////////////////
+        /////fill LUT ///
+        /////////////////
+        
+        for(int j=0; j<pArray.size(); j++){
+            sum = TVector3(0,0,0);
+            sumt=0;
+
+            
+//cout << "number of solutions   "<< pArray.size() <<endl;
+//cout << "number of solutions have the same id  "<<vArray[j].size() <<endl;
+            
+            if (vArray[j].size() < 15)continue;
+            for(int v=0; v<vArray[j].size(); v++) {
+                //sum += vArray[j][v];
+                //sumt += tArray[j][v];
+                
+                
+                ((PrtLutNode*)(fLutNew->At(i)))->AddEntry(node->GetDetectorId(), vArray[j][v],pArray[j],0,tArray[j][v],  node->GetDigiPos(),node->GetDigiPos(),node->GetDigiPos(),vArray[j].size()/(Double_t)size);
+                
+                hist_dir_xy_occu_final2[mcpid][pixid]->Fill(vArray[j][v].Y(), vArray[j][v].X());
+            }
+            
+            if(vArray[j].size()<1) continue;
+            Double_t weight = 1/(Double_t)vArray[j].size();
+            sum *= weight;
+            sumt *= weight;
+            
+            //            cout << "sum  "<<sum.X()<<endl;
+            //            cout << "sumt  "<<sumt<<endl;
+            //            cout << "d id  "<<node->GetDetectorId()<<endl;
+            //            cout << "id  "<<pArray[j]<<endl;
+            //            cout << "w  "<<vArray[j].size()/(Double_t)size<<endl;
+            
+           // ((PrtLutNode*)(fLutNew->At(i)))->AddEntry(node->GetDetectorId(), sum,pArray[j],0,sumt,  node->GetDigiPos(),node->GetDigiPos(),node->GetDigiPos(),vArray[j].size()/(Double_t)size);
+            
+           // hist_dir_xy_occu_final2[mcpid][pixid]->Fill(sum.Y(), sum.X());
+            
+        }
+        for(int i=0; i<100; i++) {vArray[i].clear();  tArray[i].clear();}
+        pArray.clear();
+        
+        
+        
+        
+        
+        
+        
     }
+    
+    //    {
+    //        int mcpid=5;
+    //        int pixid=5;
+    //
+    //        prt_canvasAdd("r_dirxy_angle",800,400);
+    //        hist_dir_xy_angle[mcpid][pixid]->Draw("colz");
+    //
+    //
+    //        prt_canvasAdd("r_dirxy",800,400);
+    //        hist_dir_xy_test[mcpid][pixid]->Draw("colz");
+    //
+    //
+    //        prt_canvasAdd("r_dirxy_time",800,400);
+    //        hist_dir_xy_time_time[mcpid][pixid]->Draw("colz");
+    //
+    //        prt_canvasAdd("r_dirxy_occ",800,400);
+    //        hist_dir_xy_occu_final[mcpid][pixid]->Draw("colz");
+    //
+    //
+    //    }
+    
+    
+    
+    
+    
+    
+    //    prt_canvasAdd("r_pix_phs",600,600);
+    //    for(Int_t m=0; m<12; m++) {
+    //        for(Int_t p=0; p<64; p++) {
+    //            hist_dir_xy_occu[m][p]->Draw("colz");
+    //            for(Int_t e=0; e<100; e++) {
+    //
+    //                el[m][p][e]->SetFillColor(0);
+    //                el[m][p][e]->SetFillStyle(0);
+    //                el[m][p][e]->Draw("same");
+    //            }
+    //            prt_waitPrimitive("r_pix_phs");
+    //
+    //        }
+    //    }
     
     {
         int mcpid=5;
         int pixid=5;
         
-        prt_canvasAdd("r_dirxy_angle",800,400);
-        hist_dir_xy_angle[mcpid][pixid]->Draw("colz");
-        
-        
-        prt_canvasAdd("r_dirxy",800,400);
-        hist_dir_xy_test[mcpid][pixid]->Draw("colz");
-        
-        
-        prt_canvasAdd("r_dirxy_time",800,400);
-        hist_dir_xy_time_time[mcpid][pixid]->Draw("colz");
-        
-        prt_canvasAdd("r_dirxy_occ",800,400);
+        prt_canvasAdd("r_f1",800,400);
         hist_dir_xy_occu_final[mcpid][pixid]->Draw("colz");
         
+                    for(Int_t e=0; e<100; e++) {
         
+                        el[mcpid][pixid][e]->SetFillColor(0);
+                        el[mcpid][pixid][e]->SetFillStyle(0);
+                        el[mcpid][pixid][e]->Draw("same");
+                    }
+        
+        prt_canvasAdd("r_f2",800,400);
+        hist_dir_xy_occu_final2[mcpid][pixid]->Draw("colz");
     }
-    
-    
-    
-    
-    
-    
-    prt_canvasAdd("r_pix_phs",600,600);
-    for(Int_t m=0; m<12; m++) {
-        for(Int_t p=0; p<64; p++) {
-            
-            
-            
-            hist_dir_xy_test[m][p]->Draw("colz");
-            
-            // glx_canvasGet("r_pix_phs")->Update();
-            
-            
-            for(Int_t e=0; e<100; e++) {
-                
-                el[m][p][e]->SetFillColor(0);
-                el[m][p][e]->SetFillStyle(0);
-                el[m][p][e]->Draw("same");
-                
-            }
-            
-            
-            // glx_canvasGet("r_pix_phs")->Update();
-            prt_waitPrimitive("r_pix_phs");
-            
-        }
-    }
-    
-    
-    
-    
     
     
     
@@ -570,9 +638,9 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     
     
     
-    //    fTreeNew->Fill();
-    //    fTreeNew->Print();
-    //    fTreeNew->AutoSave();
+    fTreeNew->Fill();
+    fTreeNew->Print();
+    fTreeNew->AutoSave();
     
     
     
