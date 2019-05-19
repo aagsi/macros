@@ -17,6 +17,9 @@
 void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20_rot_final.root"){ //1m_l3_20_rot_final.root // test_lut_pathid.root
     gStyle->SetOptStat(0);
     
+    
+        double R =0.05;
+    
     ///////////////////////
     //// Debuging Histo ///
     ///////////////////////
@@ -92,21 +95,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         }
     }
     
-    ////////////////////////////////
-    //// circiles inisialization ///
-    ////////////////////////////////
-    
-    double R =0.05;
-    TEllipse *el[12][64][100];
-    for(Int_t m=0; m<12; m++) {
-        for(Int_t p=0; p<64; p++) {
-            for(Int_t e=0; e<100; e++) {
-                
-                el[m][p][e] = new TEllipse(-2,-2,R,R);
-                
-            }
-        }
-    }
+
     
     
     //////////////////////
@@ -142,8 +131,24 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     std::vector<Double_t> pathIDVector;
     TVector3  sum;
     Double_t sumt;
-
+    
     std::vector<TVector3> circleIDVector[12][64];
+    
+    ////////////////////////////////
+    //// circiles inisialization ///
+    ////////////////////////////////
+    
+
+    TEllipse *el[12][64][vsize];
+    for(Int_t m=0; m<12; m++) {
+        for(Int_t p=0; p<64; p++) {
+            for(Int_t e=0; e<vsize; e++) {
+                
+                el[m][p][e] = new TEllipse(-2,-2,R,R);
+                
+            }
+        }
+    }
     
     
     
@@ -238,7 +243,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             if (dir_z < 0)hist_phs_time_m_div_z->Fill(evtime );
             if (dir_z > 0)hist_phs_time_p_div_z->Fill(evtime );
             
-
+            
             hist_phs_time->Fill(evtime );
             
             
@@ -419,8 +424,8 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             //            cout << "id  "<<pathIDVector[j]<<endl;
             //            cout << "w  "<<dirArrayVector[j].size()/(Double_t)size<<endl;
             
-             ((PrtLutNode*)(fLutNew->At(i)))->AddEntry(node->GetDetectorId(), sum,pathIDVector[j],0,sumt,  node->GetDigiPos(),node->GetDigiPos(),node->GetDigiPos(),dirArrayVector[j].size()/(Double_t)size);
-             hist_dir_xy_occu_final2[mcpid][pixid]->Fill(sum.Y(), sum.X());
+            ((PrtLutNode*)(fLutNew->At(i)))->AddEntry(node->GetDetectorId(), sum,pathIDVector[j],0,sumt,  node->GetDigiPos(),node->GetDigiPos(),node->GetDigiPos(),dirArrayVector[j].size()/(Double_t)size);
+            hist_dir_xy_occu_final2[mcpid][pixid]->Fill(sum.Y(), sum.X());
             
         }
         for(int i=0; i<vsize; i++) {dirArrayVector[i].clear();  tArrayVector[i].clear();}
@@ -428,8 +433,8 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         
         for(int m=0; m<12; m++){
             for(int p=0; p<12; p++){
-        
-        circleIDVector[m][p].clear();
+                
+                circleIDVector[m][p].clear();
             }
         }
     }
@@ -460,21 +465,21 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     //    }
     
     /*
-    prt_canvasAdd("r_pix_phs1",800,400);
-    for(Int_t m=0; m<12; m++) {
-        for(Int_t p=0; p<64; p++) {
-            hist_dir_xy_occu_final[m][p]->Draw("colz");
-            for(Int_t e=0; e<100; e++) {
-                
-                el[m][p][e]->SetFillColor(0);
-                el[m][p][e]->SetFillStyle(0);
-                el[m][p][e]->Draw("same");
-            }
-            prt_waitPrimitive("r_pix_phs1");
-            
-        }
-    }
-    */
+     prt_canvasAdd("r_pix_phs1",800,400);
+     for(Int_t m=0; m<12; m++) {
+     for(Int_t p=0; p<64; p++) {
+     hist_dir_xy_occu_final[m][p]->Draw("colz");
+     for(Int_t e=0; e<100; e++) {
+     
+     el[m][p][e]->SetFillColor(0);
+     el[m][p][e]->SetFillStyle(0);
+     el[m][p][e]->Draw("same");
+     }
+     prt_waitPrimitive("r_pix_phs1");
+     
+     }
+     }
+     */
     
     prt_canvasAdd("r_pix_phs2",800,400);
     for(Int_t m=0; m<12; m++) {
