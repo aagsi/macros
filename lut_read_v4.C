@@ -19,10 +19,14 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     
     double R =0.05; // circle redues 0.05
     Int_t vsize= 500; // number of cicles per pix 500
-    Int_t threshold= 0;// solution threshold per circle 30
+    Int_t threshold= 250;// solution threshold per circle 30
+    
+    
+    // technical
     
     int ncircle(50);
     int counter(0);
+    TVector3 dummy(1,1,1);
     
     ///////////////////////
     //// Debuging Histo ///
@@ -79,7 +83,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     TH2F* hist_time_angle_ch[12][64], *hist_time_angle_ch2[12][64], *hist_time_angle_ch3[12][64];
     TH2F*  hist2_dir_xy[12][64], *hist_dir_xy_test[12][64], *hist_dir_xy_occu[12][64],*hist_dir_xy_occu_final[12][64],*hist_dir_xy_occu_final2[12][64], *hist_dir_xy_angle[12][64], *hist_dir_xy_time[12][64], *hist_dir_xy_time_time[12][64];
     
-    int bin_histo= 50; //400
+    int bin_histo= 400; //400
     for(Int_t m=0; m<12; m++) {
         for(Int_t p=0; p<64; p++) {
             
@@ -91,8 +95,8 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             hist2_dir_xy[m][p] = new TH2F(Form("hist2_dir_xy_ch_%d_%d",m,p),Form("hist2_dir_xy_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
             hist_dir_xy_test[m][p] = new TH2F(Form("hist_dir_xy_test_ch_%d_%d",m,p),Form("hist_dir_xy_test_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
             hist_dir_xy_occu[m][p] = new TH2F(Form("hist_dir_xy_occu_ch_%d_%d",m,p),Form("hist_dir_xy_occu_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
-            hist_dir_xy_occu_final[m][p] = new TH2F(Form("hist_dir_xy_occu_final_ch_%d_%d",m,p),Form("hist_dir_xy_occu_final_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
-            hist_dir_xy_occu_final2[m][p] = new TH2F(Form("hist_dir_xy_occu_final2_ch_%d_%d",m,p),Form("hist_dir_xy_occu_final2_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
+            hist_dir_xy_occu_final[m][p] = new TH2F(Form("hist_dir_xy_occu_final_ch_%d_%d",m,p),Form("hist_dir_xy_occu_final_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo/2,-1.0,0);
+            hist_dir_xy_occu_final2[m][p] = new TH2F(Form("hist_dir_xy_occu_final2_ch_%d_%d",m,p),Form("hist_dir_xy_occu_final2_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo/2,-1.0,0);
             
             hist_dir_xy_angle[m][p] = new TH2F(Form("hist_dir_xy_angle_ch_%d_%d",m,p),Form("hist_dir_xy_angle_ch_%d_%d;dir y component;dir x component",m,p),  bin_histo,-1.0,1.0, bin_histo,-1.0,1.0);
             
@@ -137,6 +141,9 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     /////////////////////////
     //Int_t vsize= 500;
     std::vector<TVector3> dirArrayVector[vsize];
+    std::vector<TVector3> posGlobalArrayVector[vsize];
+    std::vector<TVector3> posLocalArrayVector[vsize];
+    
     std::vector<Double_t> tArrayVector[vsize];
     std::vector<Double_t> pathIDVector;
     TVector3  sum;
@@ -171,8 +178,9 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     TClonesArray *fLut = new TClonesArray("PrtLutNode");
     t->SetBranchAddress("LUT",&fLut);
     t->GetEntry(0);
-    Double_t time_solution;
+    Double_t time_solution(-1),  DetectorId(-1);
     TVector3 dird;
+    
     Int_t mcpid, pixid;
     PrtLutNode *fLutNode[5000];
     PrtLutNode *node;
@@ -190,7 +198,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     
     // in the intergration should convert the mcp and pix id to i derectly to get the the right Node
     
-    for(int i=0; i<2000; i++) {
+    for(int i=0; i<2000; i++) { //2000
         node = (PrtLutNode*) fLut->At(i);
         Int_t size = node->Entries();
         if(size<1) continue;
@@ -208,6 +216,8 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         
         for(int u=0; u<size; u++) { // size
             time_solution = node->GetTime(u);
+            
+            DetectorId = node->GetDetectorId();
             //pathid = node->GetPathId(u);
             //hPTime[mcpid][pixid]->Fill(time_solution);
             prt_hdigi[mcpid]->Fill(pixid%8, pixid/8);
@@ -312,8 +322,8 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             Double_t binCenter_x = xaxis->GetBinCenter(ka2);
             Double_t binCenter_y = xaxis->GetBinCenter(kt2);
             
-            dird.SetX(binCenter_y);
-            dird.SetY(binCenter_x);
+            //dird.SetX(binCenter_y);
+            //dird.SetY(binCenter_x);
             
             //hist_dir_x_angle->Fill(dird.X(),angle);
             //hist_dir_y_angle->Fill(dird.Y(),angle);
@@ -412,13 +422,18 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
                 //cout<<"#########################   New Solution  "<<pathid<<"  "<<pathid - pathIDVector[pathIDVector.size()-1]<<endl;
                 //cout<<"@@@@@@@@@@@@  new pathIDVector[j] = "<<pathIDVector[pathIDVector.size()-1]<< " stor dir and t indix J = "<<pathIDVector.size()<<endl;
             }
+            
+            // test
+            //((PrtLutNode*)( fLutNew->At(i)))->AddEntry(node->GetDetectorId(), node->GetEntry(u).Unit(), pathid,0,node->GetTime(u),dummy, dummy, dummy);
+            
+            //((PrtLutNode*)( fLutNew->At(i)))->AddEntry(node->GetDetectorId(), node->GetEntry(u).Unit(), pathid,0,node->GetTime(u),node->GetHitPos(u), node->GetHitPosGlobal(u), node->GetDigiPos());
         }
         
         /////////////////
         /////Fill LUT ///
         /////////////////
         
-        
+
         for(int j=0; j<pathIDVector.size(); j++){
             sum = TVector3(0,0,0);
             sumt=0;
@@ -430,12 +445,41 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             for(int v=0; v<(dirArrayVector[j].size()); v++) {
                 sum += dirArrayVector[j][v];
                 sumt += tArrayVector[j][v];
-                ((PrtLutNode*)(fLutNew->At(i)))->AddEntry(node->GetDetectorId(), dirArrayVector[j][v],pathIDVector[j],0,tArrayVector[j][v],  node->GetDigiPos(),node->GetDigiPos(),node->GetDigiPos(),dirArrayVector[j].size()/(Double_t)size);
+                ((PrtLutNode*)(fLutNew->At(i)))->AddEntry(node->GetDetectorId(), dirArrayVector[j][v],pathIDVector[j],0,tArrayVector[j][v],  dummy,dummy,dummy,dirArrayVector[j].size()/(Double_t)size);
                 hist_dir_xy_occu_final2[mcpid][pixid]->Fill(dirArrayVector[j][v].Y(), dirArrayVector[j][v].X());
                 //if (counter< ncircle)hist_dir_xy_occu_circle[counter]->Fill(dirArrayVector[j][v].Y(), dirArrayVector[j][v].X());
                 
-                //cout.precision(1);
-                //cout<<"#################  The distance= "<<distance<<" j= "<<pathIDVector.size()<<"  circle number= "<< e<<"  id= "<<fixed << <<pathid<<endl;
+                
+                /////////////////
+//                if(false){
+//                    dir_x3=
+//                    dir_y3=
+//                    angle3=
+//                    time_solution3=
+//
+//                    hist3_dir_xy[mcpid][pixid]->Fill(dir_y3, dir_x3,angle3);
+//                    hist3_dir_xy_test[mcpid][pixid]->Fill(dir_y3, dir_x3);
+//                    hist3_dir_xy_time[mcpid][pixid]->Fill(dir_y3, dir_x3,time_solution3);// time_phs
+//
+//                    kt3 = hist3_dir_xy[mcpid][pixid]->GetXaxis()->FindBin(dir_x3);
+//                    ka3 = hist3_dir_xy[mcpid][pixid]->GetYaxis()->FindBin(dir_y3);
+//
+//                    content3_hist_dir_xy=hist3_dir_xy[mcpid][pixid]->GetBinContent(ka3,kt3);
+//
+//                    // if (content_hist_dir_xy< 1) continue;
+//
+//                    content3_hist_dir_xy_test=hist3_dir_xy_test[mcpid][pixid]->GetBinContent(ka3,kt3);
+//                    content3_hist_dir_xy_time=hist3_dir_xy_time[mcpid][pixid]->GetBinContent(ka3,kt3);
+//
+//                    average3_bin=content_hist_dir_xy/content3_hist_dir_xy_test;
+//                    average3_bin_time=content_hist_dir_xy_time/content3_hist_dir_xy_test;
+//
+//                    hist3_dir_xy_angle[mcpid][pixid]->SetBinContent(ka3,kt3,average3_bin);
+//                    hist3_dir_xy_time_time[mcpid][pixid]->SetBinContent(ka3,kt3,average3_bin_time);
+//                    hist3_dir_xy_occu[mcpid][pixid]->Fill(dir_y3, dir_x3);
+//                }
+                ///////////////////////////////////////////////////////////////////////////////////////
+                
             }
             
             if(dirArrayVector[j].size()<1) continue;
@@ -462,7 +506,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         pathIDVector.clear();
         
         for(int m=0; m<12; m++){
-            for(int p=0; p<12; p++){
+            for(int p=0; p<64; p++){
                 
                 circleIDVector[m][p].clear();
             }
@@ -494,7 +538,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     //
     //    }
     
-    if(false){
+    if(true){
         prt_canvasAdd("r_pix_phs1",800,400);
         for(Int_t m=0; m<12; m++) {
             for(Int_t p=0; p<64; p++) {
@@ -515,11 +559,11 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         for(Int_t m=0; m<12; m++) {
             for(Int_t p=0; p<64; p++) {
                 hist_dir_xy_occu_final2[m][p]->Draw("colz");
-                for(Int_t e=0; e<vsize; e++) {
-                    el[m][p][e]->SetFillColor(0);
-                    el[m][p][e]->SetFillStyle(0);
-                    el[m][p][e]->Draw("same");
-                }
+//                for(Int_t e=0; e<vsize; e++) {
+//                    el[m][p][e]->SetFillColor(0);
+//                    el[m][p][e]->SetFillStyle(0);
+//                    el[m][p][e]->Draw("same");
+//                }
                 prt_waitPrimitive("r_pix_phs2");
             }
         }
