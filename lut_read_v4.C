@@ -13,13 +13,13 @@
 #include "TEllipse.h"
 
 
-void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20_rot_final.root"){ //1m_l3_20_rot_final.root // test_lut_pathid.root
+void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/10m_l3_20_f_rot_final.root"){ //1m_l3_20_rot_final.root // test_lut_pathid.root
     gStyle->SetOptStat(0);
     
     
-    double R =0.05; // circle redues 0.05
-    Int_t vsize= 500; // number of cicles per pix 500
-    Int_t threshold= 250;// solution threshold per circle 30
+    double R =0.025; // circle redues 0.05, 0.025
+    Int_t vsize= 500; // number of cicles per pix 500, 500
+    Int_t threshold= 2;// solution threshold per circle 30  , 200
     
     
     // technical
@@ -192,21 +192,26 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     
     Double_t rad = TMath::Pi()/180.;
     Double_t prtangle = 145;
-    TVector3 momInBar(0,0,-1); // -1
+    TVector3 momInBar(0,0,-1);
     
     Int_t kt(-1), ka(-1), nEntries(-1);
     
-    // in the intergration should convert the mcp and pix id to i derectly to get the the right Node
+    Int_t Xbin_pattern(-1), Ybin_pattern(-1);
+    Double_t content_prt_hdigi(0);
     
-    for(int i=0; i<2000; i++) { //2000
+
+    ///////////////////////
+    /// Loop over nodes ///
+    ///////////////////////
+    
+    for(int i=0; i<2000; i++) {
         node = (PrtLutNode*) fLut->At(i);
         Int_t size = node->Entries();
         if(size<1) continue;
-        //cout<<"node "<<i<<" has "<<size<<endl;
-        mcpid = i/100;   // old
-        pixid = i%100; // old
+        mcpid = i/100;
+        pixid = i%100;
+
         
-        //if (!(mcpid==5 && pixid==5)) continue;
         nEntries=0;
         for(Int_t m=0; m<12; m++) {
             for(Int_t p=0; p<64; p++) {
@@ -214,23 +219,30 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             }
         }
         
+        
+        ///////////////////////////////////
+        /// Loop over soluions per node ///
+        ///////////////////////////////////
+        
         for(int u=0; u<size; u++) { // size
             time_solution = node->GetTime(u);
             
-            DetectorId = node->GetDetectorId();
+            Xbin_pattern = prt_hdigi[mcpid]->GetXaxis()->FindBin(pixid%8);
+            Ybin_pattern = prt_hdigi[mcpid]->GetYaxis()->FindBin(pixid/8);
+            content_prt_hdigi=prt_hdigi[mcpid]->GetBinContent(Xbin_pattern,Ybin_pattern);
+            if (content_prt_hdigi> 500) continue;
+
+            
+            prt_hdigi[mcpid]->Fill(pixid%8, pixid/8);
+            
+            ///////////////////////////
+            /// Extract information ///
+            ///////////////////////////
+            
             //pathid = node->GetPathId(u);
             //hPTime[mcpid][pixid]->Fill(time_solution);
-            prt_hdigi[mcpid]->Fill(pixid%8, pixid/8);
-            //cout<<"mcpid "<<mcpid<<" pixid "<<pixid<<endl;
-            //cout<<"time_solution "<<time_solution<<endl;
             //Int_t sensorId = 100*mcpid + pixid;
-            //cout<<"##### sensorId=   "<<sensorId<<endl;
-            
-            
-            //if (time_solution > 10)continue;
-            
-            
-            
+            DetectorId = node->GetDetectorId();
             pos_x = node->GetHitPos(u).X();
             pos_y = node->GetHitPos(u).Y();
             pos_z = node->GetHitPos(u).Z();
@@ -239,8 +251,8 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             dir_x=dird.X();
             dir_y=dird.Y();
             dir_z=dird.Z();
-            //if (dir_z > 0) continue;
-            //cout<<"pos_x "<<pos_x<<" pos_y  "<<pos_y<<endl;
+
+            
             hist_xy->Fill(pos_y, pos_x);
             hist_z->Fill(pos_z);
             //hist_dir_x->Fill(dir_x);
@@ -367,9 +379,10 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             // calcluate distance between new (dir_x, dir_y) and circles center
             // if the destance smaller than reduis of one circle, flag it as false newid, register the point with taken pathid and exit check loop
             
-            bool registered = false;
+
             pathid= -1;
-            //cout<<"#########################  Check the Solution  "<<pathid<<endl;
+            
+            map<int, Double_t> circle_map ;
             for(int e=0; e<circleIDVector[mcpid][pixid].size(); e++) {
                 Double_t p1 = circleIDVector[mcpid][pixid][e].X()-dird.X() ;
                 Double_t p2 = circleIDVector[mcpid][pixid][e].Y()-dird.Y() ;
@@ -378,33 +391,33 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
                 Double_t result=p1+p2;
                 Double_t distance = sqrt(result);
                 
-                //cout<<"#################-------->  The distance= "<<fixed <<distance<<" j= "<<pathIDVector.size()<<"  circle number= "<< e<<"  id= "<<fixed <<pathid<<endl;
-                //if (circleIDVector[mcpid][pixid][e].X() == -0.06 && circleIDVector[mcpid][pixid][e].Y() == 0.58) cout<<"*******************************#######"<<e<<endl;
-                //cout<<"#######"<<" "<<circleIDVector[mcpid][pixid][e].X() <<" "<<circleIDVector[mcpid][pixid][e].Y()<<"  "<<e<<endl;
-                if( distance < R ){
-                    newid= false;
-                    pathid=mcpid*10000000+pixid*10000+e+1;
-                    //if (e==0)cout<<"################# "<<pathid<<endl;
-                    //cout<<"#################  The Solution in a band = "<<pathid<<endl;
-                    for(int j=0; j<pathIDVector.size(); j++){
-                        if(pathid == pathIDVector[j]){
-                            dirArrayVector[j].push_back(dird);
-                            tArrayVector[j].push_back(time_solution);
-                            //cout<<"########  used pathIDVector[j]= "<<pathIDVector[j]<< " stor dir and t indix J = "<<j<<endl;
-                            registered = true;
-                            //cout.precision(10);
-                            //if (e==0)cout<<"################# "<<pathid<<endl;
-                            //if (pathid == 50050001)cout<<"################# 1st The distance= "<<fixed <<distance<<" j= "<<pathIDVector.size()<<"  circle number= "<< e<<"  id= "<<fixed <<pathid<<" "<<dird.X() <<" "<<dird.Y()<<endl;
-                            //if (pathid == 50050001)cout<<circleIDVector[mcpid][pixid][e].X() <<" "<<circleIDVector[mcpid][pixid][e].Y()<<endl;
-                            
-                            if (registered)break;
-                            //cout<<"########  The Solution registered on the band = "<<pathid<<endl;
-                        }
-                    }
-                    //if (registered) cout<<"#####  Exit Check Loop= "<<pathid<<endl;
-                    if (registered)break;
+                circle_map[e] = distance;
+            }
+
+
+            Double_t min_distance =100;
+            Double_t order = -1;
+            for(auto it = circle_map.cbegin(); it != circle_map.cend(); ++it ) {
+                if (it ->second < min_distance) {
+                    order = it->first;
+                    min_distance = it->second;
                 }
             }
+
+            
+            if( min_distance < R ){
+                newid= false;
+                pathid=mcpid*10000000+pixid*10000+order+1;
+                
+                for(int j=0; j<pathIDVector.size(); j++){
+                    if(pathid == pathIDVector[j]){
+                        dirArrayVector[j].push_back(dird);
+                        tArrayVector[j].push_back(time_solution);
+                        break;
+                    }
+                }
+            }
+            
             
             // if the point new, creat a new circle for it
             // add the circle to a list
@@ -425,7 +438,6 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
             
             // test
             //((PrtLutNode*)( fLutNew->At(i)))->AddEntry(node->GetDetectorId(), node->GetEntry(u).Unit(), pathid,0,node->GetTime(u),dummy, dummy, dummy);
-            
             //((PrtLutNode*)( fLutNew->At(i)))->AddEntry(node->GetDetectorId(), node->GetEntry(u).Unit(), pathid,0,node->GetTime(u),node->GetHitPos(u), node->GetHitPosGlobal(u), node->GetDigiPos());
         }
         
@@ -433,7 +445,7 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         /////Fill LUT ///
         /////////////////
         
-
+        
         for(int j=0; j<pathIDVector.size(); j++){
             sum = TVector3(0,0,0);
             sumt=0;
@@ -446,39 +458,9 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
                 sum += dirArrayVector[j][v];
                 sumt += tArrayVector[j][v];
                 ((PrtLutNode*)(fLutNew->At(i)))->AddEntry(node->GetDetectorId(), dirArrayVector[j][v],pathIDVector[j],0,tArrayVector[j][v],  dummy,dummy,dummy,dirArrayVector[j].size()/(Double_t)size);
-                hist_dir_xy_occu_final2[mcpid][pixid]->Fill(dirArrayVector[j][v].Y(), dirArrayVector[j][v].X());
+                //hist_dir_xy_occu_final2[mcpid][pixid]->Fill(dirArrayVector[j][v].Y(), dirArrayVector[j][v].X());
                 //if (counter< ncircle)hist_dir_xy_occu_circle[counter]->Fill(dirArrayVector[j][v].Y(), dirArrayVector[j][v].X());
                 
-                
-                /////////////////
-//                if(false){
-//                    dir_x3=
-//                    dir_y3=
-//                    angle3=
-//                    time_solution3=
-//
-//                    hist3_dir_xy[mcpid][pixid]->Fill(dir_y3, dir_x3,angle3);
-//                    hist3_dir_xy_test[mcpid][pixid]->Fill(dir_y3, dir_x3);
-//                    hist3_dir_xy_time[mcpid][pixid]->Fill(dir_y3, dir_x3,time_solution3);// time_phs
-//
-//                    kt3 = hist3_dir_xy[mcpid][pixid]->GetXaxis()->FindBin(dir_x3);
-//                    ka3 = hist3_dir_xy[mcpid][pixid]->GetYaxis()->FindBin(dir_y3);
-//
-//                    content3_hist_dir_xy=hist3_dir_xy[mcpid][pixid]->GetBinContent(ka3,kt3);
-//
-//                    // if (content_hist_dir_xy< 1) continue;
-//
-//                    content3_hist_dir_xy_test=hist3_dir_xy_test[mcpid][pixid]->GetBinContent(ka3,kt3);
-//                    content3_hist_dir_xy_time=hist3_dir_xy_time[mcpid][pixid]->GetBinContent(ka3,kt3);
-//
-//                    average3_bin=content_hist_dir_xy/content3_hist_dir_xy_test;
-//                    average3_bin_time=content_hist_dir_xy_time/content3_hist_dir_xy_test;
-//
-//                    hist3_dir_xy_angle[mcpid][pixid]->SetBinContent(ka3,kt3,average3_bin);
-//                    hist3_dir_xy_time_time[mcpid][pixid]->SetBinContent(ka3,kt3,average3_bin_time);
-//                    hist3_dir_xy_occu[mcpid][pixid]->Fill(dir_y3, dir_x3);
-//                }
-                ///////////////////////////////////////////////////////////////////////////////////////
                 
             }
             
@@ -538,13 +520,13 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
     //
     //    }
     
-    if(true){
+    if(false){
         prt_canvasAdd("r_pix_phs1",800,400);
         for(Int_t m=0; m<12; m++) {
             for(Int_t p=0; p<64; p++) {
                 hist_dir_xy_occu_final[m][p]->Draw("colz");
                 for(Int_t e=0; e<vsize; e++) {
-                    
+
                     el[m][p][e]->SetFillColor(0);
                     el[m][p][e]->SetFillStyle(0);
                     el[m][p][e]->Draw("same");
@@ -559,11 +541,11 @@ void lut_read_v4(TString infile="/Users/ahmed/Desktop/std/prtdirc/build/1m_l3_20
         for(Int_t m=0; m<12; m++) {
             for(Int_t p=0; p<64; p++) {
                 hist_dir_xy_occu_final2[m][p]->Draw("colz");
-//                for(Int_t e=0; e<vsize; e++) {
-//                    el[m][p][e]->SetFillColor(0);
-//                    el[m][p][e]->SetFillStyle(0);
-//                    el[m][p][e]->Draw("same");
-//                }
+                for(Int_t e=0; e<vsize; e++) {
+                    el[m][p][e]->SetFillColor(0);
+                    el[m][p][e]->SetFillStyle(0);
+                    el[m][p][e]->Draw("same");
+                }
                 prt_waitPrimitive("r_pix_phs2");
             }
         }
